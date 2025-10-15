@@ -56,7 +56,6 @@
                     <a href="index.html" class="nav-link">Home</a>
                     <a href="index.html#tickets" class="nav-link">Buy Tickets</a>
                     <a href="sell.html" class="nav-link active">Sell Tickets</a>
-                    <a href="#" class="nav-link">Events</a>
                     <a href="#support" class="nav-link">Support</a>
                 </div>
                 <div class="nav-auth">
@@ -78,8 +77,89 @@
             </div>
         </nav>
     </header>
+    
 
     <main>
+        <!-- Hero Section -->
+    <section class="sell-hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>Turn your tickets into cash</h1>
+                    <p>List your tickets for free and get paid within 24 hours of sale. Our platform handles everything from buyer verification to secure payments.</p>
+                    
+                    <div class="selling-benefits">
+                        <div class="benefit">
+                            <i class="fas fa-rupee-sign"></i>
+                            <span>Free to list</span>
+                        </div>
+                        <div class="benefit">
+                            <i class="fas fa-clock"></i>
+                            <span>Get paid fast</span>
+                        </div>
+                        <div class="benefit">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>100% secure</span>
+                        </div>
+                        <div class="benefit">
+                            <i class="fas fa-users"></i>
+                            <span>Millions of buyers</span>
+                        </div>
+                    </div>
+                    
+                    <div class="cta-buttons">
+                        <button class="btn-primary btn-large" onclick="scrollToForm()">
+                            Start selling now
+                        </button>
+                        <a href="#how-it-works" class="btn-secondary btn-large">
+                            How it works
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="hero-visual">
+                    <div class="earning-calculator">
+                        <h3>Earnings Calculator</h3>
+                        <div class="calculator-form">
+                            <div class="form-group">
+                                <label>Ticket price</label>
+                                <div class="price-input">
+                                    <span>₹</span>
+                                    <input type="number" id="ticketPrice" value="2500" min="100" max="50000">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Quantity</label>
+                                <select id="ticketQuantity">
+                                    <option value="1">1 ticket</option>
+                                    <option value="2" selected>2 tickets</option>
+                                    <option value="3">3 tickets</option>
+                                    <option value="4">4 tickets</option>
+                                    <option value="5">5 tickets</option>
+                                    <option value="6">6 tickets</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="earnings-breakdown">
+                            <div class="breakdown-row">
+                                <span>Total sale</span>
+                                <span id="totalSale">₹5,000</span>
+                            </div>
+                            <div class="breakdown-row">
+                                <span>TicketAdda fee (3%)</span>
+                                <span id="platformFee">₹500</span>
+                            </div>
+                            <div class="breakdown-row total">
+                                <span>You earn</span>
+                                <span id="youEarn">₹4,500</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
         <!-- KEEP THE HERO & CALCULATOR AS IS (omitted here for brevity in this preview) -->
         <section class="sell-form-section" id="sellForm">
             <div class="container">
@@ -368,6 +448,78 @@
             </div>
         </section>
         <!-- rest of page (how-it-works, faq, footer...) unchanged -->
+        <section class="how-it-works" id="how-it-works">
+            <div class="container">
+                <h2>How selling works</h2>
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <div class="step-icon">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <h3>1. List your tickets</h3>
+                        <p>Create your listing in under 2 minutes. Add event details, ticket information, and set your price.</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>2. Connect with buyers</h3>
+                        <p>Our platform shows your tickets to millions of buyers. We handle all communication and verification.</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <h3>3. Secure transfer</h3>
+                        <p>When someone buys your tickets, we facilitate the secure transfer and handle payment processing.</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <h3>4. Get paid instantly</h3>
+                        <p>Receive payment in your bank account within 24 hours. No waiting, no hassle.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <div class="container">
+                <h2>Frequently asked questions</h2>
+                <div class="faq-grid">
+                    <div class="faq-item">
+                        <h3>How much does it cost to sell?</h3>
+                        <p>Listing your tickets is completely free right now! Since the site is newly launched, there are no extra charges at all.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>When do I get paid?</h3>
+                        <p>Payment is transferred to your bank account within 24 hours of the ticket sale being completed.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>What if my event gets cancelled?</h3>
+                        <p>If an event is cancelled, we automatically process refunds for buyers and remove your listing. No fees apply.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Can I change my price after listing?</h3>
+                        <p>Yes, you can update your ticket prices anytime before they sell through your seller dashboard.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>How do I transfer mobile tickets?</h3>
+                        <p>For mobile tickets, we provide a secure transfer process through the original ticketing platform.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Is it safe to sell on TicketAdda?</h3>
+                        <p>Yes, we verify all buyers and provide seller protection. Payments are processed securely through our platform.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    
     </main>
 
     <footer class="footer">
@@ -379,10 +531,8 @@
                     </div>
                     <p>India's most trusted ticket marketplace for concerts, sports, theater, and more.</p>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
                         <a href="https://x.com/ticketadda"><i class="fab fa-twitter"></i></a>
                         <a href="https://www.instagram.com/ticketadda.in/"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
             </div>

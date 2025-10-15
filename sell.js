@@ -26,7 +26,7 @@
     function readFileAsDataURL(file) {
       return new Promise((resolve, reject) => {
         if (!file) return resolve('');
-        if (file.size > 5 * 1024 * 1024) return reject(new Error('File too large. Max 5MB allowed.'));
+        if (file.size > 50* 1024 * 1024) return reject(new Error('File too large. Max 50MB allowed.'));
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result);
         reader.onerror = (err) => reject(err);
