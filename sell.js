@@ -1,14 +1,12 @@
-/** sell.js - Full working file for Sell Tickets page
- *  Paste this file as-is. Make sure firebase compat scripts are loaded in HTML before this file.
- */
-
 (function () {
     'use strict';
   
-    
-    // ---------------------------
-    // Firebase config (user-provided)
-    // ---------------------------
+    // ===== CONFIG =====
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbz-fZxL0bo27SnhkFVwJKM03dqkrgtMPA7PqUX_Aj7oLvGxoUSoMUDTpmBrVnKoZSKa/exec";
+    const PLATFORM_FEE_RATE = 0.00;
+    const totalSteps = 4;
+    let currentStep = 1;
+  
     const firebaseConfig = {
       apiKey: "AIzaSyDSPYXYwrxaVTna2CfFI2EktEysXb7z5iE",
       authDomain: "ticketaddda.firebaseapp.com",
@@ -19,546 +17,452 @@
       measurementId: "G-EDDVKVVXHS"
     };
   
-    // small helper to query element by id
-    function qs(id) { return document.getElementById(id); }
-    function log(...args){ console.log('[sell.js]', ...args); }
-    function warn(...args){ console.warn('[sell.js]', ...args); }
-    function err(...args){ console.error('[sell.js]', ...args); }
-  
-    // ---------------------------
-    // Initialize Firebase (compat)
-    // ---------------------------
-    try {
-      if (typeof firebase === 'undefined') {
-        throw new Error('Firebase SDK not found. Make sure firebase-app-compat + auth-compat + firestore-compat (+ storage-compat) scripts are included in HTML BEFORE sell.js');
-      }
-      if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-        log('Firebase initialized.');
-      } else {
-        log('Firebase already initialized, reusing instance.');
-      }
-    } catch (e) {
-      err('Firebase init failed:', e);
-      // continue - code will handle missing SDK gracefully
-    }
-  
-    // SDK refs (compat)
-    const auth = (typeof firebase !== 'undefined' && firebase.auth) ? firebase.auth() : null;
-    const db = (typeof firebase !== 'undefined' && firebase.firestore) ? firebase.firestore() : null;
-    const storage = (typeof firebase !== 'undefined' && firebase.storage) ? firebase.storage() : null;
-  
-    // ---------------------------
-    // State + constants
-    // ---------------------------
-    const PLATFORM_FEE_RATE = 0.02;
-    let currentStep = 1;
-    const totalSteps = 4;
-  
-    const formData = {
-      eventName: '',
-      eventCategory: '',
-      eventDate: '',
-      eventTime: '',
-      venue: '',
-      ticketSection: '',
-      ticketRow: '',
-      seatNumbers: '',
-      quantity: 0,
-      ticketType: 'mobile',
-      sellingPrice: 0,
-      agreeTerms: false,
-      agreeTransfer: false
-    };
-  
-    // ---------------------------
-    // Small helpers
-    // ---------------------------
+    // ===== Helpers =====
     function formatINR(num) {
       if (isNaN(num)) num = 0;
       return '₹' + Number(num).toLocaleString('en-IN', { maximumFractionDigits: 0 });
     }
   
-    function escapeHtml(text) {
-      if (!text) return '';
-      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-      return String(text).replace(/[&<>"']/g, m => map[m]);
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        if (!file) return resolve('');
+        if (file.size > 5 * 1024 * 1024) return reject(new Error('File too large. Max 5MB allowed.'));
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (err) => reject(err);
+        reader.readAsDataURL(file);
+      });
     }
   
-    // ---------------------------
-    // Header auth UI handling
-    // ---------------------------
-    function updateHeaderForUser(user) {
-      const authActions = qs('authActions');
-      const userMenu = qs('userMenu');
-      const userNameElm = qs('userNameElm');
-      const userAvatar = qs('userAvatar');
-      const mobileNav = qs('mobileNav'); // may not exist on sell.html, that's fine
+    // ===== Firebase auth init & UI sync =====
+    function initFirebaseAuth() {
+      // requires firebase (compat) included on page
+      if (typeof firebase === 'undefined') {
+        console.warn('Firebase SDK not found (initFirebaseAuth skipped).');
+        return;
+      }
   
-      if (user) {
-        let displayName = (user.displayName || '').trim();
-        if (!displayName && user.email) displayName = user.email.split('@')[0];
-        if (!displayName) displayName = 'User';
-  
-        if (authActions) authActions.style.display = 'none';
-        if (userMenu) userMenu.style.display = 'flex';
-        if (userNameElm) userNameElm.textContent = `Hi, ${displayName}`;
-        if (userAvatar && user.photoURL) userAvatar.src = user.photoURL;
-  
-        // mobile nav link
-        if (mobileNav) {
-          const existing = mobileNav.querySelector('.mobile-auth-link');
-          if (existing) existing.remove();
-          const a = document.createElement('a');
-          a.href = '#';
-          a.className = 'mobile-nav-link mobile-auth-link';
-          a.textContent = 'Logout';
-          a.addEventListener('click', (e) => { e.preventDefault(); auth.signOut(); });
-          mobileNav.appendChild(a);
+      try {
+        // initialize only if not already initialized
+        if (!(firebase.apps && firebase.apps.length)) {
+          firebase.initializeApp(firebaseConfig);
         }
-      } else {
-        if (authActions) authActions.style.display = 'flex';
-        if (userMenu) userMenu.style.display = 'none';
-        if (mobileNav) {
-          const existing = mobileNav.querySelector('.mobile-auth-link');
-          if (existing) existing.remove();
-          const a = document.createElement('a');
-          a.href = 'login.html';
-          a.className = 'mobile-nav-link mobile-auth-link';
-          a.textContent = 'Sign In';
-          mobileNav.appendChild(a);
+      } catch (err) {
+        // if already initialized, ignore
+        console.warn('Firebase init warning:', err && err.message ? err.message : err);
+      }
+  
+      const auth = firebase.auth();
+  
+      // prefer LOCAL persistence
+      if (auth && auth.setPersistence) {
+        try {
+          auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => { /* ignore */ });
+        } catch (e) { /* ignore */ }
+      }
+  
+      const authActions = document.getElementById('authActions'); // sign-in container
+      const userMenu = document.getElementById('userMenu');       // signed-in menu container
+      const userNameElm = document.getElementById('userNameElm');
+      const userAvatar = document.getElementById('userAvatar');
+      const logoutBtn = document.getElementById('logoutBtn');
+  
+      function updateUIforUser(user) {
+        if (user) {
+          let displayName = (user.displayName || '').trim();
+          if (!displayName && user.email) displayName = user.email.split('@')[0];
+          if (!displayName) displayName = 'User';
+          if (authActions) authActions.style.display = 'none';
+          if (userMenu) userMenu.style.display = 'flex';
+          if (userNameElm) userNameElm.textContent = `Hi, ${displayName}`;
+          if (userAvatar && user.photoURL) userAvatar.src = user.photoURL;
+        } else {
+          if (authActions) authActions.style.display = '';
+          if (userMenu) userMenu.style.display = 'none';
         }
+      }
+  
+      // listen for state changes
+      auth.onAuthStateChanged(user => {
+        updateUIforUser(user);
+      });
+  
+      // wire logout
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          auth.signOut().catch(err => console.error('Sign out failed:', err));
+        });
       }
     }
   
-    // ---------------------------
-    // Setup firebase auth persistence + listener
-    // ---------------------------
-    if (auth) {
-      // set persistence to LOCAL to keep user logged across pages
-      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-        .then(() => {
-          log('Auth persistence set to LOCAL.');
-        })
-        .catch(e => {
-          warn('Could not set auth persistence:', e);
-        });
+    // ===== Main DOM logic =====
+    document.addEventListener('DOMContentLoaded', function () {
+      // Initialize Firebase auth UI sync
+      initFirebaseAuth();
   
-      // onAuthStateChanged will fire on page load if user is already logged in
-      auth.onAuthStateChanged(user => {
-        log('onAuthStateChanged fired. user=', !!user);
-        updateHeaderForUser(user);
+      // Elements
+      const form = document.getElementById('ticketListingForm');
+      const steps = Array.from(document.querySelectorAll('.form-step'));
+      const nextBtn = document.getElementById('nextBtn');
+      const prevBtn = document.getElementById('prevBtn');
+      const submitBtn = document.getElementById('submitBtn');
+      const progressSteps = Array.from(document.querySelectorAll('.progress-indicator .step'));
   
-        // optional redirect back to saved url after login
-        try {
-          const post = localStorage.getItem('postSignInRedirect');
-          if (user && post) {
-            localStorage.removeItem('postSignInRedirect');
-            if (window.location.pathname !== post) {
-              log('Redirecting to saved postSignInRedirect:', post);
-              window.location.href = post;
+      // status holder
+      const statusHolder = document.createElement('div');
+      statusHolder.id = 'formStatus';
+      const formContainer = document.querySelector('.sell-form-container');
+      if (formContainer) formContainer.appendChild(statusHolder);
+  
+      // preview elements
+      const previewPrice = document.getElementById('previewPrice');
+      const previewQuantity = document.getElementById('previewQuantity');
+      const previewTotal = document.getElementById('previewTotal');
+      const previewFee = document.getElementById('previewFee');
+      const previewEarnings = document.getElementById('previewEarnings');
+      const previewEventName = document.getElementById('previewEventName');
+      const previewCategory = document.getElementById('previewCategory');
+      const previewEventDate = document.getElementById('previewEventDate');
+      const previewVenue = document.getElementById('previewVenue');
+      const previewTicketInfo = document.getElementById('previewTicketInfo');
+      const previewPriceInfo = document.getElementById('previewPriceInfo');
+      const previewTicketUpload = document.getElementById('previewTicketUpload');
+      const previewPaymentProof = document.getElementById('previewPaymentProof');
+  
+      // file inputs + previews (IDs must match HTML)
+      const ticketInput = document.getElementById('ticketUpload');
+      const proofInput = document.getElementById('paymentProofUpload');
+      const ticketPreview = document.getElementById('ticketUploadPreview');
+      const proofPreview = document.getElementById('paymentProofUploadPreview');
+  
+      // hero calculator elements
+      const heroPrice = document.getElementById('ticketPrice');
+      const heroQty = document.getElementById('ticketQuantity');
+      const heroTotalSaleEl = document.getElementById('totalSale');
+      const heroPlatformFeeEl = document.getElementById('platformFee');
+      const heroYouEarnEl = document.getElementById('youEarn');
+  
+      // ===== Functions =====
+      function updateHeroCalculator() {
+        if (!heroPrice || !heroQty) return;
+        const price = parseFloat(heroPrice.value) || 0;
+        const qty = parseInt(heroQty.value) || 1;
+        const total = price * qty;
+        const fee = Math.round(total * PLATFORM_FEE_RATE);
+        const earn = total - fee;
+        if (heroTotalSaleEl) heroTotalSaleEl.textContent = formatINR(total);
+        if (heroPlatformFeeEl) heroPlatformFeeEl.textContent = formatINR(fee);
+        if (heroYouEarnEl) heroYouEarnEl.textContent = formatINR(earn);
+      }
+  
+      function showStep(i) {
+        currentStep = i;
+        steps.forEach(s => s.classList.toggle('active', parseInt(s.getAttribute('data-step')) === i));
+        progressSteps.forEach(p => p.classList.toggle('active', parseInt(p.getAttribute('data-step')) <= i));
+        if (prevBtn) prevBtn.style.display = i === 1 ? 'none' : 'inline-flex';
+        if (nextBtn) nextBtn.style.display = i === totalSteps ? 'none' : 'inline-flex';
+        if (submitBtn) submitBtn.style.display = i === totalSteps ? 'inline-flex' : 'none';
+        const formEl = document.getElementById('sellForm');
+        if (formEl) window.scrollTo({ top: formEl.offsetTop - 20, behavior: 'smooth' });
+        updatePreviewSection();
+      }
+  
+      function createPreview(container, file) {
+        if (!container) return;
+        container.innerHTML = '';
+        container.style.display = file ? 'block' : 'none';
+        if (!file) return;
+        if (file.type && file.type.startsWith('image/')) {
+          const img = document.createElement('img');
+          img.src = URL.createObjectURL(file);
+          img.style.maxWidth = '120px';
+          container.appendChild(img);
+        } else {
+          const div = document.createElement('div');
+          div.textContent = file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
+          container.appendChild(div);
+        }
+      }
+  
+      function updateEarningsPreview() {
+        const sellingPrice = document.getElementById('sellingPrice');
+        const quantity = document.getElementById('quantity');
+        const price = parseInt(sellingPrice ? sellingPrice.value : 0) || 0;
+        const qty = parseInt(quantity ? quantity.value : 0) || 0;
+        const total = price * qty;
+        const fee = Math.round(total * PLATFORM_FEE_RATE);
+        const earnings = total - fee;
+        if (previewPrice) previewPrice.textContent = formatINR(price);
+        if (previewQuantity) previewQuantity.textContent = String(qty);
+        if (previewTotal) previewTotal.textContent = formatINR(total);
+        if (previewFee) previewFee.textContent = formatINR(fee);
+        if (previewEarnings) previewEarnings.textContent = formatINR(earnings);
+      }
+  
+      function updatePreviewSection() {
+        const eventName = document.getElementById('eventName')?.value || '';
+        const eventCategory = document.getElementById('eventCategory')?.value || '';
+        const eventDate = document.getElementById('eventDate')?.value || '';
+        const eventTime = document.getElementById('eventTime')?.value || '';
+        const venue = document.getElementById('venue')?.value || '';
+        const quantity = document.getElementById('quantity')?.value || '';
+        const ticketSection = document.getElementById('ticketSection')?.value || '';
+        const ticketRow = document.getElementById('ticketRow')?.value || '';
+        const seatNumbers = document.getElementById('seatNumbers')?.value || '';
+        const sellingPrice = document.getElementById('sellingPrice')?.value || '';
+  
+        if (previewEventName) previewEventName.textContent = eventName || 'Event Name';
+        if (previewCategory) previewCategory.textContent = eventCategory || 'Category';
+  
+        if (eventDate) {
+          const d = new Date(eventDate);
+          let dateStr = d.toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+          if (eventTime) dateStr += ' at ' + eventTime;
+          if (previewEventDate) previewEventDate.textContent = dateStr;
+        } else if (previewEventDate) previewEventDate.textContent = 'Date';
+  
+        if (previewVenue) previewVenue.textContent = venue || 'Venue';
+  
+        let ticketInfo = '';
+        if (quantity) ticketInfo += quantity + ' ticket' + (parseInt(quantity) > 1 ? 's' : '');
+        if (ticketSection) ticketInfo += ' • ' + ticketSection;
+        if (ticketRow) ticketInfo += ' • Row ' + ticketRow;
+        if (seatNumbers) ticketInfo += ' • Seats ' + seatNumbers;
+        if (previewTicketInfo) previewTicketInfo.textContent = ticketInfo || 'Ticket info';
+  
+        if (previewPriceInfo) previewPriceInfo.textContent = sellingPrice ? (formatINR(sellingPrice) + ' per ticket') : 'Price info';
+  
+        if (previewTicketUpload) previewTicketUpload.textContent = ticketInput && ticketInput.files && ticketInput.files.length ? ticketInput.files[0].name : 'No ticket file provided';
+        if (previewPaymentProof) previewPaymentProof.textContent = proofInput && proofInput.files && proofInput.files.length ? proofInput.files[0].name : 'No proof file provided';
+  
+        updateEarningsPreview();
+      }
+  
+      function validateStep(stepNum) {
+        const step = document.querySelector(`.form-step[data-step="${stepNum}"]`);
+        if (!step) return true;
+        let isValid = true;
+        const requiredFields = step.querySelectorAll('input[required], select[required], textarea[required]');
+  
+        requiredFields.forEach(field => {
+          field.classList.remove('error-border');
+          const fieldType = (field.type || '').toLowerCase();
+  
+          if (fieldType === 'file') {
+            if (!field.files || field.files.length === 0) {
+              const label = field.parentElement && field.parentElement.querySelector('.file-upload-label');
+              if (label) label.classList.add('error-border');
+              isValid = false;
+            }
+          } else if (fieldType === 'checkbox') {
+            if (!field.checked) {
+              const checkmark = field.parentElement && field.parentElement.querySelector('.checkmark');
+              if (checkmark) checkmark.classList.add('error-border');
+              field.classList.add('error-border');
+              isValid = false;
+            }
+          } else if (fieldType === 'radio') {
+            const radios = step.querySelectorAll(`input[type="radio"][name="${field.name}"]`);
+            const anyChecked = Array.from(radios).some(r => r.checked);
+            if (!anyChecked) {
+              radios.forEach(r => r.classList.add('error-border'));
+              isValid = false;
+            } else {
+              radios.forEach(r => r.classList.remove('error-border'));
+            }
+          } else {
+            if (!String(field.value || '').trim()) {
+              field.classList.add('error-border');
+              isValid = false;
             }
           }
-        } catch (e) { /* ignore */ }
-      });
-    } else {
-      warn('Firebase Auth SDK not found - header login will not update.');
-    }
-  
-    // helper to store path before redirecting to login
-    window.savePostSignInRedirect = function () {
-      try { localStorage.setItem('postSignInRedirect', window.location.pathname); } catch (e) { /* ignore */ }
-    };
-  
-    // wire logout button (delegated)
-    document.addEventListener('click', function (ev) {
-      if (!ev.target) return;
-      if (ev.target.id === 'logoutBtn' || ev.target.closest && ev.target.closest('#logoutBtn')) {
-        ev.preventDefault();
-        if (auth) {
-          auth.signOut().catch(e => console.error('Sign out failed:', e));
-        }
-      }
-    });
-  
-    // ---------------------------
-    // Hero earnings calculator
-    // ---------------------------
-    function calculateHero() {
-      const priceInput = qs('ticketPrice');
-      const qtyInput = qs('ticketQuantity');
-      if (!priceInput || !qtyInput) return;
-      const price = parseInt(priceInput.value, 10) || 0;
-      const qty = parseInt(qtyInput.value, 10) || 1;
-      const total = price * qty;
-      const fee = Math.round(total * PLATFORM_FEE_RATE);
-      const earnings = total - fee;
-      if (qs('totalSale')) qs('totalSale').textContent = formatINR(total);
-      if (qs('platformFee')) qs('platformFee').textContent = formatINR(fee);
-      if (qs('youEarn')) qs('youEarn').textContent = formatINR(earnings);
-    }
-  
-    // ---------------------------
-    // Previews
-    // ---------------------------
-    function updateEarningsPreview() {
-      const price = parseInt(formData.sellingPrice, 10) || 0;
-      const qty = parseInt(formData.quantity, 10) || 0;
-      const total = price * qty;
-      const fee = Math.round(total * PLATFORM_FEE_RATE);
-      const earnings = total - fee;
-      if (qs('previewPrice')) qs('previewPrice').textContent = formatINR(price);
-      if (qs('previewQuantity')) qs('previewQuantity').textContent = String(qty);
-      if (qs('previewTotal')) qs('previewTotal').textContent = formatINR(total);
-      if (qs('previewFee')) qs('previewFee').textContent = formatINR(fee);
-      if (qs('previewEarnings')) qs('previewEarnings').textContent = formatINR(earnings);
-    }
-  
-    function updateListingPreview() {
-      if (qs('previewEventName')) qs('previewEventName').textContent = formData.eventName || 'Event Name';
-      if (qs('previewCategory')) qs('previewCategory').textContent = formData.eventCategory || 'Category';
-  
-      if (formData.eventDate) {
-        const d = new Date(formData.eventDate);
-        const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        let dateStr = d.toLocaleDateString('en-IN', opts);
-        if (formData.eventTime) dateStr += ' at ' + formData.eventTime;
-        if (qs('previewEventDate')) qs('previewEventDate').textContent = dateStr;
-      } else {
-        if (qs('previewEventDate')) qs('previewEventDate').textContent = 'Date';
-      }
-  
-      if (qs('previewVenue')) qs('previewVenue').textContent = formData.venue || 'Venue';
-  
-      const parts = [];
-      if (formData.quantity) parts.push(`${formData.quantity} ticket${formData.quantity > 1 ? 's' : ''}`);
-      if (formData.ticketSection) parts.push(formData.ticketSection);
-      if (formData.ticketRow) parts.push(`Row ${formData.ticketRow}`);
-      if (formData.seatNumbers) parts.push(`Seats ${formData.seatNumbers}`);
-      if (qs('previewTicketInfo')) qs('previewTicketInfo').textContent = parts.join(' • ') || 'Ticket info';
-  
-      const price = parseInt(formData.sellingPrice, 10) || 0;
-      const qty = parseInt(formData.quantity, 10) || 1;
-      if (qs('previewPriceInfo')) qs('previewPriceInfo').textContent = `${formatINR(price)} per ticket • Total: ${formatINR(price * qty)}`;
-    }
-  
-    function updatePreview() {
-      updateEarningsPreview();
-      updateListingPreview();
-    }
-  
-    // ---------------------------
-    // Validation & navigation
-    // ---------------------------
-    function validateCurrentStep() {
-      const currentFormStep = document.querySelector(`.form-step[data-step="${currentStep}"]`);
-      if (!currentFormStep) return true;
-      const requiredFields = currentFormStep.querySelectorAll('input[required], select[required]');
-      let valid = true;
-      requiredFields.forEach(field => {
-        field.classList.remove('error-border');
-        const fileWrapper = field.closest('.file-upload-wrapper');
-        if (fileWrapper) {
-          const label = fileWrapper.querySelector('.file-upload-label');
-          if (label) label.classList.remove('error-border');
-        }
-        if (field.type === 'checkbox') {
-          if (!field.checked) {
-            const ck = field.parentElement.querySelector('.checkmark');
-            if (ck) ck.classList.add('error-border');
-            valid = false;
-          }
-        } else if (field.type === 'file') {
-          if (!field.files || field.files.length === 0) {
-            const label = field.parentElement.querySelector('.file-upload-label');
-            if (label) label.classList.add('error-border');
-            valid = false;
-          }
-        } else {
-          if (!String(field.value || '').trim()) {
-            field.classList.add('error-border');
-            valid = false;
-          }
-        }
-      });
-      return valid;
-    }
-  
-    function nextStep() {
-      if (!validateCurrentStep()) return;
-      if (currentStep < totalSteps) {
-        currentStep++;
-        updateStepDisplay();
-      }
-    }
-  
-    function prevStep() {
-      if (currentStep > 1) {
-        currentStep--;
-        updateStepDisplay();
-      }
-    }
-  
-    function updateStepDisplay() {
-      document.querySelectorAll('.form-step').forEach(stepEl => {
-        const stepNum = parseInt(stepEl.getAttribute('data-step'), 10);
-        stepEl.classList.toggle('active', stepNum === currentStep);
-      });
-      document.querySelectorAll('.progress-indicator .step').forEach(ind => {
-        const stepNum = parseInt(ind.getAttribute('data-step'), 10);
-        ind.classList.toggle('active', stepNum <= currentStep);
-      });
-      if (qs('prevBtn')) qs('prevBtn').style.display = currentStep === 1 ? 'none' : 'inline-flex';
-      if (qs('nextBtn')) qs('nextBtn').style.display = currentStep === totalSteps ? 'none' : 'inline-flex';
-      if (qs('submitBtn')) qs('submitBtn').style.display = currentStep === totalSteps ? 'inline-flex' : 'none';
-      if (currentStep === totalSteps) populateReview();
-    }
-  
-    function populateReview() {
-      updateListingPreview();
-      updateEarningsPreview();
-      const ticketUpload = qs('ticketUpload');
-      const paymentProof = qs('paymentProofUpload');
-      if (qs('previewTicketUpload')) {
-        qs('previewTicketUpload').textContent = ticketUpload && ticketUpload.files && ticketUpload.files[0] ? ticketUpload.files[0].name : 'No file provided';
-      }
-      if (qs('previewPaymentProof')) {
-        qs('previewPaymentProof').textContent = paymentProof && paymentProof.files && paymentProof.files[0] ? paymentProof.files[0].name : 'No file provided';
-      }
-    }
-  
-    // ---------------------------
-    // File preview helper
-    // ---------------------------
-    function setupFileUpload(inputId, previewId) {
-      const input = qs(inputId);
-      const preview = qs(previewId);
-      if (!input || !preview) return;
-      input.addEventListener('change', function () {
-        const label = this.parentElement.querySelector('.file-upload-label');
-        if (this.files && this.files.length) {
-          preview.style.display = 'flex';
-          preview.innerHTML = `<i class="fas fa-check-circle"></i> ${escapeHtml(this.files[0].name)}`;
-          if (label) label.classList.remove('error-border');
-        } else {
-          preview.style.display = 'none';
-        }
-      });
-    }
-  
-    // ---------------------------
-    // Suggestions & pricing quick picks
-    // ---------------------------
-    function initializeEventSuggestions() {
-      const eventInput = qs('eventName');
-      const suggestions = qs('eventSuggestions');
-      if (!eventInput || !suggestions) return;
-      const mockEvents = [
-        'Mumbai Indians vs Chennai Super Kings',
-        'Royal Challengers Bangalore vs Kolkata Knight Riders',
-        'Coldplay India Tour 2025',
-        'Diljit Dosanjh Live Concert',
-        'Sunburn Festival Goa',
-        'Ed Sheeran Mumbai Concert',
-        'India vs Australia Test Match'
-      ];
-      eventInput.addEventListener('input', function () {
-        const v = this.value.toLowerCase();
-        if (v.length < 2) { suggestions.style.display = 'none'; return; }
-        const matches = mockEvents.filter(ev => ev.toLowerCase().includes(v));
-        if (!matches.length) { suggestions.style.display = 'none'; return; }
-        suggestions.innerHTML = matches.map(ev => `<div class="suggestion-item" data-value="${escapeHtml(ev)}">${escapeHtml(ev)}</div>`).join('');
-        suggestions.style.display = 'block';
-      });
-      suggestions.addEventListener('click', function (e) {
-        if (e.target.classList.contains('suggestion-item')) {
-          const val = e.target.getAttribute('data-value');
-          eventInput.value = val;
-          formData.eventName = val;
-          suggestions.style.display = 'none';
-          updatePreview();
-        }
-      });
-      document.addEventListener('click', function (e) {
-        if (!eventInput.contains(e.target) && !suggestions.contains(e.target)) suggestions.style.display = 'none';
-      });
-    }
-  
-    function initializePricingSuggestions() {
-      document.querySelectorAll('.suggestion-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-          const val = parseInt(this.getAttribute('data-price'), 10) || 0;
-          const selling = qs('sellingPrice');
-          if (selling) selling.value = val;
-          formData.sellingPrice = val;
-          updatePreview();
         });
+  
+        return isValid;
+      }
+  
+      // ===== Extras: suggestions + pricing buttons + live binding =====
+      (function initExtras() {
+        const eventInput = document.getElementById('eventName');
+        const suggestions = document.getElementById('eventSuggestions');
+        const mockEvents = [
+          'Mumbai Indians vs Chennai Super Kings',
+          'Royal Challengers Bangalore vs Kolkata Knight Riders',
+          'Coldplay India Tour 2025',
+          'Diljit Dosanjh Live Concert',
+          'Sunburn Festival Goa',
+          'Ed Sheeran Mumbai Concert',
+          'India vs Australia Test Match'
+        ];
+  
+        if (eventInput && suggestions) {
+          eventInput.addEventListener('input', function () {
+            const v = this.value.toLowerCase();
+            if (v.length < 2) { suggestions.style.display = 'none'; return; }
+            const matches = mockEvents.filter(m => m.toLowerCase().includes(v));
+            if (!matches.length) { suggestions.style.display = 'none'; return; }
+            suggestions.innerHTML = matches.map(m => `<div class="suggestion-item" data-value="${m}">${m}</div>`).join('');
+            suggestions.style.display = 'block';
+          });
+  
+          suggestions.addEventListener('click', function (e) {
+            if (e.target.classList.contains('suggestion-item')) {
+              eventInput.value = e.target.getAttribute('data-value');
+              suggestions.style.display = 'none';
+              updatePreviewSection();
+            }
+          });
+  
+          document.addEventListener('click', function (e) {
+            if (!eventInput.contains(e.target) && !suggestions.contains(e.target)) suggestions.style.display = 'none';
+          });
+        }
+  
+        const buttons = document.querySelectorAll('.suggestion-btn');
+        const priceInput = document.getElementById('sellingPrice');
+        buttons.forEach(btn => btn.addEventListener('click', function () {
+          if (priceInput) {
+            priceInput.value = this.dataset.price;
+            updateEarningsPreview();
+            updatePreviewSection();
+          }
+        }));
+  
+        // wire inputs for live preview
+        document.querySelectorAll('#ticketListingForm input, #ticketListingForm select, #ticketListingForm textarea').forEach(el => {
+          el.addEventListener('input', function () { updateEarningsPreview(); updatePreviewSection(); });
+          el.addEventListener('change', function () { updateEarningsPreview(); updatePreviewSection(); });
+        });
+  
+        // hero calculator watchers
+        if (heroPrice) heroPrice.addEventListener('input', updateHeroCalculator);
+        if (heroQty) heroQty.addEventListener('change', updateHeroCalculator);
+  
+        // initial updates
+        updateHeroCalculator();
+        updatePreviewSection();
+      })();
+  
+      // wire file previews
+      if (ticketInput && ticketPreview) {
+        ticketInput.addEventListener('change', function (e) {
+          createPreview(ticketPreview, e.target.files[0]);
+          const label = this.parentElement && this.parentElement.querySelector('.file-upload-label');
+          if (label) label.classList.remove('error-border');
+          updatePreviewSection();
+        });
+      }
+      if (proofInput && proofPreview) {
+        proofInput.addEventListener('change', function (e) {
+          createPreview(proofPreview, e.target.files[0]);
+          const label = this.parentElement && this.parentElement.querySelector('.file-upload-label');
+          if (label) label.classList.remove('error-border');
+          updatePreviewSection();
+        });
+      }
+  
+      // navigation
+      if (nextBtn) nextBtn.addEventListener('click', function () {
+        if (!validateStep(currentStep)) return;
+        if (currentStep < totalSteps) showStep(currentStep + 1);
       });
-    }
-  
-    // ---------------------------
-    // Form input listeners -> formData
-    // ---------------------------
-    function addFormInputListeners() {
-      const form = qs('ticketListingForm');
-      if (!form) return;
-      form.addEventListener('input', function (e) {
-        const t = e.target;
-        if (!t || !t.name) return;
-        if (t.type === 'checkbox') {
-          formData[t.name] = t.checked;
-        } else if (t.type === 'radio') {
-          if (t.checked) formData[t.name] = t.value;
-        } else {
-          formData[t.name] = t.value;
-        }
-        if (t.name === 'quantity') formData.quantity = parseInt(t.value, 10) || 0;
-        if (t.name === 'sellingPrice') formData.sellingPrice = parseInt(t.value, 10) || 0;
-        updatePreview();
+      if (prevBtn) prevBtn.addEventListener('click', function () {
+        if (currentStep > 1) showStep(currentStep - 1);
       });
   
-      const qty = qs('quantity');
-      if (qty) qty.addEventListener('change', (e) => { formData.quantity = parseInt(e.target.value, 10) || 0; updatePreview(); });
-    }
+      // submit
+      if (form) {
+        form.addEventListener('submit', async function (e) {
+          e.preventDefault();
   
-    // ---------------------------
-    // Upload file to Firebase Storage (compat)
-    // returns download URL
-    // ---------------------------
-    async function uploadFileAndGetUrl(file, folder = 'listings') {
-      if (!file) return null;
-      if (!storage) {
-        warn('Firebase Storage SDK not loaded.');
-        return null;
+          if (!validateStep(currentStep)) return;
+  
+          // final validate all steps
+          for (let i = 1; i <= totalSteps; i++) {
+            if (!validateStep(i)) { showStep(i); return; }
+          }
+  
+          // prepare
+          statusHolder.textContent = 'Preparing submission...';
+  
+          const data = {
+            eventName: document.getElementById('eventName')?.value || '',
+            eventCategory: document.getElementById('eventCategory')?.value || '',
+            eventDate: document.getElementById('eventDate')?.value || '',
+            eventTime: document.getElementById('eventTime')?.value || '',
+            venue: document.getElementById('venue')?.value || '',
+            ticketSection: document.getElementById('ticketSection')?.value || '',
+            ticketRow: document.getElementById('ticketRow')?.value || '',
+            seatNumbers: document.getElementById('seatNumbers')?.value || '',
+            quantity: document.getElementById('quantity')?.value || '',
+            ticketType: (document.querySelector('input[name="ticketType"]:checked') || {}).value || '',
+            sellingPrice: document.getElementById('sellingPrice')?.value || '',
+            agreeTerms: !!document.getElementById('agreeTerms')?.checked,
+            agreeTransfer: !!document.getElementById('agreeTransfer')?.checked,
+            additionalNotes: ''
+          };
+  
+          try {
+            const ticketFile = ticketInput && ticketInput.files && ticketInput.files[0];
+            const proofFile = proofInput && proofInput.files && proofInput.files[0];
+  
+            data.ticketFileData = await readFileAsDataURL(ticketFile);
+            data.ticketFileName = ticketFile ? ticketFile.name : '';
+            data.paymentProofData = await readFileAsDataURL(proofFile);
+            data.paymentProofName = proofFile ? proofFile.name : '';
+  
+            // UI uploading
+            statusHolder.textContent = 'Uploading — please wait...';
+            if (submitBtn) {
+              submitBtn.disabled = true;
+              submitBtn.innerHTML = '<span class="loading-spinner"></span> Processing...';
+            }
+  
+            // Send (no Content-Type header -> reduce preflight)
+            const resp = await fetch(WEBAPP_URL, {
+              method: 'POST',
+              body: JSON.stringify(data)
+            });
+  
+            const text = await resp.text();
+            let json = {};
+            try { json = text ? JSON.parse(text) : {}; } catch {
+              throw new Error('Server returned non-JSON response: ' + text);
+            }
+  
+            if (!resp.ok) throw new Error(json.error || `HTTP ${resp.status} ${resp.statusText}`);
+  
+            if (json.result === 'success') {
+              statusHolder.innerHTML = `
+                <strong>Submitted successfully!</strong><br>
+                Ticket File: ${json.ticketFileUrl ? `<a target="_blank" href="${json.ticketFileUrl}">Open</a>` : 'None'}<br>
+                Payment Proof: ${json.paymentProofUrl ? `<a target="_blank" href="${json.paymentProofUrl}">Open</a>` : 'None'}
+              `;
+              form.reset();
+              if (ticketPreview) ticketPreview.innerHTML = '';
+              if (proofPreview) proofPreview.innerHTML = '';
+              showStep(1);
+            } else {
+              throw new Error('Server error: ' + (json.error || JSON.stringify(json)));
+            }
+          } catch (err) {
+            console.error(err);
+            statusHolder.innerHTML = `<span class="error-text">Submission failed: ${err.message}</span>`;
+          } finally {
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = 'List my tickets <i class="fas fa-check"></i>';
+            }
+          }
+        });
       }
-      try {
-        const userId = (auth && auth.currentUser && auth.currentUser.uid) ? auth.currentUser.uid : 'anon';
-        const safeName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
-        const fullPath = `${folder}/${userId}/${safeName}`;
-        const storageRef = storage.ref().child(fullPath);
-        const snap = await storageRef.put(file);
-        const url = await snap.ref.getDownloadURL();
-        return url;
-      } catch (e) {
-        err('Upload failed:', e);
-        throw e;
-      }
-    }
-  
-    // ---------------------------
-    // Submit handler -> uploads files -> saves Firestore doc
-    // ---------------------------
-    async function handleSubmit(e) {
-      e.preventDefault();
-      if (!validateCurrentStep()) return;
-  
-      const submitBtn = qs('submitBtn');
-      if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<span class="loading-spinner"></span> Listing...'; }
-  
-      try {
-        if (!auth) throw new Error('Auth SDK unavailable.');
-  
-        const user = auth.currentUser;
-        if (!user) {
-          alert('Please sign in to list tickets.');
-          try { localStorage.setItem('postSignInRedirect', window.location.pathname); } catch (ex) { /* ignore */ }
-          window.location.href = 'login.html';
-          return;
-        }
-  
-        // build payload
-        const payload = {
-          sellerUid: user.uid,
-          sellerEmail: user.email || null,
-          eventName: qs('eventName')?.value || '',
-          eventCategory: qs('eventCategory')?.value || '',
-          eventDate: qs('eventDate')?.value || '',
-          eventTime: qs('eventTime')?.value || '',
-          venue: qs('venue')?.value || '',
-          ticketSection: qs('ticketSection')?.value || '',
-          ticketRow: qs('ticketRow')?.value || '',
-          seatNumbers: qs('seatNumbers')?.value || '',
-          quantity: Number(qs('quantity')?.value) || 0,
-          ticketType: (document.querySelector('input[name="ticketType"]:checked')?.value) || 'mobile',
-          sellingPrice: Number(qs('sellingPrice')?.value) || 0,
-          ticketFileUrl: null,
-          paymentProofUrl: null,
-          agreeTerms: !!qs('agreeTerms')?.checked,
-          agreeTransfer: !!qs('agreeTransfer')?.checked,
-          createdAt: (db && firebase.firestore.FieldValue) ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString()
-        };
-  
-        // upload files
-        const ticketInput = qs('ticketUpload');
-        const proofInput = qs('paymentProofUpload');
-  
-        if (ticketInput && ticketInput.files && ticketInput.files[0]) {
-          payload.ticketFileUrl = await uploadFileAndGetUrl(ticketInput.files[0], 'tickets');
-          log('Ticket file uploaded:', payload.ticketFileUrl);
-        }
-        if (proofInput && proofInput.files && proofInput.files[0]) {
-          payload.paymentProofUrl = await uploadFileAndGetUrl(proofInput.files[0], 'proofs');
-          log('Payment proof uploaded:', payload.paymentProofUrl);
-        }
-  
-        // write to Firestore
-        if (!db) throw new Error('Firestore SDK not loaded on this page.');
-        const docRef = await db.collection('listings').add(payload);
-        log('Listing saved. id=', docRef.id);
-  
-        alert('Listing saved! Document ID: ' + docRef.id);
-        // redirect to my-listings or reload
-        window.location.href = '/my-listings.html';
-      } catch (e) {
-        err('Listing save failed:', e);
-        alert('Failed to save listing. Check console for details.');
-        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = 'List my tickets'; }
-      }
-    }
-  
-    // ---------------------------
-    // DOMContentLoaded wiring
-    // ---------------------------
-    document.addEventListener('DOMContentLoaded', function () {
-      // hero
-      calculateHero();
-      const priceInput = qs('ticketPrice');
-      const qtyInput = qs('ticketQuantity');
-      if (priceInput) priceInput.addEventListener('input', calculateHero);
-      if (qtyInput) qtyInput.addEventListener('change', calculateHero);
-  
-      // nav buttons
-      const nextBtn = qs('nextBtn');
-      const prevBtn = qs('prevBtn');
-      if (nextBtn) nextBtn.addEventListener('click', nextStep);
-      if (prevBtn) prevBtn.addEventListener('click', prevStep);
-  
-      // form
-      const form = qs('ticketListingForm');
-      if (form) form.addEventListener('submit', handleSubmit);
-  
-      // previews / uploads
-      setupFileUpload('ticketUpload', 'ticketUploadPreview');
-      setupFileUpload('paymentProofUpload', 'paymentProofUploadPreview');
-  
-      // suggestions / pricing
-      initializeEventSuggestions();
-      initializePricingSuggestions();
-  
-      // inputs -> formData
-      addFormInputListeners();
   
       // initial UI
-      updateStepDisplay();
-      updatePreview();
+      showStep(1);
+      updateHeroCalculator();
+      updatePreviewSection();
+    }); // DOMContentLoaded end
   
-      // debug - show current auth state at load time
-      if (auth) {
-        log('Current user at DOMContentLoaded:', !!auth.currentUser, auth.currentUser ? auth.currentUser.uid : null);
-      } else {
-        warn('Auth not available at DOMContentLoaded');
-      }
-    });
-  
-  })(); // end IIFE
+  })(); // IIFE end
   
