@@ -873,10 +873,10 @@
     transition: transform var(--transition-normal);
   }
   
- .faq-item.active.faq-icon {
-    transform: rotate(180deg);
-  }
-  
+ .faq-item.active .faq-icon {
+   transform: rotate(180deg);
+ }
+
  .faq-answer {
     max-height: 0;
     overflow: hidden;
@@ -889,9 +889,9 @@
     line-height: 1.7;
   }
   
- .faq-item.active.faq-answer {
-    max-height: 500px;
-  }
+ .faq-item.active .faq-answer {
+   max-height: 500px;
+ }
   
  .support-cta {
     text-align: center;
@@ -1310,9 +1310,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: rgb(255, 255, 255);
     text-decoration: none;
     transition: all 0.2s ease;
+    color: rgba(255, 95, 31, 0.4) ;
 }
 
 .social-links a:hover {
@@ -1371,5 +1372,109 @@
 
 .footer-links a:hover {
     color: #3b82f6;
+}
+/* =========================================
+   RESPONSIVE ENHANCEMENTS
+   ========================================= */
+
+/* ----- Small Devices (Phones) ----- */
+@media (max-width: 576px) {
+
+  .header-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+
+  .hero-content {
+    padding: var(--space-sm);
+  }
+
+  .hero-title {
+    font-size: 28px;
+  }
+
+  .hero-subtitle {
+    font-size: 16px;
+  }
+
+  .trust-badges {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .filter-controls {
+    flex-direction: column;
+    padding: var(--space-sm);
+  }
+
+  .tickets-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+    text-align: center;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+}
+
+/* ----- Medium Devices (Tablets) ----- */
+@media (max-width: 768px) {
+
+  .header-container {
+    padding: var(--space-sm);
+  }
+
+  .hero {
+    height: auto;
+    min-height: 500px;
+  }
+
+  .hero-cta {
+    padding: 12px 32px;
+    font-size: 16px;
+  }
+
+  .filter-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .testimonials-carousel {
+    grid-template-columns: 1fr;
+  }
+
+  .faq-accordion {
+    width: 90%;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ----- Large Devices (Laptops) ----- */
+@media (max-width: 992px) {
+
+  .nav {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .footer-content {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+}
+@media (max-width: var(--breakpoint-md)) {
+  .hero-content { padding: 16px; }
 }
 
