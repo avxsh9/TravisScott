@@ -1,420 +1,14 @@
-(function() {
+/** sell.js - Full working file for Sell Tickets page
+ *  Paste this file as-is. Make sure firebase compat scripts are loaded in HTML before this file.
+ */
+
+(function () {
     'use strict';
-
-    const PLATFORM_FEE_RATE = 0.00;
-
-    let currentStep = 1;
-    const totalSteps = 4;
-
-    const formData = {
-        eventName: '',
-        eventCategory: '',
-        eventDate: '',
-        eventTime: '',
-        venue: '',
-        ticketSection: '',
-        ticketRow: '',
-        seatNumbers: '',
-        quantity: 0,
-        ticketType: 'mobile',
-        sellingPrice: 0,
-        agreeTerms: false,
-        agreeTransfer: false
-    };
-
-    function formatINR(num) {
-        if (isNaN(num)) num = 0;
-        return '₹' + Number(num).toLocaleString('en-IN', { maximumFractionDigits: 0 });
-    }
-
-    function calculate() {
-        const priceInput = document.getElementById('ticketPrice');
-        const qtyInput = document.getElementById('ticketQuantity');
-
-        if (!priceInput || !qtyInput) return;
-
-        let price = parseInt(priceInput.value) || 0;
-        let qty = parseInt(qtyInput.value) || 1;
-
-        let totalSale = price * qty;
-        const platformFee = Math.round(totalSale * PLATFORM_FEE_RATE);
-        const earnings = totalSale - platformFee;
-
-        const totalSaleEl = document.getElementById('totalSale');
-        const platformFeeEl = document.getElementById('platformFee');
-        const youEarnEl = document.getElementById('youEarn');
-
-        if (totalSaleEl) totalSaleEl.textContent = formatINR(totalSale);
-        if (platformFeeEl) platformFeeEl.textContent = formatINR(platformFee);
-        if (youEarnEl) youEarnEl.textContent = formatINR(earnings);
-    }
-
-    function updatePreview() {
-        updateEarningsPreview();
-        updateListingPreview();
-    }
-
-    // INITIALIZATION
-    // ==========================================
-    function init() {
-        console.log('🎫 TicketAdda - Initializing...');
-    
-        // Setup Firebase Auth UI first
-        setupAuthUI();
   
-        // Render original page content
-        renderTickets();
-        renderTestimonials();
-        renderFAQ();
     
-        // Start original page timers
-        startCountdown();
-        startTestimonialCarousel();
-    
-        // Bind original page events
-        bindEvents();
-    
-        // Handle original mobile CTA
-        handleMobileStickyCTA();
-    
-        console.log('✅ TicketAdda - Ready!');
-      }
-
-    function updateEarningsPreview() {
-        const price = parseInt(formData.sellingPrice) || 0;
-        const qty = parseInt(formData.quantity) || 0;
-
-        let totalSale = price * qty;
-        const fee = Math.round(totalSale * PLATFORM_FEE_RATE);
-        const earnings = totalSale - fee;
-
-        const previewPrice = document.getElementById('previewPrice');
-        const previewQuantity = document.getElementById('previewQuantity');
-        const previewTotal = document.getElementById('previewTotal');
-        const previewFee = document.getElementById('previewFee');
-        const previewEarnings = document.getElementById('previewEarnings');
-
-        if (previewPrice) previewPrice.textContent = formatINR(price);
-        if (previewQuantity) previewQuantity.textContent = String(qty);
-        if (previewTotal) previewTotal.textContent = formatINR(totalSale);
-        if (previewFee) previewFee.textContent = formatINR(fee);
-        if (previewEarnings) previewEarnings.textContent = formatINR(earnings);
-    }
-
-    function updateListingPreview() {
-        const previewEventName = document.getElementById('previewEventName');
-        const previewCategory = document.getElementById('previewCategory');
-        const previewEventDate = document.getElementById('previewEventDate');
-        const previewVenue = document.getElementById('previewVenue');
-        const previewTicketInfo = document.getElementById('previewTicketInfo');
-        const previewPriceInfo = document.getElementById('previewPriceInfo');
-
-        if (previewEventName) previewEventName.textContent = formData.eventName || 'Event Name';
-        if (previewCategory) previewCategory.textContent = formData.eventCategory || 'Category';
-
-        if (formData.eventDate) {
-            const d = new Date(formData.eventDate);
-            const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            let dateStr = d.toLocaleDateString('en-IN', opts);
-            if (formData.eventTime) dateStr += ' at ' + formData.eventTime;
-            if (previewEventDate) previewEventDate.textContent = dateStr;
-        } else {
-            if (previewEventDate) previewEventDate.textContent = 'Date';
-        }
-
-        if (previewVenue) previewVenue.textContent = formData.venue || 'Venue';
-
-        let ticketInfo = '';
-        if (formData.quantity) ticketInfo += `${formData.quantity} ticket${formData.quantity > 1 ? 's' : ''}`;
-        if (formData.ticketSection) ticketInfo += ` • ${formData.ticketSection}`;
-        if (formData.ticketRow) ticketInfo += ` • Row ${formData.ticketRow}`;
-        if (formData.seatNumbers) ticketInfo += ` • Seats ${formData.seatNumbers}`;
-        if (previewTicketInfo) previewTicketInfo.textContent = ticketInfo || 'Ticket info';
-
-        const price = parseInt(formData.sellingPrice) || 0;
-        const qty = parseInt(formData.quantity) || 1;
-        let total = price * qty;
-        if (previewPriceInfo) previewPriceInfo.textContent = `${formatINR(price)} per ticket • Total: ${formatINR(total)}`;
-    }
-
-    function validateCurrentStep() {
-        const currentFormStep = document.querySelector(`.form-step[data-step="${currentStep}"]`);
-        if (!currentFormStep) return true;
-
-        const required = currentFormStep.querySelectorAll('input[required], select[required]');
-        let ok = true;
-
-        required.forEach(inp => {
-            inp.classList.remove('error-border');
-            const parentLabel = inp.closest('.file-upload-wrapper');
-            if (parentLabel) {
-                const label = parentLabel.querySelector('.file-upload-label');
-                if (label) label.classList.remove('error-border');
-            }
-            const checkmarkParent = inp.parentElement;
-            if (checkmarkParent) {
-                const checkmark = checkmarkParent.querySelector('.checkmark');
-                if (checkmark) checkmark.classList.remove('error-border');
-            }
-
-            if (inp.type === 'checkbox') {
-                if (!inp.checked) {
-                    const checkmark = inp.parentElement.querySelector('.checkmark');
-                    if (checkmark) checkmark.classList.add('error-border');
-                    ok = false;
-                }
-            } else if (inp.type === 'file') {
-                if (!inp.files || !inp.files.length) {
-                    const label = inp.parentElement.querySelector('.file-upload-label');
-                    if (label) label.classList.add('error-border');
-                    ok = false;
-                }
-            } else {
-                if (!String(inp.value || '').trim()) {
-                    inp.classList.add('error-border');
-                    ok = false;
-                }
-            }
-        });
-
-        return ok;
-    }
-
-    function nextStep() {
-        if (!validateCurrentStep()) return;
-
-        if (currentStep < totalSteps) {
-            currentStep++;
-            updateStepDisplay();
-        }
-    }
-
-    function prevStep() {
-        if (currentStep > 1) {
-            currentStep--;
-            updateStepDisplay();
-        }
-    }
-
-    function updateStepDisplay() {
-        const steps = document.querySelectorAll('.form-step');
-        steps.forEach(s => {
-            const stepNum = parseInt(s.getAttribute('data-step'));
-            s.classList.toggle('active', stepNum === currentStep);
-        });
-
-        const indicators = document.querySelectorAll('.progress-indicator .step');
-        indicators.forEach(ind => {
-            const stepNum = parseInt(ind.getAttribute('data-step'));
-            ind.classList.toggle('active', stepNum <= currentStep);
-        });
-
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const submitBtn = document.getElementById('submitBtn');
-
-        if (prevBtn) prevBtn.style.display = currentStep === 1 ? 'none' : 'inline-flex';
-        if (nextBtn) nextBtn.style.display = currentStep === totalSteps ? 'none' : 'inline-flex';
-        if (submitBtn) submitBtn.style.display = currentStep === totalSteps ? 'inline-flex' : 'none';
-
-        if (currentStep === totalSteps) {
-            populateReview();
-        }
-    }
-
-    function populateReview() {
-        updateListingPreview();
-        updateEarningsPreview();
-
-        const ticketUpload = document.getElementById('ticketUpload');
-        const paymentProofUpload = document.getElementById('paymentProofUpload');
-        const previewTicketUpload = document.getElementById('previewTicketUpload');
-        const previewPaymentProof = document.getElementById('previewPaymentProof');
-
-        if (ticketUpload && previewTicketUpload) {
-            previewTicketUpload.textContent = ticketUpload.files && ticketUpload.files.length ? ticketUpload.files[0].name : 'No file provided';
-        }
-
-        if (paymentProofUpload && previewPaymentProof) {
-            previewPaymentProof.textContent = paymentProofUpload.files && paymentProofUpload.files.length ? paymentProofUpload.files[0].name : 'No file provided';
-        }
-    }
-
-    function handleSubmit(e) {
-        e.preventDefault();
-        if (!validateCurrentStep()) return;
-
-        const submitBtn = document.getElementById('submitBtn');
-        if (submitBtn) {
-            submitBtn.innerHTML = '<span class="loading-spinner"></span> Processing...';
-            submitBtn.disabled = true;
-
-            setTimeout(() => {
-                alert('Tickets listed successfully! Thank you for using TicketAdda.');
-                window.location.reload();
-            }, 1500);
-        }
-    }
-
-    function setupFileUpload(inputId, previewId) {
-        const input = document.getElementById(inputId);
-        const preview = document.getElementById(previewId);
-
-        if (!input || !preview) return;
-
-        input.addEventListener('change', function() {
-            const label = this.parentElement.querySelector('.file-upload-label');
-            if (this.files && this.files.length) {
-                preview.style.display = 'flex';
-                preview.innerHTML = `<i class="fas fa-check-circle"></i> ${escapeHtml(this.files[0].name)}`;
-                if (label) label.classList.remove('error-border');
-            } else {
-                preview.style.display = 'none';
-            }
-        });
-    }
-
-    function escapeHtml(text) {
-        const map = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        };
-        return text.replace(/[&<>"']/g, m => map[m]);
-    }
-
-    function initializeEventSuggestions() {
-        const eventInput = document.getElementById('eventName');
-        const suggestions = document.getElementById('eventSuggestions');
-
-        if (!eventInput || !suggestions) return;
-
-        const mockEvents = [
-            'Mumbai Indians vs Chennai Super Kings',
-            'Royal Challengers Bangalore vs Kolkata Knight Riders',
-            'Coldplay India Tour 2025',
-            'Diljit Dosanjh Live Concert',
-            'Sunburn Festival Goa',
-            'Ed Sheeran Mumbai Concert',
-            'India vs Australia Test Match'
-        ];
-
-        eventInput.addEventListener('input', function() {
-            const value = this.value.toLowerCase();
-            if (value.length < 2) {
-                suggestions.style.display = 'none';
-                return;
-            }
-            const matches = mockEvents.filter(event => event.toLowerCase().includes(value));
-            if (matches.length === 0) {
-                suggestions.style.display = 'none';
-                return;
-            }
-            suggestions.innerHTML = matches.map(event => `<div class="suggestion-item" data-value="${escapeHtml(event)}">${escapeHtml(event)}</div>`).join('');
-            suggestions.style.display = 'block';
-        });
-
-        suggestions.addEventListener('click', function(e) {
-            if (e.target.classList.contains('suggestion-item')) {
-                const value = e.target.getAttribute('data-value');
-                eventInput.value = value;
-                formData.eventName = value;
-                suggestions.style.display = 'none';
-                updatePreview();
-            }
-        });
-
-        document.addEventListener('click', function(e) {
-            if (!eventInput.contains(e.target) && !suggestions.contains(e.target)) {
-                suggestions.style.display = 'none';
-            }
-        });
-    }
-
-    function initializePricingSuggestions() {
-        const buttons = document.querySelectorAll('.suggestion-btn');
-        const priceInput = document.getElementById('sellingPrice');
-
-        if (!priceInput) return;
-
-        buttons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const price = this.getAttribute('data-price');
-                priceInput.value = price;
-                formData.sellingPrice = price;
-                updatePreview();
-            });
-        });
-    }
-
-    function addFormInputListeners() {
-        const form = document.getElementById('ticketListingForm');
-        if (!form) return;
-
-        form.addEventListener('input', function(e) {
-            const target = e.target;
-            if (target.name) {
-                if (target.type === 'checkbox') {
-                    formData[target.name] = target.checked;
-                } else if (target.type === 'radio') {
-                    if (target.checked) formData[target.name] = target.value;
-                } else {
-                    formData[target.name] = target.value;
-                }
-                updatePreview();
-            }
-        });
-    }
-
-    window.scrollToForm = function() {
-        const form = document.getElementById('sellForm');
-        if (form) {
-            form.scrollIntoView({ behavior: 'smooth' });
-        }
-    };
-
-    document.addEventListener('DOMContentLoaded', function() {
-        calculate();
-
-        const ticketPriceInput = document.getElementById('ticketPrice');
-        const ticketQuantityInput = document.getElementById('ticketQuantity');
-
-        if (ticketPriceInput) ticketPriceInput.addEventListener('input', calculate);
-        if (ticketQuantityInput) ticketQuantityInput.addEventListener('change', calculate);
-
-        const form = document.getElementById('ticketListingForm');
-        const nextBtn = document.getElementById('nextBtn');
-        const prevBtn = document.getElementById('prevBtn');
-
-        if (form) form.addEventListener('submit', handleSubmit);
-        if (nextBtn) nextBtn.addEventListener('click', nextStep);
-        if (prevBtn) prevBtn.addEventListener('click', prevStep);
-
-        addFormInputListeners();
-        initializeEventSuggestions();
-        initializePricingSuggestions();
-        setupFileUpload('ticketUpload', 'ticketUploadPreview');
-        setupFileUpload('paymentProofUpload', 'paymentProofUploadPreview');
-        updateStepDisplay();
-    });
-})();
-
-
-// --- Firebase auth UI fix for multi-page app ---
-// Paste this at top of sell.js (AFTER firebase scripts are loaded)
-// It will: set persistence (LOCAL), listen onAuthStateChanged and toggle header UI.
-// Make sure firebaseConfig matches the one you use on index.html.
-
-(function() {
-    // if firebase not loaded -> bail
-    if (typeof firebase === 'undefined' || !firebase.apps) {
-      console.warn('Firebase SDK not found on this page. Include firebase-app & firebase-auth scripts.');
-      return;
-    }
-  
-    // safe init: if already initialized, reuse
+    // ---------------------------
+    // Firebase config (user-provided)
+    // ---------------------------
     const firebaseConfig = {
       apiKey: "AIzaSyDSPYXYwrxaVTna2CfFI2EktEysXb7z5iE",
       authDomain: "ticketaddda.firebaseapp.com",
@@ -424,31 +18,84 @@
       appId: "1:987839286443:web:235ed8857cd8cc8477fbee",
       measurementId: "G-EDDVKVVXHS"
     };
+  
+    // small helper to query element by id
+    function qs(id) { return document.getElementById(id); }
+    function log(...args){ console.log('[sell.js]', ...args); }
+    function warn(...args){ console.warn('[sell.js]', ...args); }
+    function err(...args){ console.error('[sell.js]', ...args); }
+  
+    // ---------------------------
+    // Initialize Firebase (compat)
+    // ---------------------------
     try {
-      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    } catch (err) {
-      // ignore "already exists"
+      if (typeof firebase === 'undefined') {
+        throw new Error('Firebase SDK not found. Make sure firebase-app-compat + auth-compat + firestore-compat (+ storage-compat) scripts are included in HTML BEFORE sell.js');
+      }
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+        log('Firebase initialized.');
+      } else {
+        log('Firebase already initialized, reusing instance.');
+      }
+    } catch (e) {
+      err('Firebase init failed:', e);
+      // continue - code will handle missing SDK gracefully
     }
   
-    const auth = firebase.auth();
+    // SDK refs (compat)
+    const auth = (typeof firebase !== 'undefined' && firebase.auth) ? firebase.auth() : null;
+    const db = (typeof firebase !== 'undefined' && firebase.firestore) ? firebase.firestore() : null;
+    const storage = (typeof firebase !== 'undefined' && firebase.storage) ? firebase.storage() : null;
   
-    // Enforce LOCAL persistence so user stays signed in across tabs/sessions
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(err => {
-      console.warn('Could not set auth persistence:', err);
-    });
+    // ---------------------------
+    // State + constants
+    // ---------------------------
+    const PLATFORM_FEE_RATE = 0.02;
+    let currentStep = 1;
+    const totalSteps = 4;
   
-    // selectors used by JS on index.html — adjust if your sell.html uses different IDs/classes
-    const authActions = document.getElementById('authActions');      // container with Sign in link
-    const userMenu = document.getElementById('userMenu');            // container shown when signed in
-    const userNameElm = document.getElementById('userNameElm');      // text node for username
-    const userAvatar = document.getElementById('userAvatar');        // img for avatar
-    const logoutBtn = document.getElementById('logoutBtn');          // logout button
-    const mobileNav = document.getElementById('mobileNav');          // mobile nav container (optional)
+    const formData = {
+      eventName: '',
+      eventCategory: '',
+      eventDate: '',
+      eventTime: '',
+      venue: '',
+      ticketSection: '',
+      ticketRow: '',
+      seatNumbers: '',
+      quantity: 0,
+      ticketType: 'mobile',
+      sellingPrice: 0,
+      agreeTerms: false,
+      agreeTransfer: false
+    };
   
-    // update header UI based on firebase user
-    function updateUIforUser(user) {
+    // ---------------------------
+    // Small helpers
+    // ---------------------------
+    function formatINR(num) {
+      if (isNaN(num)) num = 0;
+      return '₹' + Number(num).toLocaleString('en-IN', { maximumFractionDigits: 0 });
+    }
+  
+    function escapeHtml(text) {
+      if (!text) return '';
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+      return String(text).replace(/[&<>"']/g, m => map[m]);
+    }
+  
+    // ---------------------------
+    // Header auth UI handling
+    // ---------------------------
+    function updateHeaderForUser(user) {
+      const authActions = qs('authActions');
+      const userMenu = qs('userMenu');
+      const userNameElm = qs('userNameElm');
+      const userAvatar = qs('userAvatar');
+      const mobileNav = qs('mobileNav'); // may not exist on sell.html, that's fine
+  
       if (user) {
-        // display name fallback logic
         let displayName = (user.displayName || '').trim();
         if (!displayName && user.email) displayName = user.email.split('@')[0];
         if (!displayName) displayName = 'User';
@@ -458,63 +105,460 @@
         if (userNameElm) userNameElm.textContent = `Hi, ${displayName}`;
         if (userAvatar && user.photoURL) userAvatar.src = user.photoURL;
   
-        // mobile nav: add logout link if not present
+        // mobile nav link
         if (mobileNav) {
-          let existing = mobileNav.querySelector('.mobile-auth-link');
+          const existing = mobileNav.querySelector('.mobile-auth-link');
           if (existing) existing.remove();
-          const mobileLogout = document.createElement('a');
-          mobileLogout.href = '#';
-          mobileLogout.className = 'mobile-nav-link mobile-auth-link';
-          mobileLogout.textContent = 'Logout';
-          mobileLogout.addEventListener('click', (e)=>{ e.preventDefault(); auth.signOut(); });
-          mobileNav.appendChild(mobileLogout);
+          const a = document.createElement('a');
+          a.href = '#';
+          a.className = 'mobile-nav-link mobile-auth-link';
+          a.textContent = 'Logout';
+          a.addEventListener('click', (e) => { e.preventDefault(); auth.signOut(); });
+          mobileNav.appendChild(a);
         }
       } else {
-        // signed out UI
         if (authActions) authActions.style.display = 'flex';
         if (userMenu) userMenu.style.display = 'none';
-  
         if (mobileNav) {
-          let existing = mobileNav.querySelector('.mobile-auth-link');
+          const existing = mobileNav.querySelector('.mobile-auth-link');
           if (existing) existing.remove();
-          const loginLink = document.createElement('a');
-          loginLink.href = 'login.html';
-          loginLink.className = 'mobile-nav-link mobile-auth-link';
-          loginLink.textContent = 'Sign In';
-          mobileNav.appendChild(loginLink);
+          const a = document.createElement('a');
+          a.href = 'login.html';
+          a.className = 'mobile-nav-link mobile-auth-link';
+          a.textContent = 'Sign In';
+          mobileNav.appendChild(a);
         }
       }
     }
   
-    // listen for auth changes on this page
-    auth.onAuthStateChanged(user => {
-      updateUIforUser(user);
+    // ---------------------------
+    // Setup firebase auth persistence + listener
+    // ---------------------------
+    if (auth) {
+      // set persistence to LOCAL to keep user logged across pages
+      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => {
+          log('Auth persistence set to LOCAL.');
+        })
+        .catch(e => {
+          warn('Could not set auth persistence:', e);
+        });
   
-      // optional: if we stored a redirect target before signin, go there now
-      const postSignIn = localStorage.getItem('postSignInRedirect');
-      if (user && postSignIn) {
-        localStorage.removeItem('postSignInRedirect');
-        // if current page is different than stored, redirect
-        if (window.location.pathname !== postSignIn) {
-          window.location.href = postSignIn;
+      // onAuthStateChanged will fire on page load if user is already logged in
+      auth.onAuthStateChanged(user => {
+        log('onAuthStateChanged fired. user=', !!user);
+        updateHeaderForUser(user);
+  
+        // optional redirect back to saved url after login
+        try {
+          const post = localStorage.getItem('postSignInRedirect');
+          if (user && post) {
+            localStorage.removeItem('postSignInRedirect');
+            if (window.location.pathname !== post) {
+              log('Redirecting to saved postSignInRedirect:', post);
+              window.location.href = post;
+            }
+          }
+        } catch (e) { /* ignore */ }
+      });
+    } else {
+      warn('Firebase Auth SDK not found - header login will not update.');
+    }
+  
+    // helper to store path before redirecting to login
+    window.savePostSignInRedirect = function () {
+      try { localStorage.setItem('postSignInRedirect', window.location.pathname); } catch (e) { /* ignore */ }
+    };
+  
+    // wire logout button (delegated)
+    document.addEventListener('click', function (ev) {
+      if (!ev.target) return;
+      if (ev.target.id === 'logoutBtn' || ev.target.closest && ev.target.closest('#logoutBtn')) {
+        ev.preventDefault();
+        if (auth) {
+          auth.signOut().catch(e => console.error('Sign out failed:', e));
         }
       }
     });
   
-    // wire logout button if present
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        auth.signOut().catch(err => console.error('Sign out failed:', err));
+    // ---------------------------
+    // Hero earnings calculator
+    // ---------------------------
+    function calculateHero() {
+      const priceInput = qs('ticketPrice');
+      const qtyInput = qs('ticketQuantity');
+      if (!priceInput || !qtyInput) return;
+      const price = parseInt(priceInput.value, 10) || 0;
+      const qty = parseInt(qtyInput.value, 10) || 1;
+      const total = price * qty;
+      const fee = Math.round(total * PLATFORM_FEE_RATE);
+      const earnings = total - fee;
+      if (qs('totalSale')) qs('totalSale').textContent = formatINR(total);
+      if (qs('platformFee')) qs('platformFee').textContent = formatINR(fee);
+      if (qs('youEarn')) qs('youEarn').textContent = formatINR(earnings);
+    }
+  
+    // ---------------------------
+    // Previews
+    // ---------------------------
+    function updateEarningsPreview() {
+      const price = parseInt(formData.sellingPrice, 10) || 0;
+      const qty = parseInt(formData.quantity, 10) || 0;
+      const total = price * qty;
+      const fee = Math.round(total * PLATFORM_FEE_RATE);
+      const earnings = total - fee;
+      if (qs('previewPrice')) qs('previewPrice').textContent = formatINR(price);
+      if (qs('previewQuantity')) qs('previewQuantity').textContent = String(qty);
+      if (qs('previewTotal')) qs('previewTotal').textContent = formatINR(total);
+      if (qs('previewFee')) qs('previewFee').textContent = formatINR(fee);
+      if (qs('previewEarnings')) qs('previewEarnings').textContent = formatINR(earnings);
+    }
+  
+    function updateListingPreview() {
+      if (qs('previewEventName')) qs('previewEventName').textContent = formData.eventName || 'Event Name';
+      if (qs('previewCategory')) qs('previewCategory').textContent = formData.eventCategory || 'Category';
+  
+      if (formData.eventDate) {
+        const d = new Date(formData.eventDate);
+        const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        let dateStr = d.toLocaleDateString('en-IN', opts);
+        if (formData.eventTime) dateStr += ' at ' + formData.eventTime;
+        if (qs('previewEventDate')) qs('previewEventDate').textContent = dateStr;
+      } else {
+        if (qs('previewEventDate')) qs('previewEventDate').textContent = 'Date';
+      }
+  
+      if (qs('previewVenue')) qs('previewVenue').textContent = formData.venue || 'Venue';
+  
+      const parts = [];
+      if (formData.quantity) parts.push(`${formData.quantity} ticket${formData.quantity > 1 ? 's' : ''}`);
+      if (formData.ticketSection) parts.push(formData.ticketSection);
+      if (formData.ticketRow) parts.push(`Row ${formData.ticketRow}`);
+      if (formData.seatNumbers) parts.push(`Seats ${formData.seatNumbers}`);
+      if (qs('previewTicketInfo')) qs('previewTicketInfo').textContent = parts.join(' • ') || 'Ticket info';
+  
+      const price = parseInt(formData.sellingPrice, 10) || 0;
+      const qty = parseInt(formData.quantity, 10) || 1;
+      if (qs('previewPriceInfo')) qs('previewPriceInfo').textContent = `${formatINR(price)} per ticket • Total: ${formatINR(price * qty)}`;
+    }
+  
+    function updatePreview() {
+      updateEarningsPreview();
+      updateListingPreview();
+    }
+  
+    // ---------------------------
+    // Validation & navigation
+    // ---------------------------
+    function validateCurrentStep() {
+      const currentFormStep = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+      if (!currentFormStep) return true;
+      const requiredFields = currentFormStep.querySelectorAll('input[required], select[required]');
+      let valid = true;
+      requiredFields.forEach(field => {
+        field.classList.remove('error-border');
+        const fileWrapper = field.closest('.file-upload-wrapper');
+        if (fileWrapper) {
+          const label = fileWrapper.querySelector('.file-upload-label');
+          if (label) label.classList.remove('error-border');
+        }
+        if (field.type === 'checkbox') {
+          if (!field.checked) {
+            const ck = field.parentElement.querySelector('.checkmark');
+            if (ck) ck.classList.add('error-border');
+            valid = false;
+          }
+        } else if (field.type === 'file') {
+          if (!field.files || field.files.length === 0) {
+            const label = field.parentElement.querySelector('.file-upload-label');
+            if (label) label.classList.add('error-border');
+            valid = false;
+          }
+        } else {
+          if (!String(field.value || '').trim()) {
+            field.classList.add('error-border');
+            valid = false;
+          }
+        }
+      });
+      return valid;
+    }
+  
+    function nextStep() {
+      if (!validateCurrentStep()) return;
+      if (currentStep < totalSteps) {
+        currentStep++;
+        updateStepDisplay();
+      }
+    }
+  
+    function prevStep() {
+      if (currentStep > 1) {
+        currentStep--;
+        updateStepDisplay();
+      }
+    }
+  
+    function updateStepDisplay() {
+      document.querySelectorAll('.form-step').forEach(stepEl => {
+        const stepNum = parseInt(stepEl.getAttribute('data-step'), 10);
+        stepEl.classList.toggle('active', stepNum === currentStep);
+      });
+      document.querySelectorAll('.progress-indicator .step').forEach(ind => {
+        const stepNum = parseInt(ind.getAttribute('data-step'), 10);
+        ind.classList.toggle('active', stepNum <= currentStep);
+      });
+      if (qs('prevBtn')) qs('prevBtn').style.display = currentStep === 1 ? 'none' : 'inline-flex';
+      if (qs('nextBtn')) qs('nextBtn').style.display = currentStep === totalSteps ? 'none' : 'inline-flex';
+      if (qs('submitBtn')) qs('submitBtn').style.display = currentStep === totalSteps ? 'inline-flex' : 'none';
+      if (currentStep === totalSteps) populateReview();
+    }
+  
+    function populateReview() {
+      updateListingPreview();
+      updateEarningsPreview();
+      const ticketUpload = qs('ticketUpload');
+      const paymentProof = qs('paymentProofUpload');
+      if (qs('previewTicketUpload')) {
+        qs('previewTicketUpload').textContent = ticketUpload && ticketUpload.files && ticketUpload.files[0] ? ticketUpload.files[0].name : 'No file provided';
+      }
+      if (qs('previewPaymentProof')) {
+        qs('previewPaymentProof').textContent = paymentProof && paymentProof.files && paymentProof.files[0] ? paymentProof.files[0].name : 'No file provided';
+      }
+    }
+  
+    // ---------------------------
+    // File preview helper
+    // ---------------------------
+    function setupFileUpload(inputId, previewId) {
+      const input = qs(inputId);
+      const preview = qs(previewId);
+      if (!input || !preview) return;
+      input.addEventListener('change', function () {
+        const label = this.parentElement.querySelector('.file-upload-label');
+        if (this.files && this.files.length) {
+          preview.style.display = 'flex';
+          preview.innerHTML = `<i class="fas fa-check-circle"></i> ${escapeHtml(this.files[0].name)}`;
+          if (label) label.classList.remove('error-border');
+        } else {
+          preview.style.display = 'none';
+        }
       });
     }
   
-    // OPTIONAL helper: before sending user to sign-in page, save current path
-    // Usage on your sign-in trigger: localStorage.setItem('postSignInRedirect', window.location.pathname);
-    // Then redirect to login.html / start redirect flow.
-    window.savePostSignInRedirect = function() {
-      try { localStorage.setItem('postSignInRedirect', window.location.pathname); } catch(e){/* ignore */ }
-    };
+    // ---------------------------
+    // Suggestions & pricing quick picks
+    // ---------------------------
+    function initializeEventSuggestions() {
+      const eventInput = qs('eventName');
+      const suggestions = qs('eventSuggestions');
+      if (!eventInput || !suggestions) return;
+      const mockEvents = [
+        'Mumbai Indians vs Chennai Super Kings',
+        'Royal Challengers Bangalore vs Kolkata Knight Riders',
+        'Coldplay India Tour 2025',
+        'Diljit Dosanjh Live Concert',
+        'Sunburn Festival Goa',
+        'Ed Sheeran Mumbai Concert',
+        'India vs Australia Test Match'
+      ];
+      eventInput.addEventListener('input', function () {
+        const v = this.value.toLowerCase();
+        if (v.length < 2) { suggestions.style.display = 'none'; return; }
+        const matches = mockEvents.filter(ev => ev.toLowerCase().includes(v));
+        if (!matches.length) { suggestions.style.display = 'none'; return; }
+        suggestions.innerHTML = matches.map(ev => `<div class="suggestion-item" data-value="${escapeHtml(ev)}">${escapeHtml(ev)}</div>`).join('');
+        suggestions.style.display = 'block';
+      });
+      suggestions.addEventListener('click', function (e) {
+        if (e.target.classList.contains('suggestion-item')) {
+          const val = e.target.getAttribute('data-value');
+          eventInput.value = val;
+          formData.eventName = val;
+          suggestions.style.display = 'none';
+          updatePreview();
+        }
+      });
+      document.addEventListener('click', function (e) {
+        if (!eventInput.contains(e.target) && !suggestions.contains(e.target)) suggestions.style.display = 'none';
+      });
+    }
   
-  })();
+    function initializePricingSuggestions() {
+      document.querySelectorAll('.suggestion-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const val = parseInt(this.getAttribute('data-price'), 10) || 0;
+          const selling = qs('sellingPrice');
+          if (selling) selling.value = val;
+          formData.sellingPrice = val;
+          updatePreview();
+        });
+      });
+    }
+  
+    // ---------------------------
+    // Form input listeners -> formData
+    // ---------------------------
+    function addFormInputListeners() {
+      const form = qs('ticketListingForm');
+      if (!form) return;
+      form.addEventListener('input', function (e) {
+        const t = e.target;
+        if (!t || !t.name) return;
+        if (t.type === 'checkbox') {
+          formData[t.name] = t.checked;
+        } else if (t.type === 'radio') {
+          if (t.checked) formData[t.name] = t.value;
+        } else {
+          formData[t.name] = t.value;
+        }
+        if (t.name === 'quantity') formData.quantity = parseInt(t.value, 10) || 0;
+        if (t.name === 'sellingPrice') formData.sellingPrice = parseInt(t.value, 10) || 0;
+        updatePreview();
+      });
+  
+      const qty = qs('quantity');
+      if (qty) qty.addEventListener('change', (e) => { formData.quantity = parseInt(e.target.value, 10) || 0; updatePreview(); });
+    }
+  
+    // ---------------------------
+    // Upload file to Firebase Storage (compat)
+    // returns download URL
+    // ---------------------------
+    async function uploadFileAndGetUrl(file, folder = 'listings') {
+      if (!file) return null;
+      if (!storage) {
+        warn('Firebase Storage SDK not loaded.');
+        return null;
+      }
+      try {
+        const userId = (auth && auth.currentUser && auth.currentUser.uid) ? auth.currentUser.uid : 'anon';
+        const safeName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+        const fullPath = `${folder}/${userId}/${safeName}`;
+        const storageRef = storage.ref().child(fullPath);
+        const snap = await storageRef.put(file);
+        const url = await snap.ref.getDownloadURL();
+        return url;
+      } catch (e) {
+        err('Upload failed:', e);
+        throw e;
+      }
+    }
+  
+    // ---------------------------
+    // Submit handler -> uploads files -> saves Firestore doc
+    // ---------------------------
+    async function handleSubmit(e) {
+      e.preventDefault();
+      if (!validateCurrentStep()) return;
+  
+      const submitBtn = qs('submitBtn');
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<span class="loading-spinner"></span> Listing...'; }
+  
+      try {
+        if (!auth) throw new Error('Auth SDK unavailable.');
+  
+        const user = auth.currentUser;
+        if (!user) {
+          alert('Please sign in to list tickets.');
+          try { localStorage.setItem('postSignInRedirect', window.location.pathname); } catch (ex) { /* ignore */ }
+          window.location.href = 'login.html';
+          return;
+        }
+  
+        // build payload
+        const payload = {
+          sellerUid: user.uid,
+          sellerEmail: user.email || null,
+          eventName: qs('eventName')?.value || '',
+          eventCategory: qs('eventCategory')?.value || '',
+          eventDate: qs('eventDate')?.value || '',
+          eventTime: qs('eventTime')?.value || '',
+          venue: qs('venue')?.value || '',
+          ticketSection: qs('ticketSection')?.value || '',
+          ticketRow: qs('ticketRow')?.value || '',
+          seatNumbers: qs('seatNumbers')?.value || '',
+          quantity: Number(qs('quantity')?.value) || 0,
+          ticketType: (document.querySelector('input[name="ticketType"]:checked')?.value) || 'mobile',
+          sellingPrice: Number(qs('sellingPrice')?.value) || 0,
+          ticketFileUrl: null,
+          paymentProofUrl: null,
+          agreeTerms: !!qs('agreeTerms')?.checked,
+          agreeTransfer: !!qs('agreeTransfer')?.checked,
+          createdAt: (db && firebase.firestore.FieldValue) ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString()
+        };
+  
+        // upload files
+        const ticketInput = qs('ticketUpload');
+        const proofInput = qs('paymentProofUpload');
+  
+        if (ticketInput && ticketInput.files && ticketInput.files[0]) {
+          payload.ticketFileUrl = await uploadFileAndGetUrl(ticketInput.files[0], 'tickets');
+          log('Ticket file uploaded:', payload.ticketFileUrl);
+        }
+        if (proofInput && proofInput.files && proofInput.files[0]) {
+          payload.paymentProofUrl = await uploadFileAndGetUrl(proofInput.files[0], 'proofs');
+          log('Payment proof uploaded:', payload.paymentProofUrl);
+        }
+  
+        // write to Firestore
+        if (!db) throw new Error('Firestore SDK not loaded on this page.');
+        const docRef = await db.collection('listings').add(payload);
+        log('Listing saved. id=', docRef.id);
+  
+        alert('Listing saved! Document ID: ' + docRef.id);
+        // redirect to my-listings or reload
+        window.location.href = '/my-listings.html';
+      } catch (e) {
+        err('Listing save failed:', e);
+        alert('Failed to save listing. Check console for details.');
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = 'List my tickets'; }
+      }
+    }
+  
+    // ---------------------------
+    // DOMContentLoaded wiring
+    // ---------------------------
+    document.addEventListener('DOMContentLoaded', function () {
+      // hero
+      calculateHero();
+      const priceInput = qs('ticketPrice');
+      const qtyInput = qs('ticketQuantity');
+      if (priceInput) priceInput.addEventListener('input', calculateHero);
+      if (qtyInput) qtyInput.addEventListener('change', calculateHero);
+  
+      // nav buttons
+      const nextBtn = qs('nextBtn');
+      const prevBtn = qs('prevBtn');
+      if (nextBtn) nextBtn.addEventListener('click', nextStep);
+      if (prevBtn) prevBtn.addEventListener('click', prevStep);
+  
+      // form
+      const form = qs('ticketListingForm');
+      if (form) form.addEventListener('submit', handleSubmit);
+  
+      // previews / uploads
+      setupFileUpload('ticketUpload', 'ticketUploadPreview');
+      setupFileUpload('paymentProofUpload', 'paymentProofUploadPreview');
+  
+      // suggestions / pricing
+      initializeEventSuggestions();
+      initializePricingSuggestions();
+  
+      // inputs -> formData
+      addFormInputListeners();
+  
+      // initial UI
+      updateStepDisplay();
+      updatePreview();
+  
+      // debug - show current auth state at load time
+      if (auth) {
+        log('Current user at DOMContentLoaded:', !!auth.currentUser, auth.currentUser ? auth.currentUser.uid : null);
+      } else {
+        warn('Auth not available at DOMContentLoaded');
+      }
+    });
+  
+  })(); // end IIFE
   

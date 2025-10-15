@@ -30,6 +30,7 @@ const firebaseConfig = {
   measurementId: "G-EDDVKVVXHS"
 };
 
+
 /* ------------- Init Firebase (safe: avoid double-init) ------------- */
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 try {
