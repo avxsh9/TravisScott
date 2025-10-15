@@ -4,57 +4,165 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us - TicketAdda</title>
-    <link rel="stylesheet" href="base.css">
-    <link rel="stylesheet" href="contact-us.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="travisteststyles.css">
+    <link rel="stylesheet" href="contact-us-updated.css">
 </head>
 <body>
 
-    <header>
-        </header>
-
-    <main class="main-container">
-        <h1>Contact Us</h1>
-        <p class="subtitle">We'd love to hear from you. Fill out the form below or use our contact details.</p>
-
-        <div class="contact-wrapper">
-            <div class="contact-form-container">
-                <form id="contactForm" novalidate>
-                    <div class="form-group">
-                        <label for="fullName">Full Name</label>
-                        <input type="text" id="fullName" name="fullName" required>
-                        <small class="error-message"></small>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" required>
-                        <small class="error-message"></small>
-                    </div>
-                    <div class="form-group">
-                        <label for="subject">Subject</label>
-                        <input type="text" id="subject" name="subject" required>
-                        <small class="error-message"></small>
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Your Message</label>
-                        <textarea id="message" name="message" rows="6" required></textarea>
-                        <small class="error-message"></small>
-                    </div>
-                    <button type="submit" class="submit-btn">Send Message</button>
-                </form>
+    <header class="header" id="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="image (1) 9.28.07 PM.png" alt="TicketAdda Logo" class="logo-img">
+            </a>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="index.html#tickets" class="nav-link">Buy Tickets</a>
+                <a href="sell.html" class="nav-link">Sell Tickets</a>
+                <a href="index.html#events" class="nav-link">Events</a>
+                <a href="index.html#support" class="nav-link">Support</a>
+            </nav>
+            <div class="header-actions">
+                <button class="music-toggle" id="musicToggle" aria-label="Toggle music">
+                    <svg class="music-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18V5l12-2v13"></path>
+                        <circle cx="6" cy="18" r="3"></circle>
+                        <circle cx="18" cy="16" r="3"></circle>
+                    </svg>
+                    <span class="music-text">Play FEIN</span>
+                </button>
+                <div class="nav-auth">
+                  <div id="authActions">
+                    <a href="login.html" class="btn-signin">Sign in</a>
+                  </div>
+                  <div id="userMenu" style="display:none;">
+                    <img id="userAvatar" src="https://www.transparentpng.com/download/user/gray-user-profile-icon-png-fP8Q1P.png" alt="avatar">
+                    <span id="userNameElm">Hi, User</span>
+                    <button id="logoutBtn" class="btn-logout">Logout</button>
+                  </div>
+                </div>
             </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
 
-            <div class="contact-info-container">
-                <h3>Our Contact Information</h3>
-                <p><strong>Address:</strong><br>, gaur city centre 201301India</p>
-                <p><strong>Email:</strong><br><a href="mailto:support@ticketadda.com">support@ticketadda.com</a></p>
-                <p><strong>Phone:</strong><br><a href="tel:+911234567890">+91 9650877427</a></p>
+    <section class="contact-section">
+        <div class="container">
+            <h2 class="section-title">Contact Us</h2>
+            <p class="section-subtitle">We'd love to hear from you. Fill out the form below or use our contact details.</p>
+
+            <div class="contact-wrapper">
+                <div class="contact-form-container">
+                    <form id="contactForm" novalidate>
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" name="fullName" required placeholder="Enter your full name">
+                            <small class="error-message"></small>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required placeholder="Enter your email">
+                            <small class="error-message"></small>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" name="subject" required placeholder="How can we help?">
+                            <small class="error-message"></small>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Your Message</label>
+                            <textarea id="message" name="message" rows="6" required placeholder="Write your message here..."></textarea>
+                            <small class="error-message"></small>
+                        </div>
+                        <button type="submit" class="submit-btn">Send Message</button>
+                    </form>
+                </div>
+
+                <div class="contact-info-container">
+                    <h3>Our Contact Information</h3>
+                    <div class="info-item">
+                        <strong>Address:</strong>
+                        <p>Gaur City Centre, 201301, India</p>
+                    </div>
+                    <div class="info-item">
+                        <strong>Email:</strong>
+                        <p><a href="mailto:support@ticketadda.com">support@ticketadda.com</a></p>
+                    </div>
+                    <div class="info-item">
+                        <strong>Phone:</strong>
+                        <p><a href="tel:+919650877427">+91 9650877427</a></p>
+                    </div>
+                </div>
             </div>
         </div>
-    </main>
+    </section>
 
-    <footer>
-        </footer>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-brand">
+                        <img class="avinashlogo" src="image (1).png" alt="">
+                    </div>
+                    <p>India's most trusted ticket marketplace for concerts, sports, theater, and more.</p>
+                    <div class="social-links">
+                        <a href="https://www.linkedin.com/company/ticketadda"><i class="fa fa-linkedin"></i></a>
+                        <a href="https://x.com/ticketadda"><i class="fa fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/ticketadda.in/"><i class="fa fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Buy tickets</h4>
+                    <ul>
+                        <li><a href="#">Concerts</a></li>
+                        <li><a href="#">Sports</a></li>
+                        <li><a href="#">Theater</a></li>
+                        <li><a href="#">Comedy</a></li>
+                        <li><a href="#">All events</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Sell tickets</h4>
+                    <ul>
+                        <li><a href="sell.html">Sell tickets</a></li>
+                        <li><a href="#">How to sell</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">Seller protection</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="help-center.html">Help center</a></li>
+                        <li><a href="contact-us.html">Contact us</a></li>
+                        <li><a href="ticketadda-guarantee.html">TicketAdda Guarantee</a></li>
+                        <li><a href="terms-of-use.html">Terms of use</a></li>
+                        <li><a href="privacy-policy.html">Privacy policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 TicketAdda Technologies Pvt Ltd. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="terms-of-use.html">Terms</a>
+                    <a href="privacy-policy.html">Privacy</a>
+                    <a href="help-center.html">Help</a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-    <script src="js/contact-form.js"></script>
+    <script src="travisjstest.js"></script>
+
 </body>
 </html>

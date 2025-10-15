@@ -1,0 +1,118 @@
+/*
+ * Styles for the updated Terms of Use page.
+ * This file assumes 'travisteststyles.css' is already loaded.
+*/
+
+/* Main Page Layout */
+.terms-page-main {
+    padding: 140px 0 var(--space-xxl) 0; /* Add top padding to account for fixed header */
+}
+
+/* Page Header */
+.terms-header h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 700;
+    color: var(--color-text-white);
+    margin-bottom: var(--space-xs);
+    line-height: 1.2;
+}
+
+.terms-meta {
+    color: var(--color-text-grey);
+    font-size: 14px;
+    margin-bottom: var(--space-md);
+}
+
+.terms-warning {
+    background-color: rgba(255, 95, 31, 0.1);
+    border-left: 4px solid var(--color-accent-orange);
+    padding: var(--space-sm);
+    border-radius: 8px;
+    margin-bottom: var(--space-xl);
+    color: var(--color-text-light-grey);
+}
+
+.terms-warning strong {
+    color: var(--color-accent-orange);
+}
+
+/* Content Sections */
+.terms-section {
+    margin-bottom: var(--space-lg);
+}
+
+.terms-section h2 {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--color-text-white);
+    margin-bottom: var(--space-sm);
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.terms-section p,
+.terms-section li {
+    line-height: 1.7;
+    color: var(--color-text-grey);
+    font-size: 16px;
+    margin-bottom: var(--space-sm);
+}
+
+.terms-section strong {
+    color: var(--color-text-light-grey);
+    font-weight: 600;
+}
+
+.terms-list {
+    padding-left: 20px;
+}
+
+/* Table of Contents (TOC) */
+.toc {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    padding: var(--space-md);
+    border-radius: 12px;
+    margin-bottom: var(--space-xl);
+}
+
+.toc strong {
+    display: block;
+    margin-bottom: var(--space-sm);
+    font-size: 18px;
+}
+
+.toc .terms-list {
+    columns: 2;
+}
+
+@media (max-width: 768px) {
+    .toc .terms-list {
+        columns: 1;
+    }
+}
+
+/* Links and Utility */
+.terms-section a {
+    color: var(--color-accent-orange);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition-fast);
+}
+
+.terms-section a:hover {
+    color: var(--color-accent-red);
+    text-decoration: underline;
+}
+
+.back-to-top {
+    display: inline-block;
+    margin-top: var(--space-md);
+    background: var(--color-card-bg);
+    padding: 10px 20px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-weight: 600;
+}
