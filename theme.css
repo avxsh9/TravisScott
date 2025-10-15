@@ -1,0 +1,56 @@
+/* ========================================
+   GLOBAL THEME FILE (theme.css)
+   ======================================== */
+:root {
+  /* Colors */
+  --color-bg-dark: #0d0d0d;
+  --color-accent-orange: #ff5f1f;
+  --color-accent-red: #ff1f4b;
+  --color-text-white: #ffffff;
+  --color-text-grey: #b0b0b0;
+  --color-text-light-grey: #e0e0e0;
+  --color-card-bg: #1a1a1a;
+  --color-card-hover: #252525;
+  --color-border: #333333;
+
+  /* Spacing */
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 32px;
+  --space-xl: 48px;
+  --space-xxl: 64px;
+
+  /* Typography */
+  --font-heading: 'Poppins', sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Animations */
+  --transition-fast: 200ms ease;
+  --transition-normal: 300ms ease;
+  --transition-slow: 500ms ease;
+}
+
+/* ========================================
+   RESET & BASE STYLES
+   ======================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-white);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

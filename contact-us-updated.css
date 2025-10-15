@@ -1,0 +1,160 @@
+/*
+ * Styles for the updated Contact Us page.
+ * This file assumes 'travisteststyles.css' is already loaded.
+*/
+
+/* Section Layout */
+.contact-section {
+    padding: 140px 0 var(--space-xxl) 0; /* Add top padding to account for fixed header */
+}
+
+.section-subtitle {
+    text-align: center;
+    color: var(--color-text-grey);
+    font-size: 18px;
+    max-width: 600px;
+    margin: 0 auto var(--space-xl) auto;
+}
+
+/* Contact Wrapper Layout */
+.contact-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-lg);
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: var(--space-lg);
+}
+
+.contact-form-container {
+    flex: 2;
+    min-width: 300px;
+}
+
+.contact-info-container {
+    flex: 1;
+    min-width: 280px;
+    background-color: var(--color-bg-dark);
+    padding: var(--space-lg);
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+}
+
+/* Form Styling */
+.form-group {
+    margin-bottom: var(--space-md);
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: var(--space-xs);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-grey);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--color-bg-dark);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    color: var(--color-text-white);
+    font-family: var(--font-body);
+    font-size: 15px;
+    transition: all var(--transition-fast);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #6c757d; /* A slightly lighter grey for placeholder */
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--color-accent-orange);
+    box-shadow: 0 0 0 3px rgba(255, 95, 31, 0.2);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(45deg, var(--color-accent-orange), var(--color-accent-red));
+    color: var(--color-text-white);
+    border: none;
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(255, 95, 31, 0.4);
+}
+
+/* Contact Info Box Styling */
+.contact-info-container h3 {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    margin-bottom: var(--space-md);
+    color: var(--color-text-white);
+}
+
+.contact-info-container .info-item {
+    margin-bottom: var(--space-md);
+}
+
+.contact-info-container strong {
+    color: var(--color-text-light-grey);
+    font-weight: 600;
+}
+
+.contact-info-container p {
+    color: var(--color-text-grey);
+    margin-top: 4px;
+    line-height: 1.6;
+}
+
+.contact-info-container a {
+    color: var(--color-accent-orange);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.contact-info-container a:hover {
+    color: var(--color-accent-red);
+    text-decoration: underline;
+}
+
+/* Error Messages */
+.error-message {
+    color: var(--color-accent-red);
+    font-size: 0.875rem;
+    margin-top: 5px;
+    display: block;
+}
+
+.form-group input.is-invalid,
+.form-group textarea.is-invalid {
+    border-color: var(--color-accent-red);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    .contact-wrapper {
+        flex-direction: column;
+    }
+}
