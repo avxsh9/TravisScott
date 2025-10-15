@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Buy Travis Scott concert tickets - Live in India, 18 Oct 2025 at Mumbai Arena. Secure & verified tickets.">
+
+    <meta property="og:title" content="TicketAdda — Travis Scott Live in India">
+    <meta property="og:description" content="Get your tickets now for Travis Scott's biggest concert in Mumbai. Limited seats available!">
+    <meta property="og:image" content="assets/travis_poster.jpg">
+    <meta property="og:type" content="website">
+
+    <title>TicketAdda — Buy Tickets</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="icon" type="image/svg+xml" href="/vite.svg">
+
+    <link rel="stylesheet" href="travisteststyles.css">
+</head>
+<body>
+
+    <header class="header" id="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="image (1) 9.28.07 PM.png" alt="TicketAdda Logo" class="logo-img">
+            </a>
+            <nav class="nav">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#tickets" class="nav-link">Buy Tickets</a>
+                <a href="sell.html" class="nav-link">Sell Tickets</a>
+                <a href="#events" class="nav-link">Events</a>
+                <a href="#support" class="nav-link">Support</a>
+            </nav>
+
+            <div class="header-actions">
+                <button class="music-toggle" id="musicToggle" aria-label="Toggle music">
+                    <svg class="music-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18V5l12-2v13"></path>
+                        <circle cx="6" cy="18" r="3"></circle>
+                        <circle cx="18" cy="16" r="3"></circle>
+                    </svg>
+                    <span class="music-text">Play FEIN</span>
+                </button>
+
+                <div class="nav-auth">
+                  <div id="authActions">
+                    <a href="login.html" class="btn-signin">Sign in</a>
+                  </div>
+        
+                  <div id="userMenu" style="display:none;">
+                    <img id="userAvatar" src="https://www.transparentpng.com/download/user/gray-user-profile-icon-png-fP8Q1P.png" alt="avatar">
+                    <span id="userNameElm">Hi, User</span>
+                    <button id="logoutBtn" class="btn-logout">Logout</button>
+                  </div>
+                </div>
+            </div>
+
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <div class="mobile-nav" id="mobileNav">
+        <a href="#home" class="mobile-nav-link">Home</a>
+        <a href="#tickets" class="mobile-nav-link">Buy Tickets</a>
+        <a href="#sell" class="mobile-nav-link">Sell Tickets</a>
+        <a href="#events" class="mobile-nav-link">Events</a>
+        <a href="#support" class="mobile-nav-link">Support</a>
+        </div>
+
+    <section class="hero" id="home">
+        <video class="hero-video" autoplay muted loop playsinline poster="assets/travis_poster.jpg">
+            <source src="assets/hero-video.mp4" type="video/mp4">
+            </video>
+
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content">
+            <h1 class="hero-title">TRAVIS SCOTT LIVE IN INDIA</h1>
+            <p class="hero-subtitle">18 OCT 2025 | DELHI </p>
+
+            <div class="countdown" id="countdown" role="timer" aria-live="polite">
+                <div class="countdown-item">
+                    <span class="countdown-value" id="days">00</span>
+                    <span class="countdown-label">Days</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-value" id="hours">00</span>
+                    <span class="countdown-label">Hours</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-value" id="minutes">00</span>
+                    <span class="countdown-label">Mins</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-value" id="seconds">00</span>
+                    <span class="countdown-label">Secs</span>
+                </div>
+            </div>
+
+            <a href="#tickets" class="hero-cta">Buy Tickets Now 🔥</a>
+            <a href="sell.html" class="hero-cta">Sell Tickets Now 🔥</a>
+        </div>
+    </section>
+
+    <section class="trust-section">
+        <div class="container">
+            <div class="trust-badges">
+                <div class="trust-badge">
+                    <svg class="trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        <path d="M9 12l2 2 4-4"></path>
+                    </svg>
+                    <span>Secure Payment</span>
+                </div>
+                <div class="trust-badge">
+                    <svg class="trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <path d="M20 8v6M23 11h-6"></path>
+                    </svg>
+                    <span>Verified Sellers</span>
+                </div>
+                <div class="trust-badge">
+                    <svg class="trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="9" y1="15" x2="15" y2="15"></line>
+                        <path d="M12 18l-3-3 3-3"></path>
+                    </svg>
+                    <span>100% Genuine</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="tickets-section" id="tickets">
+        <div class="container">
+            <h2 class="section-title">Select Your Tickets</h2>
+
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="categoryFilter">Category</label>
+                    <select id="categoryFilter" class="filter-select">
+                        <option value="all">All Categories</option>
+                        <option value="Gold Left">Gold Left</option>
+                        <option value="Gold Right">Gold Right</option>
+                        <option value="Silver">Silver</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="sortFilter">Sort By</label>
+                    <select id="sortFilter" class="filter-select">
+                        <option value="popular">Popular</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                    </select>
+                </div>
+
+                <div class="filter-group filter-search">
+                    <label for="searchFilter">Search</label>
+                    <input type="text" id="searchFilter" class="filter-input" placeholder="Search by city or seat...">
+                </div>
+            </div>
+
+            <div class="tickets-grid" id="ticketsGrid" role="list">
+                </div>
+        </div>
+    </section>
+    
+
+    <section class="testimonials-section">
+        <div class="container">
+            <h2 class="section-title">What People Say</h2>
+            <div class="testimonials-carousel" id="testimonialsCarousel">
+                </div>
+        </div>
+    </section>
+
+    <section class="faq-section" id="support">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="faq-accordion" id="faqAccordion">
+                </div>
+
+            <div class="support-cta">
+                <p>Still have questions?</p>
+                <a href="mailto:ticketadda.in@gmail.com" class="support-btn">Contact Support</a>
+                <a href="https://wa.me/919596523158" class="support-btn support-btn-whatsapp" target="_blank">
+                    WhatsApp Us
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-brand">
+                        <img class="avinashlogo" src="image (1).png" alt="">
+                    </div>
+                    <p>India's most trusted ticket marketplace for concerts, sports, theater, and more.</p>
+                    <div class="social-links">
+                        <a href="https://www.linkedin.com/company/ticketadda"><i class="fab fa-linkedin"></i></a>
+                        <a href="https://x.com/ticketadda"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/ticketadda.in/"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Buy tickets</h4>
+                    <ul>
+                        <li><a href="#">Concerts</a></li>
+                        <li><a href="#">Sports</a></li>
+                        <li><a href="#">Theater</a></li>
+                        <li><a href="#">Comedy</a></li>
+                        <li><a href="#">All events</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Sell tickets</h4>
+                    <ul>
+                        <li><a href="sell.html">Sell tickets</a></li>
+                        <li><a href="#">How to sell</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">Seller protection</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help center</a></li>
+                        <li><a href="#">Contact us</a></li>
+                        <li><a href="#">TicketAdda Guarantee</a></li>
+                        <li><a href="#">Terms of use</a></li>
+                        <li><a href="#">Privacy policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 TicketAdda Technologies Pvt Ltd. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Terms</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Help</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="mobile-sticky-cta" id="mobileCta">
+        <a href="#tickets" class="mobile-cta-btn">Buy Tickets Now</a>
+        <a href="sell.html" class="mobile-cta-btn">Sell Tickets Now</a>
+    </div>
+
+    <div class="modal" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-backdrop" id="modalBackdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose" aria-label="Close modal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+
+            <h3 class="modal-title" id="modalTitle">Complete Your Purchase</h3>
+
+            <div class="modal-body" id="modalBody">
+                </div>
+        </div>
+    </div>
+
+    <div class="fomo-toast" id="fomoToast" role="alert" aria-live="polite">
+        </div>
+
+    <audio id="bgMusic" loop>
+        <source src="songfein.mp3" type="audio/mpeg">
+    </audio>
+    
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+    <script src="travisjstest.js"></script>
+</body>
+</html>
