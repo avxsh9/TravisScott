@@ -1478,3 +1478,72 @@
   .hero-content { padding: 16px; }
 }
 
+
+.tickets-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+.ticket-card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: var(--space-md);
+  transition: all var(--transition-normal);
+  box-shadow: 0 0 20px rgba(255, 95, 31, 0.1);
+  cursor: pointer;
+}
+
+.ticket-card:hover {
+  background: var(--color-card-hover);
+  transform: translateY(-5px);
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.seller-name {
+  font-weight: 700;
+  color: var(--color-accent-orange);
+  font-family: var(--font-heading);
+}
+
+.ticket-price {
+  font-weight: 700;
+  color: var(--color-text-light-grey);
+  font-size: 1.1rem;
+}
+
+.ticket-info {
+  color: var(--color-text-grey);
+  font-size: 0.95rem;
+  margin-bottom: var(--space-xs);
+}
+
+.ticket-concert {
+  font-weight: 600;
+  color: var(--color-accent-purple);
+  margin-top: var(--space-sm);
+}
+
+.buy-btn {
+  display: inline-block;
+  margin-top: var(--space-sm);
+  padding: 10px 20px;
+  background: linear-gradient(45deg, var(--color-accent-orange), var(--color-accent-red));
+  color: white;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: all var(--transition-normal);
+}
+
+.buy-btn:hover {
+  transform: scale(1.05);
+}

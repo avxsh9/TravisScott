@@ -466,3 +466,55 @@
   
   })(); // IIFE end
   
+  document.addEventListener("DOMContentLoaded", () => {
+    const ticketsData = [
+      {
+        seller: "Amit Sharma",
+        price: "₹15,000",
+        seat: "Gold Left - Row A12",
+        concert: "Travis Scott Live in India",
+        date: "18 Oct 2025"
+      },
+      {
+        seller: "Riya Patel",
+        price: "₹12,500",
+        seat: "Silver - Block C14",
+        concert: "Travis Scott Live in India",
+        date: "18 Oct 2025"
+      },
+      {
+        seller: "Vikram Singh",
+        price: "₹18,000",
+        seat: "Gold Right - Row B5",
+        concert: "Travis Scott Live in India",
+        date: "18 Oct 2025"
+      },
+      {
+        seller: "Kunal Verma",
+        price: "₹10,000",
+        seat: "Silver - Row E20",
+        concert: "Travis Scott Live in India",
+        date: "18 Oct 2025"
+      }
+    ];
+  
+    const ticketsContainer = document.getElementById("sellerTicketsList");
+  
+    ticketsData.forEach(ticket => {
+      const card = document.createElement("div");
+      card.classList.add("ticket-card");
+      card.innerHTML = `
+        <div class="ticket-header">
+          <span class="seller-name">${ticket.seller}</span>
+          <span class="ticket-price">${ticket.price}</span>
+        </div>
+        <div class="ticket-info">Seat: ${ticket.seat}</div>
+        <div class="ticket-info">Concert: ${ticket.concert}</div>
+        <div class="ticket-info">Date: ${ticket.date}</div>
+        <a href="#" class="buy-btn">Contact Seller</a>
+      `;
+      ticketsContainer.appendChild(card);
+    });
+  });
+ 
+    
