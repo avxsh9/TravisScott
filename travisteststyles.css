@@ -906,6 +906,7 @@
   
  .support-btn {
     display: inline-block;
+    margin-bottom: 15px;
     padding: 14px 32px;
     margin: 0 var(--space-xs);
     background: var(--color-card-bg);
