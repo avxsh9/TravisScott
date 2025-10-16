@@ -652,7 +652,8 @@ document.addEventListener("DOMContentLoaded", () => {
       city: "Mumbai",
       concert: "Travis Scott Live in India",
       date: "18 Oct 2025"
-    }
+    },
+      
   ];
 
   const ticketsContainer = document.getElementById("sellerTicketsList");
@@ -730,6 +731,20 @@ function showOwnerDetails(seller){
 document.addEventListener('DOMContentLoaded', () => {
   // --- DATA: Har seller ki contact details yahan hain ---
   const sellerTickets = [
+      { 
+  id: 6, 
+  seller: "Himanshu", 
+  price: "5000/Ticket", 
+  quantity: 2, 
+  seat: "Silver", 
+  concert: "Travis Scott", 
+  city: "Jawaharlal Nehru Stadium, Delhi", 
+  date: "18 Oct 2025, 6:00 PM", 
+  phone: "8770074410", 
+  email: "Hgoswami07239@gmail.com", 
+  note: "Physical tickets available. Only accepting UPI payments. Please WhatsApp first.",
+},
+
     { id: 1, seller: "Karan Dhanraj", price: "3100/Ticket", quantity: 4, seat: "Silver Ground", concert: "Travis scott Circus Maximum Tour",city:"Jawahar Lal Nehru Stadium ", date: "19 Oct 2025", phone: "9990695253", email: "No Email", note: "Only accepting UPI payments. Please WhatsApp first." },
       { id: 2, seller: "Rajveer Suvarna", price: "8500/Ticket", quantity: 2, seat: "Silver Ground", concert: "Travis Scott Live",city:"Mumbai", date: "18 Oct 2025", phone: "9987098572", email: "rajveer@example.com", note: "Only accepting UPI payments. Please WhatsApp first." },
       { 
