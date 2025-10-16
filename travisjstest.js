@@ -161,6 +161,7 @@
         }
       ],
       testimonials: [
+          
         {
           name: "Amit Sharma",
           location: "Mumbai",
@@ -608,6 +609,13 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   const ticketsData = [
+      {
+        seller: "Rajveer Suvarna",
+        price: "₹8,500/ticket",
+        seat: "Silver Ground",
+        concert: "Travis Scott Live in Mumbai",
+        date: "18 Oct 2025"
+      },
     {
       seller: "Amit Sharma",
       price: "₹15,000",
