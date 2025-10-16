@@ -732,7 +732,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const sellerTickets = [
     { id: 1, seller: "Karan Dhanraj", price: 3100, quantity: 4, seat: "Silver Ground", concert: "Travis scott Circus Maximum Tour",city:"Jawahar Lal Nehru Stadium ", date: "19 Oct 2025", phone: "9990695253", email: "No Email", note: "Only accepting UPI payments. Please WhatsApp first." },
       { id: 1, seller: "Rajveer Suvarna", price: 8500, quantity: 2, seat: "Silver Ground", concert: "Travis Scott Live",city:"Mumbai", date: "18 Oct 2025", phone: "9876543210", email: "rajveer@example.com", note: "Only accepting UPI payments. Please WhatsApp first." },
-      
+      { id: 2, seller: "Amit Sharma", price: 15000, quantity: 3, seat: "Gold Left - Row A12", concert: "Travis Scott Live",city:"JLN, Delhi", date: "18 Oct 2025", phone: "9123456789", email: "amit.sh@example.com", note: "Tickets are non-negotiable. Serious buyers only." },
+      { id: 3, seller: "Riya Patel", price: 12500, quantity: 1, seat: "Silver - Block C14", concert: "Travis Scott Live",city:"JLN, Delhi", date: "18 Oct 2025", phone: "9988776655", email: "riya.p@example.com", note: "Can meet in person in South Delhi for exchange." },
+      { id: 4, seller: "Vikram Singh", price: 18000, quantity: 5, seat: "Gold Right - Row B5", concert: "Travis Scott Live",city:"JLN, Delhi", date: "18 Oct 2025", phone: "9234567890", email: "vikram.s@example.com", note: "Group discount available for all 5 tickets." },
+      { id: 5, seller: "Kunal Verma", price: 10000, quantity: 2, seat: "Silver - Row E20", concert: "Travis Scott Live",city:"JLN,Delhi", date: "18 Oct 2025", phone: "9456789012", email: "k.verma@example.com", note: "Tickets will be transferred via the official app." },
+  ];
   
   // --- DOM ELEMENTS ---
   const ticketsContainer = document.getElementById('sellerTicketsList');
