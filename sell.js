@@ -2,7 +2,7 @@
     'use strict';
   
     // ===== CONFIG =====
-    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbz-fZxL0bo27SnhkFVwJKM03dqkrgtMPA7PqUX_Aj7oLvGxoUSoMUDTpmBrVnKoZSKa/exec";
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxv0UVhoKE3GoMkCe3QQ2IycdeopTS8lGZekdb-Pe4MCNCQQBlvCDB-xy2Ysm-TNmPs/exec";
     const PLATFORM_FEE_RATE = 0.00;
     const totalSteps = 4;
     let currentStep = 1;
@@ -126,6 +126,7 @@
       const previewEventDate = document.getElementById('previewEventDate');
       const previewVenue = document.getElementById('previewVenue');
       const previewTicketInfo = document.getElementById('previewTicketInfo');
+      const previewemail = document.getElementById('previewemail');
       const previewPriceInfo = document.getElementById('previewPriceInfo');
       const previewTicketUpload = document.getElementById('previewTicketUpload');
       const previewPaymentProof = document.getElementById('previewPaymentProof');
@@ -209,6 +210,7 @@
         const quantity = document.getElementById('quantity')?.value || '';
         const ticketSection = document.getElementById('ticketSection')?.value || '';
         const ticketRow = document.getElementById('ticketRow')?.value || '';
+        const ticketemail = document.getElementById('ticketemail')?.value || '';
         const seatNumbers = document.getElementById('seatNumbers')?.value || '';
         const sellingPrice = document.getElementById('sellingPrice')?.value || '';
   
@@ -228,6 +230,7 @@
         if (quantity) ticketInfo += quantity + ' ticket' + (parseInt(quantity) > 1 ? 's' : '');
         if (ticketSection) ticketInfo += ' • ' + ticketSection;
         if (ticketRow) ticketInfo += ' • Row ' + ticketRow;
+        if (ticketemail) ticketInfo += ' • email ' + ticketemail;
         if (seatNumbers) ticketInfo += ' • Seats ' + seatNumbers;
         if (previewTicketInfo) previewTicketInfo.textContent = ticketInfo || 'Ticket info';
   
@@ -394,6 +397,7 @@
             venue: document.getElementById('venue')?.value || '',
             ticketSection: document.getElementById('ticketSection')?.value || '',
             ticketRow: document.getElementById('ticketRow')?.value || '',
+            ticketemail: document.getElementById('ticketemail')?.value || '',
             seatNumbers: document.getElementById('seatNumbers')?.value || '',
             quantity: document.getElementById('quantity')?.value || '',
             ticketType: (document.querySelector('input[name="ticketType"]:checked') || {}).value || '',
