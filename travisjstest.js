@@ -731,8 +731,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- DATA: Har seller ki contact details yahan hain ---
   const sellerTickets = [
     { id: 1, seller: "Karan Dhanraj", price: 3100, quantity: 4, seat: "Silver Ground", concert: "Travis scott Circus Maximum Tour",city:"Jawahar Lal Nehru Stadium ", date: "19 Oct 2025", phone: "9990695253", email: "No Email", note: "Only accepting UPI payments. Please WhatsApp first." },
-      { id: 1, seller: "Rajveer Suvarna", price: 8500, quantity: 2, seat: "Silver Ground", concert: "Travis Scott Live",city:"Mumbai", date: "18 Oct 2025", phone: "9876543210", email: "rajveer@example.com", note: "Only accepting UPI payments. Please WhatsApp first." },
+      { id: 2, seller: "Rajveer Suvarna", price: 8500, quantity: 2, seat: "Silver Ground", concert: "Travis Scott Live",city:"Mumbai", date: "18 Oct 2025", phone: "9987098572", email: "rajveer@example.com", note: "Only accepting UPI payments. Please WhatsApp first." },
       
+      
+  ];
   
   // --- DOM ELEMENTS ---
   const ticketsContainer = document.getElementById('sellerTicketsList');
