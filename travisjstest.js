@@ -161,7 +161,6 @@
         }
       ],
       testimonials: [
-          
         {
           name: "Amit Sharma",
           location: "Mumbai",
@@ -609,38 +608,48 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   const ticketsData = [
-      {
-        seller: "Rajveer Suvarna",
-        price: "₹8,500/ticket",
-        seat: "Silver Ground",
-        concert: "Travis Scott Live in Mumbai",
-        date: "18 Oct 2025"
-      },
+    {
+      seller: "Rajveer Suvarna",
+      price: "₹8,500/ticket",
+      quan:"2",
+      seat: "Silver Ground",
+      city: "Mumbai",
+      concert: "Travis Scott Live in Mumbai",
+      date: "18 Oct 2025"
+    },
     {
       seller: "Amit Sharma",
-      price: "₹15,000",
+      price: "₹15,000/ticket",
+      quan:"3",
       seat: "Gold Left - Row A12",
+      city: "Mumbai",
       concert: "Travis Scott Live in India",
       date: "18 Oct 2025"
     },
     {
       seller: "Riya Patel",
-      price: "₹12,500",
+      price: "₹12,500/ticket",
+      quan:"1",
       seat: "Silver - Block C14",
+      city: "Mumbai",
       concert: "Travis Scott Live in India",
       date: "18 Oct 2025"
     },
     {
       seller: "Vikram Singh",
-      price: "₹18,000",
+      price: "₹18,000/ticket",
+      quan:"5",
       seat: "Gold Right - Row B5",
+      city: "Mumbai",
       concert: "Travis Scott Live in India",
       date: "18 Oct 2025"
     },
     {
       seller: "Kunal Verma",
-      price: "₹10,000",
+      price: "₹10,000/ticket",
+      quan:"2",
       seat: "Silver - Row E20",
+      city: "Mumbai",
       concert: "Travis Scott Live in India",
       date: "18 Oct 2025"
     }
@@ -656,7 +665,9 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="seller-name">${ticket.seller}</span>
         <span class="ticket-price">${ticket.price}</span>
       </div>
+      <div class="ticket-info">Quantity: ${ticket.quan}</div>
       <div class="ticket-info">Seat: ${ticket.seat}</div>
+      <div class="ticket-info">city: ${ticket.city}</div>
       <div class="ticket-info">Concert: ${ticket.concert}</div>
       <div class="ticket-info">Date: ${ticket.date}</div>
       <a href="#" class="buy-btn">Contact Seller</a>
@@ -664,3 +675,174 @@ document.addEventListener("DOMContentLoaded", () => {
     ticketsContainer.appendChild(card);
   });
 });
+
+
+
+ // ---------- Contact Owner flow ----------
+ function onContactOwnerClick(e){
+  e.preventDefault();
+  const id = e.currentTarget.dataset.id;
+  const seller = SELLERS.find(s=>s.id===id);
+  const user = getCurrentUser();
+  if(!seller) return;
+
+  // if(!user){
+  //   // open must-sign modal (offer sign-in)
+  //   const must = document.getElementById('mustSignModal');
+  //   openModal(must);
+  //   // when "Sign in" clicked, open signIn modal
+  //   document.getElementById('mustSignOpenSignin').onclick = () => {
+  //     closeModal(must);
+  //     document.getElementById('openSignInBtn').click();
+  //     // store intended action so after sign-in we can open owner details
+  //     sessionStorage.setItem('afterSignInOpenOwner', id);
+  //   };
+  //   return;
+  // }
+
+  // user signed in -> show owner details
+  showOwnerDetails(seller);
+}
+
+function showOwnerDetails(seller){
+  const ownerBody = document.getElementById('ownerBody');
+  ownerBody.innerHTML = `
+    <div style="color:var(--muted);">
+      <p><strong>Seller:</strong> ${escapeHTML(seller.seller)}</p>
+      <p><strong>Price:</strong> ${formatINR(seller.price)}</p>
+      <p><strong>Quantity:</strong> ${escapeHTML(seller.quantity)}</p>
+      <p><strong>Seat:</strong> ${escapeHTML(seller.seat)}</p>
+      <p><strong>Date:</strong> ${escapeHTML(seller.date)}</p>
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.04);margin:10px 0">
+      <p><strong>Phone:</strong> <a href="tel:${encodeURIComponent(seller.phone)}">${escapeHTML(seller.phone)}</a></p>
+      <p><strong>Email:</strong> <a href="mailto:${encodeURIComponent(seller.email)}">${escapeHTML(seller.email)}</a></p>
+      <p><strong>Note:</strong> ${escapeHTML(seller.note)}</p>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+        <a class="btn-light" href="mailto:${encodeURIComponent(seller.email)}"><i class="fa fa-envelope"></i> Email</a>
+        <a class="btn-primary" href="https://wa.me/${seller.phone.replace(/\D/g,'')}" target="_blank"><i class="fa fa-whatsapp"></i> WhatsApp</a>
+      </div>
+    </div>
+  `;
+  openModal(document.getElementById('ownerModal'));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // --- DATA: Har seller ki contact details yahan hain ---
+  const sellerTickets = [
+    { id: 1, seller: "Karan Dhanraj", price: 3100, quantity: 4, seat: "Silver Ground", concert: "Travis scott Circus Maximum Tour",city:"Jawahar Lal Nehru Stadium ", date: "19 Oct 2025", phone: "9990695253", email: "No Email", note: "Only accepting UPI payments. Please WhatsApp first." },
+      { id: 1, seller: "Rajveer Suvarna", price: 8500, quantity: 2, seat: "Silver Ground", concert: "Travis Scott Live",city:"Mumbai", date: "18 Oct 2025", phone: "9876543210", email: "rajveer@example.com", note: "Only accepting UPI payments. Please WhatsApp first." },
+      { id: 2, seller: "Amit Sharma", price: 15000, quantity: 3, seat: "Gold Left - Row A12", concert: "Travis Scott Live",city:"JLN, Delhi", date: "18 Oct 2025", phone: "9123456789", email: "amit.sh@example.com", note: "Tickets are non-negotiable. Serious buyers only." },
+      { id: 3, seller: "Riya Patel", price: 12500, quantity: 1, seat: "Silver - Block C14", concert: "Travis Scott Live",city:"JLN, Delhi", date: "18 Oct 2025", phone: "9988776655", email: "riya.p@example.com", note: "Can meet in person in South Delhi for exchange." },
+      { id: 4, seller: "Vikram Singh", price: 18000, quantity: 5, seat: "Gold Right - Row B5", concert: "Travis Scott Live",city:"JLN, Delhi", date: "18 Oct 2025", phone: "9234567890", email: "vikram.s@example.com", note: "Group discount available for all 5 tickets." },
+      { id: 5, seller: "Kunal Verma", price: 10000, quantity: 2, seat: "Silver - Row E20", concert: "Travis Scott Live",city:"JLN,Delhi", date: "18 Oct 2025", phone: "9456789012", email: "k.verma@example.com", note: "Tickets will be transferred via the official app." },
+  ];
+  
+  // --- DOM ELEMENTS ---
+  const ticketsContainer = document.getElementById('sellerTicketsList');
+  const contactModal = document.getElementById('contactModal');
+
+  // --- FUNCTIONS ---
+
+  // Modal ko kholne aur band karne ke functions
+  const openModal = (modal) => modal.classList.add('active');
+  const closeModal = (modal) => modal.classList.remove('active');
+  const closeAllModals = () => {
+      document.querySelectorAll('.modal').forEach(closeModal);
+  };
+
+  // Function: Seller ke ticket cards ko screen par render karta hai
+  const renderTickets = () => {
+      if(!ticketsContainer) return;
+      ticketsContainer.innerHTML = '';
+      sellerTickets.forEach(ticket => {
+          const card = document.createElement('div');
+          card.className = 'seller-ticket-card';
+          card.innerHTML = `
+              <div class="seller-card-header">
+                  <span class="seller-name">${ticket.seller}</span>
+                  <span class="seller-price">₹${ticket.price.toLocaleString('en-IN')}</span>
+              </div>
+              <div class="seller-card-body">
+                  <div class="info-row"><i class="fa fa-ticket"></i> Quantity: <span>${ticket.quantity}</span></div>
+                  <div class="info-row"><i class="fa-solid fa-chair"></i> Seat: <span>${ticket.seat}</span></div>
+                  <div class="info-row"><i class="fa fa-music"></i> Concert: <span>${ticket.concert}</span></div>
+                  <div class="info-row"><i class="fa fa-city"></i> CIty <span>${ticket.city}</span></div>
+                  <div class="info-row"><i class="fa fa-calendar-days"></i> Date: <span>${ticket.date}</span></div>
+              </div>
+              <button class="contact-seller-btn" data-ticket-id="${ticket.id}">Contact Seller</button>
+          `;
+          ticketsContainer.appendChild(card);
+      });
+  };
+
+  // Function: "Contact Seller" button click ko handle karta hai
+  const handleContactClick = (e) => {
+      if (!e.target.classList.contains('contact-seller-btn')) return;
+
+      // Sign-in check HATA diya gaya hai
+
+      const ticketId = parseInt(e.target.dataset.ticketId);
+      const ticket = sellerTickets.find(t => t.id === ticketId);
+
+      if (ticket) {
+          const modalBody = contactModal.querySelector('#modalBody');
+          modalBody.innerHTML = `
+              <p>You can contact <strong>${ticket.seller}</strong> using the details below:</p>
+              <div class="info-row"><i class="fa fa-phone"></i> Phone: <span><a href="tel:${ticket.phone}">${ticket.phone}</a></span></div>
+              <div class="info-row"><i class="fa fa-envelope"></i> Email: <span><a href="mailto:${ticket.email}">${ticket.email}</a></span></div>
+              <br>
+              <p><strong>Seller's Note:</strong><br>${ticket.note}</p>
+          `;
+          openModal(contactModal);
+      }
+  };
+  
+  // Countdown Timer Logic
+  const startCountdown = () => {
+      const countdownEl = {
+          days: document.getElementById('days'),
+          hours: document.getElementById('hours'),
+          minutes: document.getElementById('minutes'),
+          seconds: document.getElementById('seconds')
+      };
+      if (!countdownEl.days) return;
+      
+      const eventDate = new Date("2025-10-18T19:30:00+05:30").getTime();
+      
+      const update = () => {
+          const now = new Date().getTime();
+          const distance = eventDate - now;
+
+          if (distance < 0) {
+              clearInterval(interval);
+              Object.values(countdownEl).forEach(el => el.textContent = '00');
+              return;
+          }
+          
+          const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+          countdownEl.days.textContent = String(days).padStart(2, '0');
+          countdownEl.hours.textContent = String(hours).padStart(2, '0');
+          countdownEl.minutes.textContent = String(minutes).padStart(2, '0');
+          countdownEl.seconds.textContent = String(seconds).padStart(2, '0');
+      };
+
+      update();
+      const interval = setInterval(update, 1000);
+  };
+
+  // --- EVENT LISTENERS ---
+  document.querySelectorAll('[data-close-modal]').forEach(btn => btn.addEventListener('click', closeAllModals));
+  document.querySelectorAll('.modal-backdrop').forEach(bd => bd.addEventListener('click', closeAllModals));
+  
+  if(ticketsContainer) ticketsContainer.addEventListener('click', handleContactClick);
+
+  // --- INITIALIZATION ---
+  renderTickets();
+  startCountdown(); // Countdown logic ko chalu rakha hai
+});
+

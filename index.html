@@ -9,6 +9,9 @@
     <meta property="og:description" content="Get your tickets now for Travis Scott's biggest concert in Mumbai. Limited seats available!">
     <meta property="og:image" content="assets/travis_poster.jpg">
     <meta property="og:type" content="website">
+    <!-- Font Awesome 6 (use this exact one) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 
     <title>TicketAdda — Buy Tickets</title>
 
@@ -26,46 +29,54 @@
 
     <header class="header" id="header">
         <div class="header-container">
-            <a href="index.html" class="logo">
-                <img src="image (1) 9.28.07 PM.png" alt="TicketAdda Logo" class="logo-img">
-            </a>
-            <nav class="nav">
-                <a href="#home" class="nav-link active">Home</a>
-                <a href="#tickets" class="nav-link">Buy Tickets</a>
-                <a href="sell.html" class="nav-link">Sell Tickets</a>
-                <a href="#support" class="nav-link">Support</a>
+          <a href="index.html" class="logo" aria-label="TicketAdda home">
+            <img src="image (1) 9.28.07 PM.png" alt="TicketAdda Logo" class="logo-img">
+          </a>
+      
+          <!-- center area holds nav (desktop) and event / title fallback -->
+          <div class="nav-area">
+            <nav class="nav" role="navigation" aria-label="Main navigation">
+              <a href="#home" class="nav-link active">Home</a>
+              <a href="#tickets" class="nav-link">Buy Tickets</a>
+              <a href="sell.html" class="nav-link">Sell Tickets</a>
+              <a href="#support" class="nav-link">Support</a>
             </nav>
-
-            <div class="header-actions">
-                <button class="music-toggle" id="musicToggle" aria-label="Toggle music">
-                    <svg class="music-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 18V5l12-2v13"></path>
-                        <circle cx="6" cy="18" r="3"></circle>
-                        <circle cx="18" cy="16" r="3"></circle>
-                    </svg>
-                    <span class="music-text">Play FEIN</span>
-                </button>
-
-                <div class="nav-auth">
-                  <div id="authActions">
-                    <a href="login.html" class="btn-signin">Sign in</a>
-                  </div>
-        
-                  <div id="userMenu" style="display:none;">
-                    <img id="userAvatar" src="https://www.transparentpng.com/download/user/gray-user-profile-icon-png-fP8Q1P.png" alt="avatar">
-                    <span id="userNameElm">Hi, User</span>
-                    <button id="logoutBtn" class="btn-logout">Logout</button>
-                  </div>
-                </div>
-            </div>
-
-            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
-                <span></span>
-                <span></span>
-                <span></span>
+          </div>
+      
+          <!-- right area: avatar + name + small actions -->
+          <div class="header-actions">
+            <button class="music-toggle" id="musicToggle" aria-label="Toggle music" title="Play / Pause music">
+              <svg class="music-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18V5l12-2v13"></path>
+                <circle cx="6" cy="18" r="3"></circle>
+                <circle cx="18" cy="16" r="3"></circle>
+              </svg>
+              <span class="music-text">FEIN</span>
             </button>
+      
+            <div class="nav-auth" aria-live="polite">
+              <div id="authActions">
+                <a href="#" id="signInInline" class="btn-signin">Sign in</a>
+              </div>
+      
+              <div id="userMenu" style="display:none;">
+                <img id="userAvatar" src="https://www.transparentpng.com/download/user/gray-user-profile-icon-png-fP8Q1P.png" alt="avatar">
+                <div class="user-info">
+                  <span id="userNameElm" class="user-name">Hi, User</span>
+                </div>
+                <button id="logoutBtn" class="btn-logout" title="Logout">Logout</button>
+              </div>
+            </div>
+      
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu" aria-expanded="false">
+              <span></span><span></span><span></span>
+            </button>
+          </div>
         </div>
-    </header>
+      </header>
+      
+      
+      
 
     <div class="mobile-nav" id="mobileNav">
         <a href="#home" class="mobile-nav-link">Home</a>
@@ -267,6 +278,19 @@
         </div>
     </footer>
 
+    <!-- Modals -->
+<div class="modal" id="contactModal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+        <button class="modal-close" data-close-modal>&times;</button>
+        <h3 class="modal-title" id="modalTitle">Seller Contact Details</h3>
+        <div class="modal-body" id="modalBody">
+            <!-- Dynamic contact details will be injected here -->
+        </div>
+    </div>
+</div>
+
+
     <div class="mobile-sticky-cta" id="mobileCta">
         <a href="#tickets" class="mobile-cta-btn">Buy Tickets Now</a>
         <a href="sell.html" class="mobile-cta-btn">Sell Tickets Now</a>
@@ -302,5 +326,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
     <script src="travisjstest.js"></script>
+    
 </body>
 </html>
