@@ -731,6 +731,34 @@ function showOwnerDetails(seller){
 document.addEventListener('DOMContentLoaded', () => {
   // --- DATA: Har seller ki contact details yahan hain ---
   const sellerTickets = [
+      
+          
+  {
+    id: 12,
+    seller: "Rupender Gupta",
+    price: "7000/Ticket",
+    quantity: 6,
+    seat: "Gold right",
+    concert: "Travis Scott Delhi 18 19 show",
+    city: "Jawaharlal Nehru Stadium",
+    date: "18 Oct 2025, 5:02 PM",
+    phone: "6207767396",
+    email: "guptarupender299@gmail.com",
+    note: "Physical tickets available. Verified and attended."
+  },
+  {
+    id: 11,
+    seller: "Karan",
+    price: "15000/Ticket",
+    quantity: 6,
+    seat: "Lounge- A 18",
+    concert: "Travis Scott Circus Maximus Tour Delhi",
+    city: "Jawaharlal Nehru Stadium, New Delhi",
+    date: "18 Oct 2025, 5:00 PM",
+    phone: "9582332654",
+    email: "kt29122001@gmail.com",
+    note: "Physical tickets available. Verified and attended."
+  },
       {
   id: 10,
   seller: "Karan",
@@ -745,20 +773,7 @@ document.addEventListener('DOMContentLoaded', () => {
   note: "Physical tickets available. Verified and attended."
 },
 
-{ 
-  id: 9, 
-  seller: "Karan", 
-  price: "2500/Ticket", 
-  quantity: 8, 
-  seat: "Seating B-40", 
-  concert: "Travis Scott Circus Maximus", 
-  city: "Jawaharlal Nehru Stadium, New Delhi", 
-  date: "19 Oct 2025, 5:00 PM", 
-  phone: "9582332654", 
-  email: "kt29122001@gmail.com", 
-  note: "Physical tickets available. Only accepting UPI payments. Please WhatsApp first.", 
-}
-,
+
       { 
         id: 7, 
         seller: "Dhanraj K G", 
@@ -843,6 +858,19 @@ document.addEventListener('DOMContentLoaded', () => {
   phone: "8890818050", 
   email: "dakshuttamchandani4444@gmail.com", 
   note: "Physical tickets available. Only accepting UPI payments. Please WhatsApp first.",
+},
+{ 
+  id: 9, 
+  seller: "Karan", 
+  price: "2500/Ticket", 
+  quantity: 8, 
+  seat: "Seating B-40", 
+  concert: "Travis Scott Circus Maximus", 
+  city: "Jawaharlal Nehru Stadium, New Delhi", 
+  date: "19 Oct 2025, 5:00 PM", 
+  phone: "9582332654", 
+  email: "kt29122001@gmail.com", 
+  note: "Physical tickets available. Only accepting UPI payments. Please WhatsApp first.", 
 }
 
       
