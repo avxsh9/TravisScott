@@ -732,6 +732,22 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- DATA: Har seller ki contact details yahan hain ---
   const sellerTickets = [
       { 
+        id: 7, 
+        seller: "Dhanraj K G", 
+        price: "4000/Ticket", 
+        quantity: 5, 
+        seat: "Silver Standing", 
+        concert: "Circus Maximus Tour", 
+        city: "Jawaharlal Nehru Stadium, Delhi", 
+        date: "18 Oct 2025, 5:00 PM", 
+        phone: "9952071331", 
+        email: "sonic.boom866@gmail.com", 
+        note: "Physical tickets available. Only accepting UPI payments. Please WhatsApp first.", 
+        proof1: "https://drive.google.com/file/d/1mMB0jucQ4ZFmSIKjnuP2o-d70QmMBh1h/view?usp=drivesdk", 
+        proof2: "https://drive.google.com/file/d/1PTKaqLf6b0b5Pzk38FCLngBbZpOTY-lv/view?usp=drivesdk"
+      }
+      ,
+      { 
   id: 6, 
   seller: "Himanshu", 
   price: "5000/Ticket", 
