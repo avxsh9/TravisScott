@@ -745,19 +745,6 @@ document.addEventListener('DOMContentLoaded', () => {
   note: "Physical tickets available. Verified and attended."
 },
 
-      { 
-  id: 8, 
-  seller: "Karan", 
-  price: "7500/Ticket", 
-  quantity: 8, 
-  seat: "Gold (Left & Right Both)", 
-  concert: "Travis Scott Circus Maximus Delhi Tour", 
-  city: "Jawaharlal Nehru Stadium, New Delhi", 
-  date: "18 Oct 2025, 5:00 PM", 
-  phone: "9582332654", 
-  email: "kt29122001@gmail.com", 
-  note: "Physical tickets available. Only accepting UPI payments. Please WhatsApp first.", 
-},
 { 
   id: 9, 
   seller: "Karan", 
@@ -815,6 +802,20 @@ document.addEventListener('DOMContentLoaded', () => {
   date: "18 Oct 2025, 5:00 PM", 
   phone: "8890818050", 
   email: "dakshuttamchandani4444@gmail.com", 
+  note: "Physical tickets available. Only accepting UPI payments. Please WhatsApp first.", 
+},
+      
+      { 
+  id: 8, 
+  seller: "Karan", 
+  price: "7500/Ticket", 
+  quantity: 8, 
+  seat: "Gold (Left & Right Both)", 
+  concert: "Travis Scott Circus Maximus Delhi Tour", 
+  city: "Jawaharlal Nehru Stadium, New Delhi", 
+  date: "18 Oct 2025, 5:00 PM", 
+  phone: "9582332654", 
+  email: "kt29122001@gmail.com", 
   note: "Physical tickets available. Only accepting UPI payments. Please WhatsApp first.", 
 },
 { 
