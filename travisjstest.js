@@ -731,6 +731,20 @@ function showOwnerDetails(seller){
 document.addEventListener('DOMContentLoaded', () => {
   // --- DATA: Har seller ki contact details yahan hain ---
   const sellerTickets = [
+      {
+  id: 10,
+  seller: "Karan",
+  price: "3300/Ticket",
+  quantity: 6,
+  seat: "Silver",
+  concert: "Travis Scott Circus Maximus Tour Delhi",
+  city: "Jawaharlal Nehru Stadium, New Delhi",
+  date: "18 Oct 2025, 5:00 PM",
+  phone: "9582332654",
+  email: "kt29122001@gmail.com",
+  note: "Physical tickets available. Verified and attended."
+},
+
       { 
   id: 8, 
   seller: "Karan", 
