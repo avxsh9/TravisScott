@@ -732,6 +732,33 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- DATA: Har seller ki contact details yahan hain ---
   const sellerTickets = [
       { 
+  id: 8, 
+  seller: "Karan", 
+  price: "7500/Ticket", 
+  quantity: 8, 
+  seat: "Gold (Left & Right Both)", 
+  concert: "Travis Scott Circus Maximus Delhi Tour", 
+  city: "Jawaharlal Nehru Stadium, New Delhi", 
+  date: "18 Oct 2025, 5:00 PM", 
+  phone: "9582332654", 
+  email: "kt29122001@gmail.com", 
+  note: "Physical tickets available. Only accepting UPI payments. Please WhatsApp first.", 
+},
+{ 
+  id: 9, 
+  seller: "Karan", 
+  price: "2500/Ticket", 
+  quantity: 8, 
+  seat: "Seating B-40", 
+  concert: "Travis Scott Circus Maximus", 
+  city: "Jawaharlal Nehru Stadium, New Delhi", 
+  date: "19 Oct 2025, 5:00 PM", 
+  phone: "9582332654", 
+  email: "kt29122001@gmail.com", 
+  note: "Physical tickets available. Only accepting UPI payments. Please WhatsApp first.", 
+}
+,
+      { 
         id: 7, 
         seller: "Dhanraj K G", 
         price: "4000/Ticket", 
