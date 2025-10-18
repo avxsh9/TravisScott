@@ -759,19 +759,6 @@ document.addEventListener('DOMContentLoaded', () => {
     note: "Physical tickets available. Verified and attended."
   },
   {
-    id: 14,
-    seller: "Bb",
-    price: "999/Ticket",
-    quantity: 3,
-    seat: "Bb",
-    concert: "Hh",
-    city: "Hh",
-    date: "18 Oct 2025",
-    phone: "Bb",
-    email: "Bb",
-    note: "Physical tickets available. Verified and attended."
-  },
-  {
     id: 15,
     seller: "Hardik Rathaur",
     price: "1500/Ticket",
