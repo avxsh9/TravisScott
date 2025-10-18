@@ -1066,7 +1066,7 @@ const startCountdown = () => {
     };
     if (!countdownEl.days) return;
     
-    const eventDate = new Date("2025-10-18T19:30:00+05:30").getTime();
+    const eventDate = new Date("2025-11-19T17:00:00+05:30").getTime();
     
     const update = () => {
         const now = new Date().getTime();
