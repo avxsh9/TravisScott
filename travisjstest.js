@@ -731,6 +731,20 @@ openModal(document.getElementById('ownerModal'));
 document.addEventListener('DOMContentLoaded', () => {
 // --- DATA: Har seller ki contact details yahan hain ---
 window.sellerTickets = [
+  {
+  id: 23,
+  seller: "Sriram Babu",
+  price: "1800/Ticket",
+  quantity: 3,
+  seat: "B22 1-10, 1-11, 1-12",
+  concert: "Travis Scott",
+  city: "JLN Stadium",
+  date: "19 Oct 2025, 5:00 PM",
+  phone: "9913871524",
+  email: "babusriram007@gmail.com",
+  note: "Physical tickets available. Verified and attended."
+}
+,
 
  
 {
