@@ -731,7 +731,7 @@ function showOwnerDetails(seller){
 document.addEventListener('DOMContentLoaded', () => {
   // --- DATA: Har seller ki contact details yahan hain ---
   const sellerTickets = [
-  {
+  
     {
     id: 12,
     seller: "Karan",
