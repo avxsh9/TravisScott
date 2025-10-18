@@ -5,7 +5,7 @@
  * + Firebase Authentication Integration for Persistent Login
  */
 
-(function() {
+(function () {
   'use strict';
 
   // ==========================================
@@ -44,9 +44,9 @@
     // Set persistence to LOCAL to keep the user logged in across browser sessions.[1, 2, 3]
     // This is the key to making the login "stick" until the user explicitly signs out.
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-    .then(() => {
+      .then(() => {
         console.log('Firebase auth persistence set to LOCAL.');
-        
+
         // onAuthStateChanged is the recommended real-time listener for auth state.[4, 5]
         // It triggers on sign-in, sign-out, and page load.
         auth.onAuthStateChanged(async (user) => {
@@ -78,11 +78,11 @@
               if (userNameElm) userNameElm.textContent = `Hi, ${displayName}`;
               if (user.photoURL && userAvatar) userAvatar.src = user.photoURL;
             }
-            
+
             // Update Mobile Navigation to show a Logout link
             const existingMobileAuth = mobileNav.querySelector('.mobile-auth-link');
             if (existingMobileAuth) existingMobileAuth.remove();
-            
+
             const mobileLogoutLink = document.createElement('a');
             mobileLogoutLink.href = '#';
             mobileLogoutLink.className = 'mobile-nav-link mobile-auth-link';
@@ -110,7 +110,7 @@
           }
         });
       })
-    .catch((error) => {
+      .catch((error) => {
         console.error("Error setting session persistence:", error);
       });
 
@@ -141,7 +141,7 @@
         price: 15000,
         perks: "Access to ground standing ticket in the Gold Left zone",
         extraInfo: "Standing section with access to main floor. Arrive early for best spots!",
-        
+
       },
       {
         id: "t2",
@@ -149,7 +149,7 @@
         price: 15000,
         perks: "Access to ground standing ticket in the Right Left zone",
         extraInfo: "Priority entry 30 mins before doors open. VIP lounge access with complimentary drinks.",
-        
+
       },
       {
         id: "t3",
@@ -157,7 +157,7 @@
         price: 6500,
         perks: "Access to ground standing general ticket in the Silver zone",
         extraInfo: "Ultimate experience! Meet Travis Scott, exclusive backstage tour, premium gift bag, and VIP parking.",
-        
+
       }
     ],
     testimonials: [
@@ -228,7 +228,7 @@
   // ==========================================
   // STATE MANAGEMENT
   // ==========================================
-  let filteredTickets =[...EVENT_DATA.tickets];
+  let filteredTickets = [...EVENT_DATA.tickets];
   let currentTicket = null;
   let ticketQuantity = 1;
   let fomoInterval = null;
@@ -323,17 +323,17 @@
     if (targetId && targetId.startsWith('#')) {
       e.preventDefault();
       const targetSection = document.querySelector(targetId);
-  
+
       if (targetSection) {
         const headerOffset = 80;
         const elementPosition = targetSection.getBoundingClientRect().top;
         const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-  
+
         window.scrollTo({
           top: offsetPosition,
           behavior: 'smooth'
         });
-  
+
         // Close mobile menu if open
         elements.mobileNav?.classList.remove('active');
         elements.mobileMenuBtn?.classList.remove('active');
@@ -362,7 +362,7 @@
   // MUSIC TOGGLE (Original)
   // ==========================================
   function toggleMusic() {
-    if (!elements.bgMusic ||!elements.musicToggle) return;
+    if (!elements.bgMusic || !elements.musicToggle) return;
     if (isMusicPlaying) {
       elements.bgMusic.pause();
       elements.musicToggle.classList.remove('playing');
@@ -428,12 +428,12 @@
     const card = document.createElement('div');
     card.className = 'ticket-card';
     card.setAttribute('role', 'listitem');
-    const badgeHTML = ticket.badge || (ticket.qty < 20? `Only ${ticket.qty} left` : '');
+    const badgeHTML = ticket.badge || (ticket.qty < 20 ? `Only ${ticket.qty} left` : '');
     card.innerHTML = `
       <div class="ticket-category">${ticket.category}</div>
       <div class="ticket-price"><span class="ticket-price-symbol">₹</span>${ticket.price.toLocaleString('en-IN')}</div>
       <p class="ticket-perks">${ticket.perks}</p>
-      ${badgeHTML? `<span class="ticket-badge">${badgeHTML}</span>` : ''}
+      ${badgeHTML ? `<span class="ticket-badge">${badgeHTML}</span>` : ''}
       <div class="ticket-extra-info">${ticket.extraInfo}</div>
       <button class="ticket-select-btn" data-ticket-id="${ticket.id}">Select Ticket</button>`;
     const selectBtn = card.querySelector('.ticket-select-btn');
@@ -491,7 +491,7 @@
   }
 
   function renderModalContent() {
-    if (!elements.modalBody ||!currentTicket) return;
+    if (!elements.modalBody || !currentTicket) return;
     const total = currentTicket.price * ticketQuantity;
     elements.modalBody.innerHTML = `
       <div class="checkout-summary">
@@ -545,7 +545,7 @@
     elements.testimonialsCarousel.innerHTML = EVENT_DATA.testimonials.map(t => `<div class="testimonial-card"><p class="testimonial-text">"${t.text}"</p><div class="testimonial-author"><div class="testimonial-avatar">${t.avatar}</div><div class="testimonial-info"><div class="testimonial-name">${t.name}</div><div class="testimonial-location">${t.location}</div></div></div></div>`).join('');
   }
 
-  function startTestimonialCarousel() {}
+  function startTestimonialCarousel() { }
 
   function renderFAQ() {
     if (!elements.faqAccordion) return;
@@ -567,7 +567,7 @@
     const faqItem = button.closest('.faq-item');
     const isActive = faqItem.classList.contains('active');
     document.querySelectorAll('.faq-item.active').forEach(item => {
-      if (item!== faqItem) {
+      if (item !== faqItem) {
         item.classList.remove('active');
         item.querySelector('.faq-question')?.setAttribute('aria-expanded', 'false');
       }
@@ -607,61 +607,61 @@
 })();
 
 document.addEventListener("DOMContentLoaded", () => {
-const ticketsData = [
-  {
-    seller: "Rajveer Suvarna",
-    price: "₹8,500/ticket",
-    quan:"2",
-    seat: "Silver Ground",
-    city: "Mumbai",
-    concert: "Travis Scott Live in Mumbai",
-    date: "18 Oct 2025"
-  },
-  {
-    seller: "Amit Sharma",
-    price: "₹15,000/ticket",
-    quan:"3",
-    seat: "Gold Left - Row A12",
-    city: "Mumbai",
-    concert: "Travis Scott Live in India",
-    date: "18 Oct 2025"
-  },
-  {
-    seller: "Riya Patel",
-    price: "₹12,500/ticket",
-    quan:"1",
-    seat: "Silver - Block C14",
-    city: "Mumbai",
-    concert: "Travis Scott Live in India",
-    date: "18 Oct 2025"
-  },
-  {
-    seller: "Vikram Singh",
-    price: "₹18,000/ticket",
-    quan:"5",
-    seat: "Gold Right - Row B5",
-    city: "Mumbai",
-    concert: "Travis Scott Live in India",
-    date: "18 Oct 2025"
-  },
-  {
-    seller: "Kunal Verma",
-    price: "₹10,000/ticket",
-    quan:"2",
-    seat: "Silver - Row E20",
-    city: "Mumbai",
-    concert: "Travis Scott Live in India",
-    date: "18 Oct 2025"
-  },
-    
-];
+  const ticketsData = [
+    {
+      seller: "Rajveer Suvarna",
+      price: "₹8,500/ticket",
+      quan: "2",
+      seat: "Silver Ground",
+      city: "Mumbai",
+      concert: "Travis Scott Live in Mumbai",
+      date: "18 Oct 2025"
+    },
+    {
+      seller: "Amit Sharma",
+      price: "₹15,000/ticket",
+      quan: "3",
+      seat: "Gold Left - Row A12",
+      city: "Mumbai",
+      concert: "Travis Scott Live in India",
+      date: "18 Oct 2025"
+    },
+    {
+      seller: "Riya Patel",
+      price: "₹12,500/ticket",
+      quan: "1",
+      seat: "Silver - Block C14",
+      city: "Mumbai",
+      concert: "Travis Scott Live in India",
+      date: "18 Oct 2025"
+    },
+    {
+      seller: "Vikram Singh",
+      price: "₹18,000/ticket",
+      quan: "5",
+      seat: "Gold Right - Row B5",
+      city: "Mumbai",
+      concert: "Travis Scott Live in India",
+      date: "18 Oct 2025"
+    },
+    {
+      seller: "Kunal Verma",
+      price: "₹10,000/ticket",
+      quan: "2",
+      seat: "Silver - Row E20",
+      city: "Mumbai",
+      concert: "Travis Scott Live in India",
+      date: "18 Oct 2025"
+    },
 
-const ticketsContainer = document.getElementById("sellerTicketsList");
+  ];
 
-ticketsData.forEach(ticket => {
-  const card = document.createElement("div");
-  card.classList.add("ticket-card");
-  card.innerHTML = `
+  const ticketsContainer = document.getElementById("sellerTicketsList");
+
+  ticketsData.forEach(ticket => {
+    const card = document.createElement("div");
+    card.classList.add("ticket-card");
+    card.innerHTML = `
     <div class="ticket-header">
       <span class="seller-name">${ticket.seller}</span>
       <span class="ticket-price">${ticket.price}</span>
@@ -673,41 +673,41 @@ ticketsData.forEach(ticket => {
     <div class="ticket-info">Date: ${ticket.date}</div>
     <a href="#" class="buy-btn">Contact Seller</a>
   `;
-  ticketsContainer.appendChild(card);
-});
+    ticketsContainer.appendChild(card);
+  });
 });
 
 
 
 // ---------- Contact Owner flow ----------
-function onContactOwnerClick(e){
-e.preventDefault();
-const id = e.currentTarget.dataset.id;
-const seller = SELLERS.find(s=>s.id===id);
-const user = getCurrentUser();
-if(!seller) return;
+function onContactOwnerClick(e) {
+  e.preventDefault();
+  const id = e.currentTarget.dataset.id;
+  const seller = SELLERS.find(s => s.id === id);
+  const user = getCurrentUser();
+  if (!seller) return;
 
-// if(!user){
-//   // open must-sign modal (offer sign-in)
-//   const must = document.getElementById('mustSignModal');
-//   openModal(must);
-//   // when "Sign in" clicked, open signIn modal
-//   document.getElementById('mustSignOpenSignin').onclick = () => {
-//     closeModal(must);
-//     document.getElementById('openSignInBtn').click();
-//     // store intended action so after sign-in we can open owner details
-//     sessionStorage.setItem('afterSignInOpenOwner', id);
-//   };
-//   return;
-// }
+  // if(!user){
+  //   // open must-sign modal (offer sign-in)
+  //   const must = document.getElementById('mustSignModal');
+  //   openModal(must);
+  //   // when "Sign in" clicked, open signIn modal
+  //   document.getElementById('mustSignOpenSignin').onclick = () => {
+  //     closeModal(must);
+  //     document.getElementById('openSignInBtn').click();
+  //     // store intended action so after sign-in we can open owner details
+  //     sessionStorage.setItem('afterSignInOpenOwner', id);
+  //   };
+  //   return;
+  // }
 
-// user signed in -> show owner details
-showOwnerDetails(seller);
+  // user signed in -> show owner details
+  showOwnerDetails(seller);
 }
 
-function showOwnerDetails(seller){
-const ownerBody = document.getElementById('ownerBody');
-ownerBody.innerHTML = `
+function showOwnerDetails(seller) {
+  const ownerBody = document.getElementById('ownerBody');
+  ownerBody.innerHTML = `
   <div style="color:var(--muted);">
     <p><strong>Seller:</strong> ${escapeHTML(seller.seller)}</p>
     <p><strong>Price:</strong> ${formatINR(seller.price)}</p>
@@ -721,302 +721,159 @@ ownerBody.innerHTML = `
 
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
       <a class="btn-light" href="mailto:${encodeURIComponent(seller.email)}"><i class="fa fa-envelope"></i> Email</a>
-      <a class="btn-primary" href="https://wa.me/${seller.phone.replace(/\D/g,'')}" target="_blank"><i class="fa fa-whatsapp"></i> WhatsApp</a>
+      <a class="btn-primary" href="https://wa.me/${seller.phone.replace(/\D/g, '')}" target="_blank"><i class="fa fa-whatsapp"></i> WhatsApp</a>
     </div>
   </div>
 `;
-openModal(document.getElementById('ownerModal'));
+  openModal(document.getElementById('ownerModal'));
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-// --- DATA: Har seller ki contact details yahan hain ---
-window.sellerTickets = [
-  {
-  id: 23,
-  seller: "Sriram Babu",
-  price: "1800/Ticket",
-  quantity: 3,
-  seat: "B22 1-10, 1-11, 1-12",
-  concert: "Travis Scott",
-  city: "JLN Stadium",
-  date: "19 Oct 2025, 5:00 PM",
-  phone: "9913871524",
-  email: "babusriram007@gmail.com",
-  note: "Physical tickets available. Verified and attended."
-}
-,
-
- 
-{
-  id: 13,
-  seller: "Raj",
-  price: "2800/Ticket",
-  quantity: 2,
-  seat: "Seating",
-  concert: "Delhi",
-  city: "Delhi Stadium",
-  date: "19 Oct 2025, 7:00 PM",
-  phone: "8962997475",
-  email: "rajmakhija25432@gmail.com",
-  note: "Physical tickets available. Verified and attended."
-},
-{
-  id: 15,
-  seller: "Hardik Rathaur",
-  price: "1500/Ticket",
-  quantity: 1,
-  seat: "Silver Standing",
-  concert: "Travis Scott",
-  city: "Jawaharlal Nehru Stadium, Delhi",
-  date: "19 Oct 2025, 8:00 PM",
-  phone: "7009466228",
-  email: "rathaurhardik2081@gmail.com",
-  note: "Physical tickets available. Verified and attended."
-},
-{
-  id: 16,
-  seller: "Isa Machinewala",
-  price: "2000/Ticket",
-  quantity: 2,
-  seat: "B41",
-  concert: "Travis Scott Circus Maximus Tour",
-  city: "Jawaharlal Nehru Stadium, Delhi",
-  date: "19 Oct 2025, 3:00 PM",
-  phone: "9867888343",
-  email: "machinewalaisa@gmail.com",
-  note: "Physical tickets available. Verified and attended."
-},
-{
-  id: 17,
-  seller: "Savio Dias",
-  price: "2000/Ticket",
-  quantity: 6,
-  seat: "B40",
-  concert: "TRAVIS SCOTT: CIRCUS MAXIMUS TOUR 25",
-  city: "Jawaharlal Nehru Stadium, Delhi",
-  date: "19 Oct 2025, 5:00 PM",
-  phone: "9699312121",
-  email: "diassavio629@gmail.com",
-  note: "Physical tickets available. Verified and attended."
-},
-{
-  id: 18,
-  seller: "Jaiaditya Bhatia",
-  price: "1500/Ticket",
-  quantity: 6,
-  seat: "B12",
-  concert: "Travis Scott Circus Maximus",
-  city: "Jawaharlal Nehru Stadium, Delhi",
-  date: "18 Oct 2025, 5:00 PM",
-  phone: "9872238933",
-  email: "Jaiadityabhatia@gmail.com",
-  note: "Physical tickets available. Verified and attended."
-},
-{
-  id: 19,
-  seller: "Sai Vaibhav",
-  price: "3500/Ticket",
-  quantity: 6,
-  seat: "A stand 22-28",
-  concert: "Travis Scott: Circus Maximus Stadium Tour - Delhi",
-  city: "Jawaharlal Nehru Stadium, Delhi",
-  date: "19 Oct 2025, 5:00 PM",
-  phone: "7019033972",
-  email: "saivaibhav@onlinegmail.com",
-  note: "Physical tickets available. Verified and attended."
-},
-{
-  id: 20,
-  seller: "Parakh Jain",
-  price: "2800/Ticket",
-  quantity: 4,
-  seat: "Silver Standing",
-  concert: "Travis Scott Concert",
-  city: "Jawaharlal Nehru Stadium, Delhi",
-  date: "19 Oct 2025, 5:00 PM",
-  phone: "7987437206",
-  email: "business.parakhjain@gmail.com",
-  note: "Physical tickets available. Verified and attended."
-},
-{
-  id: 21,
-  seller: "Aditya Singh Tomar",
-  price: "1000/Ticket",
-  quantity: 2,
-  seat: "B9 20-14 & 20-15",
-  concert: "Travis Scott Circus Maximus Tour Delhi",
-  city: "JLN Stadium, Delhi",
-  date: "19 Oct 2025, 7:00 PM",
-  phone: "8718826653",
-  email: "adityatomar82005@gmail.com",
-  note: "Physical tickets available. Verified and attended."
-},
-{
-  id: 22,
-  seller: "Tia",
-  price: "2800/Ticket",
-  quantity: 2,
-  seat: "Silver",
-  concert: "Travis Scott Concert",
-  city: "Jawaharlal Nehru Stadium, New Delhi",
-  date: "18 Oct 2025, 5:00 PM",
-  phone: "8013173278",
-  email: "tianeedstochill@gmail.com",
-  note: "Physical tickets available. Verified and attended."
-},
-{
-  id: 11,
-  seller: "Karan",
-  price: "15000/Ticket",
-  quantity: 6,
-  seat: "Lounge- A 18",
-  concert: "Travis Scott Circus Maximus Tour Delhi",
-  city: "Jawaharlal Nehru Stadium, New Delhi",
-  date: "18 Oct 2025, 5:00 PM",
-  phone: "9582332654",
-  email: "kt29122001@gmail.com",
-  note: "Physical tickets available. Verified and attended."
-},
-    
-
-    { 
-      id: 7, 
-      seller: "Dhanraj K G", 
-      price: "4000/Ticket", 
-      quantity: 5, 
-      seat: "Silver Standing", 
-      concert: "Circus Maximus Tour", 
-      city: "Jawaharlal Nehru Stadium, Delhi", 
-      date: "18 Oct 2025, 5:00 PM", 
-      phone: "9952071331", 
-      email: "sonic.boom866@gmail.com", 
-      note: "Physical tickets available. Only accepting UPI payments. Please WhatsApp first.", 
-      proof1: "https://drive.google.com/file/d/1mMB0jucQ4ZFmSIKjnuP2o-d70QmMBh1h/view?usp=drivesdk", 
-      proof2: "https://drive.google.com/file/d/1PTKaqLf6b0b5Pzk38FCLngBbZpOTY-lv/view?usp=drivesdk"
-    }
-    ,
-    { 
-id: 6, 
-seller: "Himanshu", 
-price: "5000/Ticket", 
-quantity: 2, 
-seat: "Silver", 
-concert: "Travis Scott", 
-city: "Jawaharlal Nehru Stadium, Delhi", 
-date: "18 Oct 2025, 6:00 PM", 
-phone: "8770074410", 
-email: "Hgoswami07239@gmail.com", 
-note: "Physical tickets available. Only accepting UPI payments. Please WhatsApp first.",
-},
+  // --- DATA: Har seller ki contact details yahan hain ---
+  window.sellerTickets = [
     {
-id: 10,
-seller: "Karan",
-price: "3300/Ticket",
-quantity: 6,
-seat: "Silver",
-concert: "Travis Scott Circus Maximus Tour Delhi",
-city: "Jawaharlal Nehru Stadium, New Delhi",
-date: "18 Oct 2025, 5:00 PM",
-phone: "9582332654",
-email: "kt29122001@gmail.com",
-note: "Physical tickets available. Verified and attended."
-},
+      id: 1,
+      seller: "Rajveer Suvarna",
+      price: "8500/Ticket",
+      quantity: 2,
+      seat: "Silver ground",
+      concert: "Travis scott mumbai concert",
+      city: "Mahalakshmi race course, Mumbai",
+      date: "19 Nov 2025, 5:00 PM",
+      phone: "9987098572",
+      email: "rajveer@example.com",
+      note: "Physical tickets available. Verified."
+    },
+    {
+      id: 2,
+      seller: "Rajveer Prakash", // seller not provided in source row
+      price: "8500/Ticket",
+      quantity: 2,
+      seat: "Soccer ground",
+      concert: "Travis mumbai concert",
+      city: "Mahalakshmi race course, Mumbai",
+      date: "19 Nov 2025, 5:00 PM",
+      phone: "9987098572",
+      email: "",
+      note: "Physical tickets available. Verified."
+    },
+  
+    // -- JLN / Jawaharlal Nehru Stadium (Delhi) entries (2025-10-19)
+    {
+      id: 3,
+      seller: "Karan",
+      price: "2500/Ticket",
+      quantity: 8,
+      seat: "Seating B-40 (8 tickets)",
+      concert: "Travis Scott Circus Maximus",
+      city: "Jawaharlal Nehru Stadium, New Delhi",
+      date: "19 Oct 2025, 5:00 PM",
+      phone: "9582332654",
+      email: "kt29122001@gmail.com",
+      note: "Physical tickets available. Verified."
+    },
+    {
+      id: 4,
+      seller: "Savio Dias",
+      price: "2000/Ticket",
+      quantity: 6,
+      seat: "B40",
+      concert: "TRAVIS SCOTT: CIRCUS MAXIMUS TOUR 25",
+      city: "Jawaharlal Nehru Stadium, New Delhi",
+      date: "19 Oct 2025, 5:00 PM",
+      phone: "9699312121",
+      email: "diassavio629@gmail.com",
+      note: "Physical tickets available. Verified."
+    },
+    {
+      id: 5,
+      seller: "Sai Vaibhav",
+      price: "3500/Ticket",
+      quantity: 6,
+      seat: "A stand 22-28",
+      concert: "Travis Scott: Circus Maximus Stadium Tour - Delhi",
+      city: "Jawaharlal Nehru Stadium, New Delhi",
+      date: "19 Oct 2025, 5:00 PM",
+      phone: "7019033972",
+      email: "saivaibhav@onlinegmail.com",
+      note: "Physical tickets available. Verified."
+    },
+    {
+      id: 6,
+      seller: "Aditya Singh Tomar",
+      price: "1000/Ticket",
+      quantity: 2,
+      seat: "B9 20-14 & 20-15",
+      concert: "Travis Scott Circus Maximus Tour Delhi",
+      city: "JLN Stadium, New Delhi",
+      date: "19 Oct 2025, 7:00 PM",
+      phone: "8718826653",
+      email: "adityatomar82005@gmail.com",
+      note: "Physical tickets available. Verified."
+    },
+    {
+      id: 7,
+      seller: "Parakh Jain",
+      price: "2800/Ticket",
+      quantity: 4,
+      seat: "Silver Standing",
+      concert: "Travis Scott Concert",
+      city: "Jawaharlal Nehru Stadium, New Delhi",
+      date: "19 Oct 2025, 5:00 PM",
+      phone: "7987437206",
+      email: "business.parakhjain@gmail.com",
+      note: "Physical tickets available. Verified."
+    },
+    {
+      id: 8,
+      seller: "Karan Dhanraj",
+      price: "3100/Ticket",
+      quantity: 4,
+      seat: "Silver Ground",
+      concert: "Travis scott Circus Maximum Tour",
+      city: "Jawahar Lal Nehru Stadium, New Delhi",
+      date: "19 Oct 2025, 5:00 PM",
+      phone: "9990695253",
+      email: "No Email",
+      note: "Physical tickets available. Verified."
+    },
+    {
+      id: 9,
+      seller: "Sriram Babu",
+      price: "1800/Ticket",
+      quantity: 3,
+      seat: "B22 1-10, 1-11, 1-12",
+      concert: "Travis scott",
+      city: "JLU / (other stadium) — NOT JLN; included only if you want all 19 Oct shows",
+      date: "19 Oct 2025, 5:00 PM",
+      phone: "9913871524",
+      email: "babusriram007@gmail.com",
+      note: "Physical tickets available. Verified."
+    }
+    ];
+  
 
+  // --- DOM ELEMENTS ---
+  const ticketsContainer = document.getElementById('sellerTicketsList');
+  const contactModal = document.getElementById('contactModal');
 
-  { id: 1, seller: "Karan Dhanraj", price: "3100/Ticket", quantity: 4, seat: "Silver Ground", concert: "Travis scott Circus Maximum Tour",city:"Jawahar Lal Nehru Stadium ", date: "19 Oct 2025", phone: "9990695253", email: "No Email", note: "Only accepting UPI payments. Please WhatsApp first." },
-    { id: 2, seller: "Rajveer Suvarna", price: "8500/Ticket", quantity: 2, seat: "Silver Ground", concert: "Travis Scott Live",city:"Mumbai", date: "18 Oct 2025", phone: "9987098572", email: "rajveer@example.com", note: "Only accepting UPI payments. Please WhatsApp first." },
-    { 
-id: 3, 
-seller: "Daksh Uttamchandani", 
-price: "1800/Ticket", 
-quantity: 2, 
-seat: "Silver Standing", 
-concert: "Travis Scott in Delhi", 
-city: "Jawaharlal Nehru Stadium, Delhi", 
-date: "18 Oct 2025, 5:00 PM", 
-phone: "8890818050", 
-email: "dakshuttamchandani4444@gmail.com", 
-note: "Physical tickets available. Only accepting UPI payments. Please WhatsApp first.", 
-},
-    
-    { 
-id: 8, 
-seller: "Karan", 
-price: "7500/Ticket", 
-quantity: 8, 
-seat: "Gold (Left & Right Both)", 
-concert: "Travis Scott Circus Maximus Delhi Tour", 
-city: "Jawaharlal Nehru Stadium, New Delhi", 
-date: "18 Oct 2025, 5:00 PM", 
-phone: "9582332654", 
-email: "kt29122001@gmail.com", 
-note: "Physical tickets available. Only accepting UPI payments. Please WhatsApp first.", 
-},
-{ 
-id: 4, 
-seller: "Daksh", 
-price: "2200/Ticket", 
-quantity: 2, 
-seat: "Silver Standing", 
-concert: "Travis Scott Circus Maximus", 
-city: "Jawaharlal Nehru Stadium, Delhi", 
-date: "18 Oct 2025, 5:00 PM", 
-phone: "8890818050", 
-email: "dakshuttamchandani4444@gmail.com", 
-note: "Physical tickets available. Only accepting UPI payments. Please WhatsApp first.", 
-},
-{ 
-id: 5, 
-seller: "Daksh", 
-price: "2200/Ticket", 
-quantity: 2, 
-seat: "Silver Standing", 
-concert: "Travis Scott Circus Maximus", 
-city: "Jawaharlal Nehru Stadium, Delhi", 
-date: "18 Oct 2025, 5:00 PM", 
-phone: "8890818050", 
-email: "dakshuttamchandani4444@gmail.com", 
-note: "Physical tickets available. Only accepting UPI payments. Please WhatsApp first.",
-},
-{ 
-id: 9, 
-seller: "Karan", 
-price: "2500/Ticket", 
-quantity: 8, 
-seat: "Seating B-40", 
-concert: "Travis Scott Circus Maximus", 
-city: "Jawaharlal Nehru Stadium, New Delhi", 
-date: "19 Oct 2025, 5:00 PM", 
-phone: "9582332654", 
-email: "kt29122001@gmail.com", 
-note: "Physical tickets available. Only accepting UPI payments. Please WhatsApp first.", 
-}
+  // --- FUNCTIONS ---
 
-    
-    
-];
-
-// --- DOM ELEMENTS ---
-const ticketsContainer = document.getElementById('sellerTicketsList');
-const contactModal = document.getElementById('contactModal');
-
-// --- FUNCTIONS ---
-
-// Modal ko kholne aur band karne ke functions
-const openModal = (modal) => modal.classList.add('active');
-const closeModal = (modal) => modal.classList.remove('active');
-const closeAllModals = () => {
+  // Modal ko kholne aur band karne ke functions
+  const openModal = (modal) => modal.classList.add('active');
+  const closeModal = (modal) => modal.classList.remove('active');
+  const closeAllModals = () => {
     document.querySelectorAll('.modal').forEach(closeModal);
-};
+  };
 
-// Function: Seller ke ticket cards ko screen par render karta hai
-const renderTickets = () => {
-    if(!ticketsContainer) return;
+  // Function: Seller ke ticket cards ko screen par render karta hai
+  const renderTickets = () => {
+    if (!ticketsContainer) return;
     ticketsContainer.innerHTML = '';
     sellerTickets.forEach(ticket => {
-        const card = document.createElement('div');
-        card.className = 'seller-ticket-card';
-        card.innerHTML = `
+      const card = document.createElement('div');
+      card.className = 'seller-ticket-card';
+      card.innerHTML = `
             <div class="seller-card-header">
                 <span class="seller-name">${ticket.seller}</span>
                 <span class="seller-price">₹${ticket.price.toLocaleString('en-IN')}</span>
@@ -1030,12 +887,12 @@ const renderTickets = () => {
             </div>
             <button class="contact-seller-btn" data-ticket-id="${ticket.id}">Contact Seller</button>
         `;
-        ticketsContainer.appendChild(card);
+      ticketsContainer.appendChild(card);
     });
-};
+  };
 
-// Function: "Contact Seller" button click ko handle karta hai
-const handleContactClick = (e) => {
+  // Function: "Contact Seller" button click ko handle karta hai
+  const handleContactClick = (e) => {
     if (!e.target.classList.contains('contact-seller-btn')) return;
 
     // Sign-in check HATA diya gaya hai
@@ -1044,73 +901,73 @@ const handleContactClick = (e) => {
     const ticket = sellerTickets.find(t => t.id === ticketId);
 
     if (ticket) {
-        const modalBody = contactModal.querySelector('#modalBody');
-        modalBody.innerHTML = `
+      const modalBody = contactModal.querySelector('#modalBody');
+      modalBody.innerHTML = `
             <p>You can contact <strong>${ticket.seller}</strong> using the details below:</p>
             <div class="info-row"><i class="fa fa-phone"></i> Phone: <span><a href="tel:${ticket.phone}">${ticket.phone}</a></span></div>
             <div class="info-row"><i class="fa fa-envelope"></i> Email: <span><a href="mailto:${ticket.email}">${ticket.email}</a></span></div>
             <br>
             <p><strong>Seller's Note:</strong><br>${ticket.note}</p>
         `;
-        openModal(contactModal);
+      openModal(contactModal);
     }
-};
+  };
 
-// Countdown Timer Logic
-const startCountdown = () => {
+  // Countdown Timer Logic
+  const startCountdown = () => {
     const countdownEl = {
-        days: document.getElementById('days'),
-        hours: document.getElementById('hours'),
-        minutes: document.getElementById('minutes'),
-        seconds: document.getElementById('seconds')
+      days: document.getElementById('days'),
+      hours: document.getElementById('hours'),
+      minutes: document.getElementById('minutes'),
+      seconds: document.getElementById('seconds')
     };
     if (!countdownEl.days) return;
-    
+
     const eventDate = new Date("2025-11-19T17:00:00+05:30").getTime();
-    
+
     const update = () => {
-        const now = new Date().getTime();
-        const distance = eventDate - now;
+      const now = new Date().getTime();
+      const distance = eventDate - now;
 
-        if (distance < 0) {
-            clearInterval(interval);
-            Object.values(countdownEl).forEach(el => el.textContent = '00');
-            return;
-        }
-        
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      if (distance < 0) {
+        clearInterval(interval);
+        Object.values(countdownEl).forEach(el => el.textContent = '00');
+        return;
+      }
 
-        countdownEl.days.textContent = String(days).padStart(2, '0');
-        countdownEl.hours.textContent = String(hours).padStart(2, '0');
-        countdownEl.minutes.textContent = String(minutes).padStart(2, '0');
-        countdownEl.seconds.textContent = String(seconds).padStart(2, '0');
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      countdownEl.days.textContent = String(days).padStart(2, '0');
+      countdownEl.hours.textContent = String(hours).padStart(2, '0');
+      countdownEl.minutes.textContent = String(minutes).padStart(2, '0');
+      countdownEl.seconds.textContent = String(seconds).padStart(2, '0');
     };
 
     update();
     const interval = setInterval(update, 1000);
-};
+  };
 
-// --- EVENT LISTENERS ---
-document.querySelectorAll('[data-close-modal]').forEach(btn => btn.addEventListener('click', closeAllModals));
-document.querySelectorAll('.modal-backdrop').forEach(bd => bd.addEventListener('click', closeAllModals));
+  // --- EVENT LISTENERS ---
+  document.querySelectorAll('[data-close-modal]').forEach(btn => btn.addEventListener('click', closeAllModals));
+  document.querySelectorAll('.modal-backdrop').forEach(bd => bd.addEventListener('click', closeAllModals));
 
-if(ticketsContainer) ticketsContainer.addEventListener('click', handleContactClick);
+  if (ticketsContainer) ticketsContainer.addEventListener('click', handleContactClick);
 
-// --- INITIALIZATION ---
-// renderTickets();
-// startCountdown(); // Countdown logic ko chalu rakha hai
-// renderTickets(); // old renderer — disabled, new filtered renderer will handle it
-startCountdown();
+  // --- INITIALIZATION ---
+  // renderTickets();
+  // startCountdown(); // Countdown logic ko chalu rakha hai
+  // renderTickets(); // old renderer — disabled, new filtered renderer will handle it
+  startCountdown();
 
 });
 
 /* === Ticket filters + price-sort logic (UPDATED) ===
    Replace your old block with this one.
 */
-(function(){
+(function () {
   // run after DOM ready
   function parsePriceToNumber(price) {
     if (typeof price === 'number') return price;
@@ -1185,9 +1042,9 @@ startCountdown();
     // sort
     const sortVal = document.getElementById('sortPrice')?.value || 'default';
     if (sortVal === 'price-low') {
-      list.sort((a,b) => (a.__priceNum || 0) - (b.__priceNum || 0));
+      list.sort((a, b) => (a.__priceNum || 0) - (b.__priceNum || 0));
     } else if (sortVal === 'price-high') {
-      list.sort((a,b) => (b.__priceNum || 0) - (a.__priceNum || 0));
+      list.sort((a, b) => (b.__priceNum || 0) - (a.__priceNum || 0));
     } // default -> leave original order
 
     // render
@@ -1262,14 +1119,14 @@ startCountdown();
     // delegate contact button clicks to container (if you already have a global handler, this is a safe backup)
     const container = document.getElementById('sellerTicketsList');
     if (container) {
-      container.addEventListener('click', function(e){
+      container.addEventListener('click', function (e) {
         const btn = e.target.closest('.contact-seller-btn');
         if (!btn) return;
         const id = btn.dataset.ticketId;
         // Trigger any global handler if present
         if (typeof onContactOwnerClick === 'function') {
-          try { onContactOwnerClick({ currentTarget: { dataset: { id } }, preventDefault: () => {} }); }
-          catch(err){ console.warn('onContactOwnerClick failed', err); }
+          try { onContactOwnerClick({ currentTarget: { dataset: { id } }, preventDefault: () => { } }); }
+          catch (err) { console.warn('onContactOwnerClick failed', err); }
           return;
         }
         // Fallback modal display if no global handler
@@ -1295,11 +1152,11 @@ startCountdown();
   }
 
   // small debounce helper
-  function debounce(fn, wait){
+  function debounce(fn, wait) {
     let t;
-    return function(...args){
+    return function (...args) {
       clearTimeout(t);
-      t = setTimeout(()=> fn.apply(this,args), wait);
+      t = setTimeout(() => fn.apply(this, args), wait);
     };
   }
 
@@ -1315,7 +1172,7 @@ startCountdown();
 /* === Ticket filters + price-sort + incremental "View more" + flash ===
    Replace your old IIFE block with this updated one.
 */
-(function(){
+(function () {
   // config: how many show initially & per click
   const INITIAL_SHOW = 9;
   const LOAD_MORE_COUNT = 6;
@@ -1403,9 +1260,9 @@ startCountdown();
     // sort
     const sortVal = document.getElementById('sortPrice')?.value || 'default';
     if (sortVal === 'price-low') {
-      list.sort((a,b) => (a.__priceNum || 0) - (b.__priceNum || 0));
+      list.sort((a, b) => (a.__priceNum || 0) - (b.__priceNum || 0));
     } else if (sortVal === 'price-high') {
-      list.sort((a,b) => (b.__priceNum || 0) - (a.__priceNum || 0));
+      list.sort((a, b) => (b.__priceNum || 0) - (a.__priceNum || 0));
     }
 
     // save full filtered list to window for debugging if needed
@@ -1471,13 +1328,13 @@ startCountdown();
     const fb = document.getElementById('flashBox');
     if (!fb) return;
     fb.textContent = text;
-    fb.setAttribute('aria-hidden','false');
+    fb.setAttribute('aria-hidden', 'false');
     fb.classList.add('show');
     // hide after ms
     clearTimeout(fb._t);
     fb._t = setTimeout(() => {
       fb.classList.remove('show');
-      fb.setAttribute('aria-hidden','true');
+      fb.setAttribute('aria-hidden', 'true');
     }, ms);
   }
 
@@ -1518,13 +1375,13 @@ startCountdown();
     // delegate contact button clicks to container (if no other handler)
     const container = document.getElementById('sellerTicketsList');
     if (container) {
-      container.addEventListener('click', function(e){
+      container.addEventListener('click', function (e) {
         const btn = e.target.closest('.contact-seller-btn');
         if (!btn) return;
         const id = btn.dataset.ticketId;
         if (typeof onContactOwnerClick === 'function') {
-          try { onContactOwnerClick({ currentTarget: { dataset: { id } }, preventDefault: () => {} }); }
-          catch(err){ console.warn('onContactOwnerClick failed', err); }
+          try { onContactOwnerClick({ currentTarget: { dataset: { id } }, preventDefault: () => { } }); }
+          catch (err) { console.warn('onContactOwnerClick failed', err); }
           return;
         }
         const ticket = (window.sellerTickets || []).find(t => String(t.id) === String(id));
@@ -1553,11 +1410,11 @@ startCountdown();
   }
 
   // small debounce helper
-  function debounce(fn, wait){
+  function debounce(fn, wait) {
     let t;
-    return function(...args){
+    return function (...args) {
       clearTimeout(t);
-      t = setTimeout(()=> fn.apply(this,args), wait);
+      t = setTimeout(() => fn.apply(this, args), wait);
     };
   }
 
