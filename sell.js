@@ -2,7 +2,7 @@
     'use strict';
   
     // ===== CONFIG =====
-    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxv0UVhoKE3GoMkCe3QQ2IycdeopTS8lGZekdb-Pe4MCNCQQBlvCDB-xy2Ysm-TNmPs/exec";
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbznTFguIMDQDt4aXdzBG384VJOeSa5wy__kUyQfJfDFQYPZLL07DAEk82YNdIkU_kUv/exec";
     const PLATFORM_FEE_RATE = 0.00;
     const totalSteps = 4;
     let currentStep = 1;
