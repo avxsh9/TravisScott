@@ -762,21 +762,6 @@ document.addEventListener('DOMContentLoaded', () => {
     price: 2800
   },
   {
-    id: 14,
-    concertName: "Hh",
-    category: "concerts",
-    date: "2025-10-18",
-    time: "",
-    venue: "Hh",
-    ticketType: "Bb",
-    phone: "Bb",
-    ownerName: "Bb",
-    email: "Bb",
-    quantity: 3,
-    deliveryType: "physical",
-    price: 999
-  },
-  {
     id: 15,
     concertName: "Travis Scott",
     category: "concerts",
