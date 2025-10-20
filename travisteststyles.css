@@ -1891,3 +1891,66 @@ footer {
 #fomoToast {
   bottom: 60px !important;
 }
+/* === FINAL HEADER FIX: Music Left | Logo Center | Nav Right === */
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 16px; /* reduce header height */
+  height: 60px;
+  position: relative;
+}
+
+/* Music Button - Left */
+.music-toggle {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+/* Logo - Center */
+.logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+}
+
+/* Nav Menu - Right */
+.nav-area {
+  margin-left: auto;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+/* Adjust hero so text appears slightly higher */
+.hero {
+  margin-top: 60px !important;
+  height: calc(100vh - 60px);
+}
+
+.hero-content {
+  margin-top: -30px;
+}
+
+/* Make sure mobile menu still works fine */
+@media (max-width: 992px) {
+  .nav {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
