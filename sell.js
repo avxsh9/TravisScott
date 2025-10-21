@@ -33,6 +33,9 @@
         reader.readAsDataURL(file);
       });
     }
+
+    // This variable will hold the user status
+    let currentFirebaseUser = null; 
   
     // ===== Firebase auth init & UI sync =====
     function initFirebaseAuth() {
@@ -81,12 +84,13 @@
           if (userMenu) userMenu.style.display = 'none';
         }
       }
-  
-      // listen for state changes
+     
+      // listen for state changes and update the global variable
       auth.onAuthStateChanged(user => {
         updateUIforUser(user);
+        currentFirebaseUser = user; // Update the user status here
       });
-  
+
       // wire logout
       if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
@@ -100,6 +104,30 @@
     document.addEventListener('DOMContentLoaded', function () {
       // Initialize Firebase auth UI sync
       initFirebaseAuth();
+
+      // ===== START: MODAL HELPER FUNCTIONS =====
+      const loginModal = document.getElementById('loginRequiredModal');
+      
+      function openLoginModal() {
+        if (loginModal) {
+            // Login ke baad user ko wapas laane ke liye (optional)
+            sessionStorage.setItem('loginRedirect', 'sell.html');
+            loginModal.classList.add('active');
+        }
+      }
+
+      function closeLoginModal() {
+        if (loginModal) loginModal.classList.remove('active');
+      }
+
+      // Modal ke close buttons par event lagayein
+      if (loginModal) {
+        loginModal.querySelectorAll('[data-close-modal]').forEach(btn => {
+            btn.addEventListener('click', closeLoginModal);
+        });
+        loginModal.querySelector('.modal-backdrop').addEventListener('click', closeLoginModal);
+      }
+      // ===== END: MODAL HELPER FUNCTIONS =====
   
       // Elements
       const form = document.getElementById('ticketListingForm');
@@ -126,7 +154,7 @@
       const previewEventDate = document.getElementById('previewEventDate');
       const previewVenue = document.getElementById('previewVenue');
       const previewTicketInfo = document.getElementById('previewTicketInfo');
-      const previewemail = document.getElementById('previewemail');
+      // const previewemail = document.getElementById('previewemail'); // This ID doesn't exist in preview section
       const previewPriceInfo = document.getElementById('previewPriceInfo');
       const previewTicketUpload = document.getElementById('previewTicketUpload');
       const previewPaymentProof = document.getElementById('previewPaymentProof');
@@ -229,9 +257,9 @@
         let ticketInfo = '';
         if (quantity) ticketInfo += quantity + ' ticket' + (parseInt(quantity) > 1 ? 's' : '');
         if (ticketSection) ticketInfo += ' • ' + ticketSection;
-        if (ticketRow) ticketInfo += ' • Row ' + ticketRow;
+        if (ticketRow) ticketInfo += ' • Phone ' + ticketRow; // Changed to match label
         if (ticketemail) ticketInfo += ' • email ' + ticketemail;
-        if (seatNumbers) ticketInfo += ' • Seats ' + seatNumbers;
+        if (seatNumbers) ticketInfo += ' • Seller ' + seatNumbers; // Changed to match label
         if (previewTicketInfo) previewTicketInfo.textContent = ticketInfo || 'Ticket info';
   
         if (previewPriceInfo) previewPriceInfo.textContent = sellingPrice ? (formatINR(sellingPrice) + ' per ticket') : 'Price info';
@@ -367,9 +395,23 @@
   
       // navigation
       if (nextBtn) nextBtn.addEventListener('click', function () {
-        if (!validateStep(currentStep)) return;
-        if (currentStep < totalSteps) showStep(currentStep + 1);
+        if (!validateStep(currentStep)) return; // Pehle step validate karo
+
+        // ===== START: UPDATED LOGIN CHECK (NEXT BUTTON) =====
+        // Agar user Step 3 (Pricing) se Step 4 (Review) par jaa raha hai
+        if (currentStep === 3) {
+            if (!currentFirebaseUser) { // Yahan check karein
+                // User login nahi hai, toh modal dikhao
+                openLoginModal();
+                return; // Aur aage badhne se roko
+            }
+        }
+        // ===== END: UPDATED LOGIN CHECK =====
+
+        if (currentStep < totalSteps) showStep(currentStep + 1); // Sab theek hai, agle step par jao
       });
+
+
       if (prevBtn) prevBtn.addEventListener('click', function () {
         if (currentStep > 1) showStep(currentStep - 1);
       });
@@ -380,6 +422,14 @@
           e.preventDefault();
   
           if (!validateStep(currentStep)) return;
+
+          // ===== START: UPDATED LOGIN CHECK (SUBMIT BUTTON) =====
+          if (!currentFirebaseUser) { // Yahan check karein
+              // User login nahi hai, modal dikhao
+              openLoginModal();
+              return; // Form submit karne se roko
+          }
+          // ===== END: UPDATED LOGIN CHECK =====
   
           // final validate all steps
           for (let i = 1; i <= totalSteps; i++) {
@@ -468,64 +518,4 @@
       updatePreviewSection();
     }); // DOMContentLoaded end
   
-  })(); // IIFE end
-  
-  document.addEventListener("DOMContentLoaded", () => {
-    const ticketsData = [
-        {
-            seller: "Rajveer Suvarna",
-            price: "₹8,500/ticket",
-            seat: "Silver Ground",
-            concert: "Travis Scott Live in Mumbai",
-            date: "18 Oct 2025"
-        },
-      {
-        seller: "Amit Sharma",
-        price: "₹15,000",
-        seat: "Gold Left - Row A12",
-        concert: "Travis Scott Live in India",
-        date: "18 Oct 2025"
-      },
-      {
-        seller: "Riya Patel",
-        price: "₹12,500",
-        seat: "Silver - Block C14",
-        concert: "Travis Scott Live in India",
-        date: "18 Oct 2025"
-      },
-      {
-        seller: "Vikram Singh",
-        price: "₹18,000",
-        seat: "Gold Right - Row B5",
-        concert: "Travis Scott Live in India",
-        date: "18 Oct 2025"
-      },
-      {
-        seller: "Kunal Verma",
-        price: "₹10,000",
-        seat: "Silver - Row E20",
-        concert: "Travis Scott Live in India",
-        date: "18 Oct 2025"
-      }
-    ];
-  
-    const ticketsContainer = document.getElementById("sellerTicketsList");
-  
-    ticketsData.forEach(ticket => {
-      const card = document.createElement("div");
-      card.classList.add("ticket-card");
-      card.innerHTML = `
-        <div class="ticket-header">
-          <span class="seller-name">${ticket.seller}</span>
-          <span class="ticket-price">${ticket.price}</span>
-        </div>
-        <div class="ticket-info">Seat: ${ticket.seat}</div>
-        <div class="ticket-info">Concert: ${ticket.concert}</div>
-        <div class="ticket-info">Date: ${ticket.date}</div>
-        <a href="#" class="buy-btn">Contact Seller</a>
-      `;
-      ticketsContainer.appendChild(card);
-    });
-  });
- 
-    
+})(); // IIFE end
