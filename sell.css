@@ -2358,4 +2358,73 @@ h1, h2, h3, h4 {
    .footer-content { grid-template-columns: 1fr; }
    .footer-bottom { flex-direction: column; gap: 16px; }
 }
-
+/* ===== START: MODAL (POPUP) STYLES ===== */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    display: none; /* Shuru mein chupa hua */
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 300ms ease;
+}
+.modal.active {
+    display: flex; /* Dikhane ke liye 'active' class ka istemaal hoga */
+    opacity: 1;
+}
+.modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+}
+.modal-content {
+    position: relative;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    max-width: 500px;
+    width: 100%;
+    padding: 32px;
+    z-index: 10000;
+    transform: scale(0.9);
+    transition: transform 300ms ease;
+}
+.modal.active .modal-content {
+    transform: scale(1);
+}
+.modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    font-size: 1.5rem;
+    line-height: 1;
+    transition: all 0.2s ease;
+}
+.modal-close:hover {
+    background: var(--color-primary);
+}
+.modal-title {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+}
+/* ===== END: MODAL STYLES ===== */
