@@ -112,6 +112,7 @@
 
  .logo-img {
     height: 40px;
+    margin-top: 10px;
     margin-left: 10px;
   }
   
@@ -162,6 +163,7 @@
   
   /* Music Toggle Button */
  .music-toggle {
+  margin-top: 5px;
     display: flex;
     align-items: center;
     gap: var(--space-xs);
@@ -300,6 +302,7 @@
   
   /* Mobile Menu Button */
  .mobile-menu-btn {
+  margin-top: 5px;
     display: flex;
     flex-direction: column;
     gap: 4px;
