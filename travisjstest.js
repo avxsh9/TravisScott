@@ -366,14 +366,14 @@
     if (isMusicPlaying) {
       elements.bgMusic.pause();
       elements.musicToggle.classList.remove('playing');
-      elements.musicToggle.querySelector('.music-text').textContent = 'Play FEIN';
+      elements.musicToggle.querySelector('.music-text').textContent = 'Play Pal Pal';
       isMusicPlaying = false;
     } else {
       elements.bgMusic.play().catch(err => {
         console.error('Audio playback failed:', err);
       });
       elements.musicToggle.classList.add('playing');
-      elements.musicToggle.querySelector('.music-text').textContent = 'Pause FEIN';
+      elements.musicToggle.querySelector('.music-text').textContent = 'Pause Pal Pal';
       isMusicPlaying = true;
     }
   }
