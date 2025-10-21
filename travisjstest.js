@@ -1117,35 +1117,83 @@ document.addEventListener('DOMContentLoaded', () => {
     renderFilteredTickets();
 
     // delegate contact button clicks to container (if you already have a global handler, this is a safe backup)
+    // const container = document.getElementById('sellerTicketsList');
+    // if (container) {
+    //   container.addEventListener('click', function (e) {
+    //     const btn = e.target.closest('.contact-seller-btn');
+    //     if (!btn) return;
+    //     const id = btn.dataset.ticketId;
+    //     // Trigger any global handler if present
+    //     if (typeof onContactOwnerClick === 'function') {
+    //       try { onContactOwnerClick({ currentTarget: { dataset: { id } }, preventDefault: () => { } }); }
+    //       catch (err) { console.warn('onContactOwnerClick failed', err); }
+    //       return;
+    //     }
+    //     // Fallback modal display if no global handler
+    //     const ticket = (window.sellerTickets || []).find(t => String(t.id) === String(id));
+    //     if (ticket) {
+    //       const contactModal = document.getElementById('contactModal');
+    //       if (contactModal) {
+    //         const modalBody = contactModal.querySelector('#modalBody');
+    //         if (modalBody) {
+    //           modalBody.innerHTML = `
+    //             <p>You can contact <strong>${escapeHTML(ticket.seller)}</strong> using the details below:</p>
+    //             <div class="info-row"><i class="fa fa-phone"></i> Phone: <span><a href="tel:${escapeHTML(ticket.phone || '')}">${escapeHTML(ticket.phone || 'N/A')}</a></span></div>
+    //             <div class="info-row"><i class="fa fa-envelope"></i> Email: <span><a href="mailto:${escapeHTML(ticket.email || '')}">${escapeHTML(ticket.email || 'N/A')}</a></span></div>
+    //             <br>
+    //             <p><strong>Seller's Note:</strong><br>${escapeHTML(ticket.note || '')}</p>
+    //           `;
+    //           contactModal.classList.add('active');
+    //         }
+    //       }
+    //     }
+    //   });
+    // }
+    // delegate contact button clicks to container (if you already have a global handler, this is a safe backup)
     const container = document.getElementById('sellerTicketsList');
     if (container) {
       container.addEventListener('click', function (e) {
         const btn = e.target.closest('.contact-seller-btn');
-        if (!btn) return;
+        if (!btn) return; // Agar button nahi hai toh kuch mat karo
+
         const id = btn.dataset.ticketId;
-        // Trigger any global handler if present
-        if (typeof onContactOwnerClick === 'function') {
-          try { onContactOwnerClick({ currentTarget: { dataset: { id } }, preventDefault: () => { } }); }
-          catch (err) { console.warn('onContactOwnerClick failed', err); }
-          return;
-        }
-        // Fallback modal display if no global handler
         const ticket = (window.sellerTickets || []).find(t => String(t.id) === String(id));
-        if (ticket) {
-          const contactModal = document.getElementById('contactModal');
-          if (contactModal) {
-            const modalBody = contactModal.querySelector('#modalBody');
-            if (modalBody) {
-              modalBody.innerHTML = `
-                <p>You can contact <strong>${escapeHTML(ticket.seller)}</strong> using the details below:</p>
-                <div class="info-row"><i class="fa fa-phone"></i> Phone: <span><a href="tel:${escapeHTML(ticket.phone || '')}">${escapeHTML(ticket.phone || 'N/A')}</a></span></div>
-                <div class="info-row"><i class="fa fa-envelope"></i> Email: <span><a href="mailto:${escapeHTML(ticket.email || '')}">${escapeHTML(ticket.email || 'N/A')}</a></span></div>
-                <br>
-                <p><strong>Seller's Note:</strong><br>${escapeHTML(ticket.note || '')}</p>
-              `;
-              contactModal.classList.add('active');
+        if (!ticket) return; // Agar ticket nahi mila toh kuch mat karo
+
+        // Firebase se current user ki details check karo
+        const currentUser = firebase.auth().currentUser;
+
+        if (currentUser) {
+            // --- USER LOGGED IN HAI ---
+            // User sign-in hai, toh contact details wala modal dikhao
+            const contactModal = document.getElementById('contactModal');
+            if (contactModal) {
+                const modalBody = contactModal.querySelector('#modalBody');
+                if (modalBody) {
+                    modalBody.innerHTML = `
+                        <p>Aap <strong>${escapeHTML(ticket.seller)}</strong> se neeche di gayi details par contact kar sakte hain:</p>
+                        <div class="info-row"><i class="fa fa-phone"></i> Phone: <span><a href="tel:${escapeHTML(ticket.phone || '')}">${escapeHTML(ticket.phone || 'N/A')}</a></span></div>
+                        <div class="info-row"><i class="fa fa-envelope"></i> Email: <span><a href="mailto:${escapeHTML(ticket.email || '')}">${escapeHTML(ticket.email || 'N/A')}</a></span></div>
+                        <br>
+                        <p><strong>Seller ka Note:</strong><br>${escapeHTML(ticket.note || '')}</p>
+                    `;
+                    contactModal.classList.add('active'); // Modal ko dikhao
+                }
             }
-          }
+        } else {
+            // --- USER LOGGED OUT HAI ---
+            // User sign-in nahi hai, toh "login required" wala modal dikhao
+            const loginModal = document.getElementById('loginRequiredModal');
+            if (loginModal) {
+                // (Optional) Hum user ko login ke baad waapis yahin bhej sakte hain
+                sessionStorage.setItem('loginRedirect', window.location.pathname + '#tickets');
+                
+                loginModal.classList.add('active'); // Login wala modal dikhao
+            } else {
+                // Agar naya modal nahi mila (fallback)
+                alert("Seller details dekhne ke liye aapko login karna hoga.");
+                window.location.href = 'login.html';
+            }
         }
       });
     }
