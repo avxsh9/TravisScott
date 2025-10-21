@@ -163,7 +163,6 @@
   
   /* Music Toggle Button */
  .music-toggle {
-  margin-top: 5px;
     display: flex;
     align-items: center;
     gap: var(--space-xs);
@@ -302,7 +301,7 @@
   
   /* Mobile Menu Button */
  .mobile-menu-btn {
-  margin-top: 5px;
+    margin-top: 5px;
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -381,6 +380,8 @@
      ======================================== */
  .hero {
     position: relative;
+    margin-bottom: 0; /* ensure hero doesn't push next section */
+    padding-bottom: 20px;
     height: 100vh;
     min-height: 600px;
     display: flex;
@@ -567,6 +568,68 @@
     color: var(--color-text-light-grey);
   }
   
+
+  /* ===== QUICK FIX: remove extra gap between CTA and Available Tickets ===== */
+/* Paste this at the END of sell.css */
+
+:root {
+  /* safer smaller values override if needed */
+  --space-xxl-reduced: 36px; /* reduce large vertical spacing */
+  --hero-min-height-mobile: 420px;
+}
+
+/* Reduce hero vertical bulk on all screens */
+.hero {
+  min-height: 520px; /* from 600 -> 520 (desktop) */
+}
+
+/* Make hero smaller on tablets/phones where gap is more visible */
+@media (max-width: 992px) {
+  .hero {
+    min-height: var(--hero-min-height-mobile);
+    margin-top: 60px; /* keep header spacing okay */
+    padding-bottom: 8px;
+  }
+
+  .hero-cta {
+    margin-bottom: 12px;
+  }
+}
+
+/* Reduce huge padding on tickets section (the main reason for gap) */
+.tickets-section {
+  margin-top: 0 !important;
+  padding-top: 30px !important;
+}
+
+/* If you specifically use a section wrapper for Available Tickets title */
+.section-title {
+  margin-top: 8px !important;
+  margin-bottom: 24px !important; /* keep a bit of breathing room */
+}
+
+/* If you have CTA container class, reduce its bottom margin */
+.cta-buttons,
+.hero-cta-container,
+.hero-content .cta-buttons {
+  margin-bottom: 8px !important;
+  padding-bottom: 0 !important;
+}
+
+/* Mobile specific aggressive tighten */
+@media (max-width: 700px) {
+  .tickets-section { padding-top: 28px !important; padding-bottom: 28px !important; }
+  .hero { min-height: 420px; }
+  .section-title { margin-top: 6px; margin-bottom: 18px; font-size: clamp(22px, 6vw, 36px); }
+}
+
+/* Debug helper (temporary) - uncomment to see which boxes create the gap */
+/*
+.hero { outline: 1px dashed rgba(255,0,0,0.15); }
+.tickets-section { outline: 1px dashed rgba(0,255,0,0.15); }
+.section-title { outline: 1px dashed rgba(0,0,255,0.15); }
+*/
+
   /* ========================================
      TICKETS SECTION
      ======================================== */

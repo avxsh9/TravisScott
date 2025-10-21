@@ -142,6 +142,43 @@
         </div>
     </section>
 
+
+
+    <section class="tickets-section" id="tickets">
+        <div class="container">
+            <h2 class="section-title">Available Tickets</h2>
+      
+            <div class="filter-bar">
+                <div class="filter-row">
+                    <select id="sortPrice" class="filter-select" aria-label="Sort by price">
+                        <option value="default">Sort: Default</option>
+                        <option value="price-low">Price: Low → High</option>
+                        <option value="price-high">Price: High → Low</option>
+                    </select>
+                    <select id="availabilityFilter" class="filter-select" aria-label="Availability">
+                        <option value="all">All Tickets</option>
+                        <option value="available">Available only</option>
+                    </select>
+                    <button id="resetFilters" class="filter-btn" title="Reset filters">Reset</button>
+                </div>
+            </div>
+      
+            <div class="tickets-wrapper" id="sellerTicketsList"></div>
+      
+            <div class="load-more-wrap" id="loadMoreWrap" aria-live="polite">
+                <button id="loadMoreBtn" class="hero-cta" type="button">View more</button>
+            </div>
+      
+            <div id="flashBox" class="flash-box" aria-hidden="true">Loading more tickets…</div>
+        </div>
+      </section>
+      
+
+    
+
+
+
+    </section>
     <section class="trust-section">
         <div class="container">
             <div class="trust-badges">
@@ -173,78 +210,6 @@
         </div>
     </section>
 
-    <section class="tickets-section" id="tickets">
-        <div class="container">
-            <!-- <h2 class="section-title">Select Your Tickets</h2> -->
-
-            <!-- <div class="filter-controls">
-                <div class="filter-group">
-                    <label for="categoryFilter">Category</label>
-                    <select id="categoryFilter" class="filter-select">
-                        <option value="all">All Categories</option>
-                        <option value="Gold Left">Gold Left</option>
-                        <option value="Gold Right">Gold Right</option>
-                        <option value="Silver">Silver</option>
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <label for="sortFilter">Sort By</label>
-                    <select id="sortFilter" class="filter-select">
-                        <option value="popular">Popular</option>
-                        <option value="price-low">Price: Low to High</option>
-                        <option value="price-high">Price: High to Low</option>
-                    </select>
-                </div>
-
-                <div class="filter-group filter-search">
-                    <label for="searchFilter">Search</label>
-                    <input type="text" id="searchFilter" class="filter-input" placeholder="Search by city or seat...">
-                </div>
-            </div> -->
-
-            <section class="tickets-section" id="tickets">
-                <div class="container">
-                    <h2 class="section-title">Available Tickets</h2>
-
-                </div>
-                <!-- FILTER BAR: paste this right before #sellerTicketsList -->
-                <div class="filter-bar">
-                    <div class="filter-row">
-                        <select id="sortPrice" class="filter-select" aria-label="Sort by price">
-                            <option value="default">Sort: Default</option>
-                            <option value="price-low">Price: Low → High</option>
-                            <option value="price-high">Price: High → Low</option>
-                        </select>
-                        <select id="availabilityFilter" class="filter-select" aria-label="Availability">
-                            <option value="all">All Tickets</option>
-                            <option value="available">Available only</option>
-                        </select>
-                        <button id="resetFilters" class="filter-btn" title="Reset filters">Reset</button>
-                    </div>
-                </div>
-
-
-                <div class="tickets-wrapper" id="sellerTicketsList"></div>
-
-<!-- LOAD MORE WRAPPER -->
-<div class="load-more-wrap" id="loadMoreWrap" aria-live="polite">
-  <button id="loadMoreBtn" class="hero-cta" type="button">View more</button>
-</div>
-
-<!-- Flash box (hidden, will be shown briefly on click) -->
-<div id="flashBox" class="flash-box" aria-hidden="true">Loading more tickets…</div>
-
-        </div>
-    </section>
-
-    </div>
-
-
-
-    </section>
-
-
     <section class="testimonials-section">
         <div class="container">
             <h2 class="section-title">What People Say</h2>
@@ -269,13 +234,15 @@
         </div>
     </section>
 
+
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
                     <div class="footer-brand">
-                        <img class="avinashlogo" src="image (1).png" alt="">
+                        <img class="logo-img" src="TM.png" alt="">
                     </div>
                     <p>India's most trusted ticket marketplace for concerts, sports, theater, and more.</p>
                     <div class="social-links">
@@ -370,10 +337,10 @@
             </div>
         </div>
     </div>
-    
+
 
     <div class="modal" id="contactModal">
-        </div>
+    </div>
 
     <div class="modal" id="loginRequiredModal">
         <div class="modal-backdrop" data-close-modal></div>
@@ -387,10 +354,10 @@
                 <a href="login.html" class="checkout-btn" id="loginModalBtn">Sign In or Create an Account</a>
             </div>
         </div>
-        
+
     </div>
     <div class="modal" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-        </div>
+    </div>
 
 
     <div class="fomo-toast" id="fomoToast" role="alert" aria-live="polite">
