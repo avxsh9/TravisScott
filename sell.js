@@ -3,7 +3,7 @@
   
     // ===== CONFIG =====
     const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxYpYj4c_6SPuXjEOTUlbbpW5iHZlMJX40har2NJnoAYYhRukDMEPrIbzofbEEz_cIG/exec";
-    const PLATFORM_FEE_RATE = 0.00;
+    const PLATFORM_FEE_RATE = 0.00; // Currently 0%
     const totalSteps = 4;
     let currentStep = 1;
   
@@ -26,7 +26,8 @@
     function readFileAsDataURL(file) {
       return new Promise((resolve, reject) => {
         if (!file) return resolve('');
-        if (file.size > 50* 1024 * 1024) return reject(new Error('File too large. Max 50MB allowed.'));
+        // Increased max file size check to 50MB as per previous code context
+        if (file.size > 50 * 1024 * 1024) return reject(new Error('File too large. Max 50MB allowed.'));
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result);
         reader.onerror = (err) => reject(err);
@@ -34,38 +35,36 @@
       });
     }
 
-    // This variable will hold the user status
-    let currentFirebaseUser = null; 
-  
     // ===== Firebase auth init & UI sync =====
     function initFirebaseAuth() {
-      // requires firebase (compat) included on page
       if (typeof firebase === 'undefined') {
         console.warn('Firebase SDK not found (initFirebaseAuth skipped).');
+        // If Firebase is missing, maybe default to showing login wall?
+        const loginWall = document.getElementById('loginWall');
+        const sellPageContent = document.getElementById('sellPageContent');
+        if (loginWall) loginWall.style.display = 'block';
+        if (sellPageContent) sellPageContent.style.display = 'none';
         return;
       }
   
       try {
-        // initialize only if not already initialized
         if (!(firebase.apps && firebase.apps.length)) {
           firebase.initializeApp(firebaseConfig);
         }
       } catch (err) {
-        // if already initialized, ignore
         console.warn('Firebase init warning:', err && err.message ? err.message : err);
       }
   
       const auth = firebase.auth();
   
-      // prefer LOCAL persistence
       if (auth && auth.setPersistence) {
         try {
           auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => { /* ignore */ });
         } catch (e) { /* ignore */ }
       }
   
-      const authActions = document.getElementById('authActions'); // sign-in container
-      const userMenu = document.getElementById('userMenu');       // signed-in menu container
+      const authActions = document.getElementById('authActions');
+      const userMenu = document.getElementById('userMenu');
       const userNameElm = document.getElementById('userNameElm');
       const userAvatar = document.getElementById('userAvatar');
       const logoutBtn = document.getElementById('logoutBtn');
@@ -85,11 +84,28 @@
         }
       }
      
-      // listen for state changes and update the global variable
+      // ===== THIS IS THE CORE LOGIC =====
       auth.onAuthStateChanged(user => {
+        // 1. Update Header
         updateUIforUser(user);
-        currentFirebaseUser = user; // Update the user status here
+
+        // 2. Control Page Content Visibility
+        const loginWall = document.getElementById('loginWall');
+        const sellPageContent = document.getElementById('sellPageContent');
+
+        if (user) {
+            // --- USER IS LOGGED IN ---
+            // Show the form, hide the login message
+            if (loginWall) loginWall.style.display = 'none';
+            if (sellPageContent) sellPageContent.style.display = 'block';
+        } else {
+            // --- USER IS LOGGED OUT ---
+            // Show the login message, hide the form
+            if (loginWall) loginWall.style.display = 'block';
+            if (sellPageContent) sellPageContent.style.display = 'none';
+        }
       });
+      // ===== LOGIC ENDS HERE =====
 
       // wire logout
       if (logoutBtn) {
@@ -100,36 +116,12 @@
       }
     }
   
-    // ===== Main DOM logic =====
+    // ===== Main DOM logic (Form handling, etc.) =====
     document.addEventListener('DOMContentLoaded', function () {
-      // Initialize Firebase auth UI sync
+      // Initialize Firebase auth (this will handle showing/hiding content)
       initFirebaseAuth();
-
-      // ===== START: MODAL HELPER FUNCTIONS =====
-      const loginModal = document.getElementById('loginRequiredModal');
-      
-      function openLoginModal() {
-        if (loginModal) {
-            // Login ke baad user ko wapas laane ke liye (optional)
-            sessionStorage.setItem('loginRedirect', 'sell.html');
-            loginModal.classList.add('active');
-        }
-      }
-
-      function closeLoginModal() {
-        if (loginModal) loginModal.classList.remove('active');
-      }
-
-      // Modal ke close buttons par event lagayein
-      if (loginModal) {
-        loginModal.querySelectorAll('[data-close-modal]').forEach(btn => {
-            btn.addEventListener('click', closeLoginModal);
-        });
-        loginModal.querySelector('.modal-backdrop').addEventListener('click', closeLoginModal);
-      }
-      // ===== END: MODAL HELPER FUNCTIONS =====
   
-      // Elements
+      // Elements (only needed if user is logged in, but we wire them anyway)
       const form = document.getElementById('ticketListingForm');
       const steps = Array.from(document.querySelectorAll('.form-step'));
       const nextBtn = document.getElementById('nextBtn');
@@ -154,12 +146,11 @@
       const previewEventDate = document.getElementById('previewEventDate');
       const previewVenue = document.getElementById('previewVenue');
       const previewTicketInfo = document.getElementById('previewTicketInfo');
-      // const previewemail = document.getElementById('previewemail'); // This ID doesn't exist in preview section
       const previewPriceInfo = document.getElementById('previewPriceInfo');
       const previewTicketUpload = document.getElementById('previewTicketUpload');
       const previewPaymentProof = document.getElementById('previewPaymentProof');
   
-      // file inputs + previews (IDs must match HTML)
+      // file inputs + previews
       const ticketInput = document.getElementById('ticketUpload');
       const proofInput = document.getElementById('paymentProofUpload');
       const ticketPreview = document.getElementById('ticketUploadPreview');
@@ -172,17 +163,17 @@
       const heroPlatformFeeEl = document.getElementById('platformFee');
       const heroYouEarnEl = document.getElementById('youEarn');
   
-      // ===== Functions =====
+      // ===== Functions (Form related) =====
       function updateHeroCalculator() {
         if (!heroPrice || !heroQty) return;
         const price = parseFloat(heroPrice.value) || 0;
         const qty = parseInt(heroQty.value) || 1;
         const total = price * qty;
-        const fee = Math.round(total * PLATFORM_FEE_RATE);
+        const fee = Math.round(total * PLATFORM_FEE_RATE); // Use 0 fee rate
         const earn = total - fee;
         if (heroTotalSaleEl) heroTotalSaleEl.textContent = formatINR(total);
-        if (heroPlatformFeeEl) heroPlatformFeeEl.textContent = formatINR(fee);
-        if (heroYouEarnEl) heroYouEarnEl.textContent = formatINR(earn);
+        if (heroPlatformFeeEl) heroPlatformFeeEl.textContent = formatINR(fee); // Will show ₹0
+        if (heroYouEarnEl) heroYouEarnEl.textContent = formatINR(earn); // Will show total
       }
   
       function showStep(i) {
@@ -193,25 +184,28 @@
         if (nextBtn) nextBtn.style.display = i === totalSteps ? 'none' : 'inline-flex';
         if (submitBtn) submitBtn.style.display = i === totalSteps ? 'inline-flex' : 'none';
         const formEl = document.getElementById('sellForm');
-        if (formEl) window.scrollTo({ top: formEl.offsetTop - 20, behavior: 'smooth' });
+        if (formEl) window.scrollTo({ top: formEl.offsetTop - 80, behavior: 'smooth' }); // Adjusted offset
         updatePreviewSection();
       }
   
       function createPreview(container, file) {
         if (!container) return;
-        container.innerHTML = '';
-        container.style.display = file ? 'block' : 'none';
+        container.innerHTML = ''; // Clear previous preview
+        container.style.display = file ? 'flex' : 'none'; // Use flex for alignment
         if (!file) return;
-        if (file.type && file.type.startsWith('image/')) {
-          const img = document.createElement('img');
-          img.src = URL.createObjectURL(file);
-          img.style.maxWidth = '120px';
-          container.appendChild(img);
-        } else {
-          const div = document.createElement('div');
-          div.textContent = file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
-          container.appendChild(div);
-        }
+
+        const icon = document.createElement('i');
+        icon.className = 'fas fa-check-circle'; // Success icon
+        icon.style.color = 'var(--color-success)';
+        icon.style.marginRight = '8px';
+
+        const text = document.createElement('span');
+        text.textContent = file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
+        
+        container.appendChild(icon);
+        container.appendChild(text);
+
+        // Removed image preview generation to simplify and use consistent text format
       }
   
       function updateEarningsPreview() {
@@ -220,16 +214,17 @@
         const price = parseInt(sellingPrice ? sellingPrice.value : 0) || 0;
         const qty = parseInt(quantity ? quantity.value : 0) || 0;
         const total = price * qty;
-        const fee = Math.round(total * PLATFORM_FEE_RATE);
+        const fee = Math.round(total * PLATFORM_FEE_RATE); // Use 0 fee rate
         const earnings = total - fee;
         if (previewPrice) previewPrice.textContent = formatINR(price);
         if (previewQuantity) previewQuantity.textContent = String(qty);
         if (previewTotal) previewTotal.textContent = formatINR(total);
-        if (previewFee) previewFee.textContent = formatINR(fee);
-        if (previewEarnings) previewEarnings.textContent = formatINR(earnings);
+        if (previewFee) previewFee.textContent = formatINR(fee); // Shows ₹0
+        if (previewEarnings) previewEarnings.textContent = formatINR(earnings); // Shows total
       }
   
       function updatePreviewSection() {
+        // Ensure elements exist before accessing .value
         const eventName = document.getElementById('eventName')?.value || '';
         const eventCategory = document.getElementById('eventCategory')?.value || '';
         const eventDate = document.getElementById('eventDate')?.value || '';
@@ -237,35 +232,55 @@
         const venue = document.getElementById('venue')?.value || '';
         const quantity = document.getElementById('quantity')?.value || '';
         const ticketSection = document.getElementById('ticketSection')?.value || '';
-        const ticketRow = document.getElementById('ticketRow')?.value || '';
-        const ticketemail = document.getElementById('ticketemail')?.value || '';
-        const seatNumbers = document.getElementById('seatNumbers')?.value || '';
+        const ticketRow = document.getElementById('ticketRow')?.value || ''; // Phone Number
+        const ticketemail = document.getElementById('ticketemail')?.value || ''; // Email
+        const seatNumbers = document.getElementById('seatNumbers')?.value || ''; // Seller Name
         const sellingPrice = document.getElementById('sellingPrice')?.value || '';
   
         if (previewEventName) previewEventName.textContent = eventName || 'Event Name';
-        if (previewCategory) previewCategory.textContent = eventCategory || 'Category';
+        if (previewCategory) {
+           previewCategory.textContent = eventCategory || 'Category';
+           // Add a class based on category for potential styling
+           previewCategory.className = 'preview-category'; // Reset class
+           if(eventCategory) {
+               previewCategory.classList.add(`category-${eventCategory.toLowerCase()}`);
+           }
+        }
   
         if (eventDate) {
-          const d = new Date(eventDate);
-          let dateStr = d.toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
-          if (eventTime) dateStr += ' at ' + eventTime;
-          if (previewEventDate) previewEventDate.textContent = dateStr;
+          try {
+              const d = new Date(eventDate + 'T00:00:00'); // Ensure it's treated as local date
+              let dateStr = d.toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+              if (eventTime) {
+                 // Format time nicely
+                 let [hours, minutes] = eventTime.split(':');
+                 let ampm = hours >= 12 ? 'PM' : 'AM';
+                 hours = hours % 12;
+                 hours = hours ? hours : 12; // Handle midnight
+                 dateStr += ` at ${hours}:${minutes} ${ampm}`;
+              }
+              if (previewEventDate) previewEventDate.textContent = dateStr;
+          } catch (e) {
+              if (previewEventDate) previewEventDate.textContent = 'Invalid Date';
+          }
         } else if (previewEventDate) previewEventDate.textContent = 'Date';
   
         if (previewVenue) previewVenue.textContent = venue || 'Venue';
   
         let ticketInfo = '';
         if (quantity) ticketInfo += quantity + ' ticket' + (parseInt(quantity) > 1 ? 's' : '');
-        if (ticketSection) ticketInfo += ' • ' + ticketSection;
-        if (ticketRow) ticketInfo += ' • Phone ' + ticketRow; // Changed to match label
-        if (ticketemail) ticketInfo += ' • email ' + ticketemail;
-        if (seatNumbers) ticketInfo += ' • Seller ' + seatNumbers; // Changed to match label
+        if (ticketSection) ticketInfo += (ticketInfo ? ' • ' : '') + ticketSection;
+        // Combine Phone, Email, Seller Name under Ticket Info for brevity in preview
+        if (ticketRow) ticketInfo += (ticketInfo ? ' • 📞 ' : '📞 ') + ticketRow;
+        if (ticketemail) ticketInfo += (ticketInfo ? ' • 📧 ' : '📧 ') + ticketemail;
+        if (seatNumbers) ticketInfo += (ticketInfo ? ' • 👤 ' : '👤 ') + seatNumbers;
+
         if (previewTicketInfo) previewTicketInfo.textContent = ticketInfo || 'Ticket info';
   
         if (previewPriceInfo) previewPriceInfo.textContent = sellingPrice ? (formatINR(sellingPrice) + ' per ticket') : 'Price info';
   
-        if (previewTicketUpload) previewTicketUpload.textContent = ticketInput && ticketInput.files && ticketInput.files.length ? ticketInput.files[0].name : 'No ticket file provided';
-        if (previewPaymentProof) previewPaymentProof.textContent = proofInput && proofInput.files && proofInput.files.length ? proofInput.files[0].name : 'No proof file provided';
+        if (previewTicketUpload) previewTicketUpload.textContent = ticketInput?.files?.length ? ticketInput.files[0].name : 'No ticket file provided';
+        if (previewPaymentProof) previewPaymentProof.textContent = proofInput?.files?.length ? proofInput.files[0].name : 'No proof file provided';
   
         updateEarningsPreview();
       }
@@ -277,36 +292,47 @@
         const requiredFields = step.querySelectorAll('input[required], select[required], textarea[required]');
   
         requiredFields.forEach(field => {
+          // Reset error states first
           field.classList.remove('error-border');
-          const fieldType = (field.type || '').toLowerCase();
+          const parentWrapper = field.closest('.input-wrapper, .price-input-wrapper, .file-upload-wrapper, .checkbox-wrapper');
+          if(parentWrapper) parentWrapper.classList.remove('error-border');
+          const fileLabel = field.type === 'file' ? field.parentElement?.querySelector('.file-upload-label') : null;
+          if(fileLabel) fileLabel.classList.remove('error-border');
+          const checkmark = field.type === 'checkbox' ? field.parentElement?.querySelector('.checkmark') : null;
+           if(checkmark) checkmark.classList.remove('error-border');
+
+          const fieldType = (field.type || field.tagName).toLowerCase();
+          let value = (field.value || '').trim();
+
+          let hasError = false;
   
           if (fieldType === 'file') {
-            if (!field.files || field.files.length === 0) {
-              const label = field.parentElement && field.parentElement.querySelector('.file-upload-label');
-              if (label) label.classList.add('error-border');
-              isValid = false;
-            }
+            if (!field.files || field.files.length === 0) hasError = true;
           } else if (fieldType === 'checkbox') {
-            if (!field.checked) {
-              const checkmark = field.parentElement && field.parentElement.querySelector('.checkmark');
-              if (checkmark) checkmark.classList.add('error-border');
-              field.classList.add('error-border');
-              isValid = false;
-            }
+            if (!field.checked) hasError = true;
           } else if (fieldType === 'radio') {
-            const radios = step.querySelectorAll(`input[type="radio"][name="${field.name}"]`);
-            const anyChecked = Array.from(radios).some(r => r.checked);
-            if (!anyChecked) {
-              radios.forEach(r => r.classList.add('error-border'));
+             // Validation for radio is handled implicitly by browser/required attribute normally.
+             // If needed, check if any radio in the group is checked.
+             const radioGroup = step.querySelectorAll(`input[type="radio"][name="${field.name}"]`);
+             if (!Array.from(radioGroup).some(r => r.checked)) hasError = true;
+          } else if (fieldType === 'select' || fieldType === 'select-one') {
+             if (!value) hasError = true; // Check if a selection is made
+          } else { // Text, email, tel, date, time, number etc.
+            if (!value) hasError = true;
+            // Add specific type validations if needed (e.g., email format)
+            if (fieldType === 'email' && value && !/^\S+@\S+\.\S+$/.test(value)) hasError = true;
+            if (fieldType === 'tel' && value && !/^\+?[0-9\s-()]{7,}$/.test(value)) hasError = true; // Basic phone check
+            if (fieldType === 'number' && field.min && parseFloat(value) < parseFloat(field.min)) hasError = true;
+            if (fieldType === 'number' && field.max && parseFloat(value) > parseFloat(field.max)) hasError = true;
+          }
+
+          if (hasError) {
               isValid = false;
-            } else {
-              radios.forEach(r => r.classList.remove('error-border'));
-            }
-          } else {
-            if (!String(field.value || '').trim()) {
               field.classList.add('error-border');
-              isValid = false;
-            }
+              // Add error class to specific wrappers for better visual feedback
+              if(parentWrapper) parentWrapper.classList.add('error-border');
+              if(fileLabel) fileLabel.classList.add('error-border');
+              if(checkmark) checkmark.classList.add('error-border');
           }
         });
   
@@ -317,193 +343,210 @@
       (function initExtras() {
         const eventInput = document.getElementById('eventName');
         const suggestions = document.getElementById('eventSuggestions');
-        const mockEvents = [
-          'Mumbai Indians vs Chennai Super Kings',
-          'Royal Challengers Bangalore vs Kolkata Knight Riders',
-          'Coldplay India Tour 2025',
-          'Diljit Dosanjh Live Concert',
-          'Sunburn Festival Goa',
-          'Ed Sheeran Mumbai Concert',
-          'India vs Australia Test Match'
+        const mockEvents = [ // Example list
+          'Mumbai Indians vs Chennai Super Kings', 'IPL Final 2025',
+          'Coldplay Live in Mumbai', 'Arijit Singh Concert Delhi',
+          'Sunburn Goa 2025', 'India vs England Cricket Match',
+          'Theatre Play: Mughal-e-Azam'
         ];
   
         if (eventInput && suggestions) {
           eventInput.addEventListener('input', function () {
-            const v = this.value.toLowerCase();
-            if (v.length < 2) { suggestions.style.display = 'none'; return; }
-            const matches = mockEvents.filter(m => m.toLowerCase().includes(v));
-            if (!matches.length) { suggestions.style.display = 'none'; return; }
+            const query = this.value.toLowerCase().trim();
+            if (query.length < 2) { suggestions.style.display = 'none'; return; }
+            const matches = mockEvents.filter(m => m.toLowerCase().includes(query));
             suggestions.innerHTML = matches.map(m => `<div class="suggestion-item" data-value="${m}">${m}</div>`).join('');
-            suggestions.style.display = 'block';
+            suggestions.style.display = matches.length ? 'block' : 'none';
           });
-  
           suggestions.addEventListener('click', function (e) {
             if (e.target.classList.contains('suggestion-item')) {
               eventInput.value = e.target.getAttribute('data-value');
               suggestions.style.display = 'none';
-              updatePreviewSection();
+              updatePreviewSection(); // Update preview when suggestion selected
             }
           });
-  
-          document.addEventListener('click', function (e) {
-            if (!eventInput.contains(e.target) && !suggestions.contains(e.target)) suggestions.style.display = 'none';
+          document.addEventListener('click', (e) => { // Hide on outside click
+            if (!eventInput.contains(e.target) && !suggestions.contains(e.target)) {
+              suggestions.style.display = 'none';
+            }
           });
         }
   
-        const buttons = document.querySelectorAll('.suggestion-btn');
+        // Pricing suggestion buttons
+        const priceButtons = document.querySelectorAll('.suggestion-btn');
         const priceInput = document.getElementById('sellingPrice');
-        buttons.forEach(btn => btn.addEventListener('click', function () {
+        priceButtons.forEach(btn => btn.addEventListener('click', function () {
           if (priceInput) {
             priceInput.value = this.dataset.price;
-            updateEarningsPreview();
+            updateEarningsPreview(); // Update dependent previews
             updatePreviewSection();
           }
         }));
   
-        // wire inputs for live preview
-        document.querySelectorAll('#ticketListingForm input, #ticketListingForm select, #ticketListingForm textarea').forEach(el => {
-          el.addEventListener('input', function () { updateEarningsPreview(); updatePreviewSection(); });
-          el.addEventListener('change', function () { updateEarningsPreview(); updatePreviewSection(); });
+        // Wire ALL form inputs for live preview updates
+        const formInputs = document.querySelectorAll('#ticketListingForm input, #ticketListingForm select, #ticketListingForm textarea');
+        formInputs.forEach(el => {
+            // Use 'input' for text fields, 'change' for selects, files, checkboxes, radios
+            const eventType = ['checkbox', 'radio', 'file', 'select-one'].includes(el.type) ? 'change' : 'input';
+            el.addEventListener(eventType, () => {
+                updateEarningsPreview(); // Update earnings part of preview
+                updatePreviewSection(); // Update general preview
+            });
         });
   
-        // hero calculator watchers
+        // Hero calculator watchers
         if (heroPrice) heroPrice.addEventListener('input', updateHeroCalculator);
         if (heroQty) heroQty.addEventListener('change', updateHeroCalculator);
   
-        // initial updates
+        // Initial calculations and preview population
         updateHeroCalculator();
         updatePreviewSection();
       })();
   
-      // wire file previews
+      // Wire file input changes to preview function
       if (ticketInput && ticketPreview) {
         ticketInput.addEventListener('change', function (e) {
           createPreview(ticketPreview, e.target.files[0]);
-          const label = this.parentElement && this.parentElement.querySelector('.file-upload-label');
-          if (label) label.classList.remove('error-border');
-          updatePreviewSection();
+          const label = this.parentElement?.querySelector('.file-upload-label');
+          if (label) label.classList.remove('error-border'); // Remove error on file select
+          updatePreviewSection(); // Update main preview
         });
       }
       if (proofInput && proofPreview) {
         proofInput.addEventListener('change', function (e) {
           createPreview(proofPreview, e.target.files[0]);
-          const label = this.parentElement && this.parentElement.querySelector('.file-upload-label');
-          if (label) label.classList.remove('error-border');
-          updatePreviewSection();
+          const label = this.parentElement?.querySelector('.file-upload-label');
+           if (label) label.classList.remove('error-border'); // Remove error on file select
+          updatePreviewSection(); // Update main preview
         });
       }
   
-      // navigation
+      // Navigation Button Logic
       if (nextBtn) nextBtn.addEventListener('click', function () {
-        if (!validateStep(currentStep)) return; // Pehle step validate karo
-
-        // ===== START: UPDATED LOGIN CHECK (NEXT BUTTON) =====
-        // Agar user Step 3 (Pricing) se Step 4 (Review) par jaa raha hai
-        if (currentStep === 3) {
-            if (!currentFirebaseUser) { // Yahan check karein
-                // User login nahi hai, toh modal dikhao
-                openLoginModal();
-                return; // Aur aage badhne se roko
-            }
+        if (!validateStep(currentStep)) return; // Validate before proceeding
+        
+        // No login check needed here anymore, page content is already gated
+        
+        if (currentStep < totalSteps) {
+          showStep(currentStep + 1);
         }
-        // ===== END: UPDATED LOGIN CHECK =====
-
-        if (currentStep < totalSteps) showStep(currentStep + 1); // Sab theek hai, agle step par jao
       });
-
 
       if (prevBtn) prevBtn.addEventListener('click', function () {
-        if (currentStep > 1) showStep(currentStep - 1);
+        if (currentStep > 1) {
+          showStep(currentStep - 1);
+        }
       });
   
-      // submit
+      // Form Submission Logic
       if (form) {
         form.addEventListener('submit', async function (e) {
-          e.preventDefault();
+          e.preventDefault(); // Prevent default browser submission
   
-          if (!validateStep(currentStep)) return;
+          // Final validation of the current (last) step
+          if (!validateStep(currentStep)) return; 
+          
+          // No login check needed here anymore
 
-          // ===== START: UPDATED LOGIN CHECK (SUBMIT BUTTON) =====
-          if (!currentFirebaseUser) { // Yahan check karein
-              // User login nahi hai, modal dikhao
-              openLoginModal();
-              return; // Form submit karne se roko
-          }
-          // ===== END: UPDATED LOGIN CHECK =====
-  
-          // final validate all steps
+          // Optional: Re-validate all steps just before submission (belt-and-suspenders)
           for (let i = 1; i <= totalSteps; i++) {
-            if (!validateStep(i)) { showStep(i); return; }
+            if (!validateStep(i)) {
+               showStep(i); // Go to the first invalid step
+               console.warn(`Validation failed at step ${i} before submission.`);
+               return;
+            }
           }
   
-          // prepare
+          // --- Submission Preparation ---
           statusHolder.textContent = 'Preparing submission...';
+          statusHolder.style.color = 'var(--color-text-secondary)'; // Neutral color
+          if (submitBtn) {
+              submitBtn.disabled = true;
+              submitBtn.innerHTML = '<span class="loading-spinner"></span> Processing...';
+          }
   
+          // Gather form data
           const data = {
             eventName: document.getElementById('eventName')?.value || '',
             eventCategory: document.getElementById('eventCategory')?.value || '',
             eventDate: document.getElementById('eventDate')?.value || '',
             eventTime: document.getElementById('eventTime')?.value || '',
             venue: document.getElementById('venue')?.value || '',
-            ticketSection: document.getElementById('ticketSection')?.value || '',
-            ticketRow: document.getElementById('ticketRow')?.value || '',
-            ticketemail: document.getElementById('ticketemail')?.value || '',
-            seatNumbers: document.getElementById('seatNumbers')?.value || '',
+            ticketSection: document.getElementById('ticketSection')?.value || '', // Section/Category
+            ticketRow: document.getElementById('ticketRow')?.value || '', // Phone
+            ticketemail: document.getElementById('ticketemail')?.value || '', // Email
+            seatNumbers: document.getElementById('seatNumbers')?.value || '', // Seller Name
             quantity: document.getElementById('quantity')?.value || '',
-            ticketType: (document.querySelector('input[name="ticketType"]:checked') || {}).value || '',
+            ticketType: document.querySelector('input[name="ticketType"]:checked')?.value || '',
             sellingPrice: document.getElementById('sellingPrice')?.value || '',
-            agreeTerms: !!document.getElementById('agreeTerms')?.checked,
-            agreeTransfer: !!document.getElementById('agreeTransfer')?.checked,
-            additionalNotes: ''
+            agreeTerms: document.getElementById('agreeTerms')?.checked || false,
+            agreeTransfer: document.getElementById('agreeTransfer')?.checked || false,
+            // additionalNotes: document.getElementById('additionalNotes')?.value || '' // If you add an additional notes field
           };
   
           try {
-            const ticketFile = ticketInput && ticketInput.files && ticketInput.files[0];
-            const proofFile = proofInput && proofInput.files && proofInput.files[0];
+            // Read files as Base64 data URLs
+            const ticketFile = ticketInput?.files?.[0];
+            const proofFile = proofInput?.files?.[0];
   
-            data.ticketFileData = await readFileAsDataURL(ticketFile);
+            // Use Promise.all for potentially faster file reading
+            const [ticketFileData, paymentProofData] = await Promise.all([
+                readFileAsDataURL(ticketFile),
+                readFileAsDataURL(proofFile)
+            ]);
+
+            data.ticketFileData = ticketFileData;
             data.ticketFileName = ticketFile ? ticketFile.name : '';
-            data.paymentProofData = await readFileAsDataURL(proofFile);
+            data.paymentProofData = paymentProofData;
             data.paymentProofName = proofFile ? proofFile.name : '';
   
-            // UI uploading
-            statusHolder.textContent = 'Uploading — please wait...';
-            if (submitBtn) {
-              submitBtn.disabled = true;
-              submitBtn.innerHTML = '<span class="loading-spinner"></span> Processing...';
-            }
-  
-            // Send (no Content-Type header -> reduce preflight)
+            // --- Send data to Google Apps Script ---
+            statusHolder.textContent = 'Uploading data, please wait...';
+            
             const resp = await fetch(WEBAPP_URL, {
+              redirect: "follow", // Important for Apps Script web apps
               method: 'POST',
-              body: JSON.stringify(data)
+              body: JSON.stringify(data),
+              headers: {
+                "Content-Type": "text/plain;charset=utf-8", // Required for Apps Script POST
+              },
             });
   
-            const text = await resp.text();
-            let json = {};
-            try { json = text ? JSON.parse(text) : {}; } catch {
-              throw new Error('Server returned non-JSON response: ' + text);
+            // --- Process Response ---
+            const textResponse = await resp.text();
+            let jsonResult = {};
+            try {
+                jsonResult = JSON.parse(textResponse);
+            } catch (parseError) {
+                console.error("Failed to parse server response:", textResponse);
+                throw new Error('Server returned an invalid response. Please try again.');
+            }
+
+            if (!resp.ok) { // Check HTTP status
+                 throw new Error(jsonResult.error || `Server error: ${resp.status}`);
             }
   
-            if (!resp.ok) throw new Error(json.error || `HTTP ${resp.status} ${resp.statusText}`);
-  
-            if (json.result === 'success') {
+            if (jsonResult.result === 'success') {
               statusHolder.innerHTML = `
-                <strong>Submitted successfully!</strong><br>
-                Ticket File: ${json.ticketFileUrl ? `<a target="_blank" href="${json.ticketFileUrl}">Open</a>` : 'None'}<br>
-                Payment Proof: ${json.paymentProofUrl ? `<a target="_blank" href="${json.paymentProofUrl}">Open</a>` : 'None'}
-              `;
+                <strong style="color: var(--color-success);">Listing submitted successfully!</strong><br>
+                It will be reviewed and posted shortly.`;
+              // Reset form and UI
               form.reset();
-              if (ticketPreview) ticketPreview.innerHTML = '';
-              if (proofPreview) proofPreview.innerHTML = '';
-              showStep(1);
+              if (ticketPreview) ticketPreview.style.display = 'none'; // Hide previews
+              if (proofPreview) proofPreview.style.display = 'none';
+              showStep(1); // Go back to the first step
+              // Optionally scroll to top
+              window.scrollTo({ top: 0, behavior: 'smooth'});
             } else {
-              throw new Error('Server error: ' + (json.error || JSON.stringify(json)));
+              // Handle specific errors from Apps Script if provided
+              throw new Error(jsonResult.error || 'An unknown error occurred on the server.');
             }
           } catch (err) {
-            console.error(err);
-            statusHolder.innerHTML = `<span class="error-text">Submission failed: ${err.message}</span>`;
+            // Display error message to user
+            console.error('Submission Error:', err);
+            statusHolder.innerHTML = `<strong style="color: var(--color-error);">Submission Failed:</strong> ${err.message}`;
           } finally {
+            // Re-enable submit button regardless of success or failure
             if (submitBtn) {
               submitBtn.disabled = false;
               submitBtn.innerHTML = 'List my tickets <i class="fas fa-check"></i>';
@@ -512,10 +555,11 @@
         });
       }
   
-      // initial UI
+      // Initial UI setup (Show step 1, calculate initial values)
       showStep(1);
       updateHeroCalculator();
-      updatePreviewSection();
+      updatePreviewSection(); // Populate preview initially
+
     }); // DOMContentLoaded end
   
 })(); // IIFE end
