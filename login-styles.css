@@ -134,17 +134,19 @@ body {
     align-items: center;
 }
 
-.input-wrapper.fas {
+.input-wrapper .icon-envelope {
     position: absolute;
     left: 16px;
     color: var(--color-text-grey);
     z-index: 2;
+    pointer-events: none; /* so that click goes to input */
+    font-size: 16px;
     transition: color var(--transition-fast);
 }
 
 .input-wrapper input {
     width: 100%;
-    padding: 14px 16px 14px 48px;
+    padding: 14px 16px 14px 48px; /* left padding to fit the icon */
     border: 1px solid var(--color-border);
     border-radius: 12px;
     font-size: 16px;
@@ -159,11 +161,9 @@ body {
     box-shadow: 0 0 0 4px rgba(255, 95, 31, 0.1);
 }
 
-.input-wrapper input:focus +.fas,
-.input-wrapper input:focus ~ button.fas {
+.input-wrapper input:focus + .icon-envelope {
     color: var(--color-accent-orange);
 }
-
 
 .toggle-password {
     position: absolute;
@@ -173,6 +173,7 @@ body {
     cursor: pointer;
     color: var(--color-text-grey);
 }
+
 
 /* Form Options (Remember Me / Forgot) */
 .form-options {
@@ -198,6 +199,61 @@ body {
     height: 0;
     width: 0;
 }
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper .icon-lock {
+    position: absolute;
+    left: 16px;
+    color: var(--color-text-grey);
+    z-index: 2;
+    pointer-events: none; /* click goes to input */
+    font-size: 16px;
+    transition: color var(--transition-fast);
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding: 14px 48px 14px 48px; /* left for lock icon, right for toggle eye */
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    font-size: 16px;
+    background: var(--color-bg-dark);
+    color: var(--color-text-white);
+    transition: all var(--transition-fast);
+}
+
+.input-wrapper input:focus {
+    outline: none;
+    border-color: var(--color-accent-orange);
+    box-shadow: 0 0 0 4px rgba(255, 95, 31, 0.1);
+}
+
+.input-wrapper input:focus + .icon-lock {
+    color: var(--color-accent-orange);
+}
+
+.toggle-password {
+    position: absolute;
+    right: 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-grey);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-password i {
+    pointer-events: none; /* icon inside button should not block click */
+}
+
 
 .checkmark {
     height: 20px;

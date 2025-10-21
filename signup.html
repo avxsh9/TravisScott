@@ -49,28 +49,31 @@
                     <p>Join millions of users buying and selling tickets securely.</p>
                     
                     <form id="signupForm" novalidate>
+                        <!-- Full Name -->
                         <div class="form-group">
                             <label for="fullName">Full name</label>
                             <div class="input-wrapper">
-                                <i class="fas fa-user"></i>
+                                <i class="fas fa-user icon-left"></i>
                                 <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required>
                             </div>
                             <div class="form-error" id="fullNameError"></div>
                         </div>
-                        
+                    
+                        <!-- Email -->
                         <div class="form-group">
                             <label for="email">Email address</label>
                             <div class="input-wrapper">
-                                <i class="fas fa-envelope"></i>
+                                <i class="fas fa-envelope icon-left"></i>
                                 <input type="email" id="email" name="email" placeholder="you@example.com" required>
                             </div>
                             <div class="form-error" id="emailError"></div>
                         </div>
-                        
+                    
+                        <!-- Password -->
                         <div class="form-group">
                             <label for="password">Password</label>
                             <div class="input-wrapper">
-                                <i class="fas fa-lock"></i>
+                                <i class="fas fa-lock icon-left"></i>
                                 <input type="password" id="password" name="password" placeholder="Create a strong password" required>
                                 <button type="button" class="toggle-password" data-target="password" aria-label="Toggle password visibility">
                                     <i class="fas fa-eye"></i>
@@ -78,11 +81,12 @@
                             </div>
                             <div class="form-error" id="passwordError"></div>
                         </div>
-                        
+                    
+                        <!-- Confirm Password -->
                         <div class="form-group">
                             <label for="confirmPassword">Confirm password</label>
                             <div class="input-wrapper">
-                                <i class="fas fa-check-circle"></i>
+                                <i class="fas fa-check-circle icon-left"></i>
                                 <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
                                 <button type="button" class="toggle-password" data-target="confirmPassword" aria-label="Toggle confirm password visibility">
                                     <i class="fas fa-eye"></i>
@@ -90,7 +94,8 @@
                             </div>
                             <div class="form-error" id="confirmPasswordError"></div>
                         </div>
-                        
+                    
+                        <!-- Terms -->
                         <div class="form-group">
                             <label class="checkbox-wrapper">
                                 <input type="checkbox" id="terms" name="terms" required>
@@ -99,19 +104,19 @@
                             </label>
                             <div class="form-error" id="termsError"></div>
                         </div>
-                        
+                    
                         <button type="submit" class="btn-primary">Create Account</button>
-                        
+                    
                         <div class="divider"><span>OR</span></div>
-                        
+                    
                         <div class="social-buttons">
-                             <button type="button" class="btn-social google-btn">
+                            <button type="button" class="btn-social google-btn">
                                 <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
                                 Sign up with Google
                             </button>
                         </div>
                     </form>
-                </div>
+                </div>                    
             </div>
             
             <div class="auth-visual-section">
@@ -121,11 +126,11 @@
                     
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <div class="stat-number">2M+</div>
+                            <div class="stat-number">1.5K</div>
                             <div class="stat-label">Happy Customers</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number">45K+</div>
+                            <div class="stat-number">500+</div>
                             <div class="stat-label">Tickets Sold Monthly</div>
                         </div>
                     </div>
