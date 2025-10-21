@@ -1864,4 +1864,96 @@
 .flash-box.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}/* --- FIX EXTRA GAP BELOW PAGE ON MOBILE --- */
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+footer {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.mobile-sticky-cta:not(.visible) {
+  display: none !important;
+}
+
+.adsbygoogle {
+  display: none !important; /* optional: hides ad block space if showing empty area */
+}
+
+#loadMoreWrap {
+  margin-bottom: 0 !important;
+}
+
+#fomoToast {
+  bottom: 60px !important;
+}
+/* ✅ FINAL FIX — Mobile Header Layout (Phones only) */
+@media (max-width: 768px) {
+  .header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    position: relative;
+  }
+
+  /* 🎵 Music button — left */
+  .music-toggle {
+    order: 1;
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  /* 🏷️ Logo — center */
+  .logo {
+    order: 2;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    top: 50%;
+  }
+
+  .logo img {
+    height: 34px;
+    width: auto;
+  }
+
+  /* 🍔 Menu — right */
+  .mobile-menu-btn {
+    order: 3;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  /* Hide desktop nav & auth on mobile */
+  .nav,
+  .nav-auth {
+    display: none !important;
+  }
+
+  /* Compact header */
+  .header {
+    padding: 8px 0;
+    height: 56px;
+  }
+
+  /* Adjust hero position so title is visible */
+  .hero {
+    margin-top: 60px !important;
+  }
+
+  /* Mobile nav below header */
+  .mobile-nav {
+    top: 56px !important;
+  }
 }
