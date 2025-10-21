@@ -1,71 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Buy Travis Scott concert tickets - Live in India, 18 Oct 2025 at Mumbai Arena. Secure & verified tickets.">
+    <meta name="description"
+        content="Buy Travis Scott concert tickets - Live in India, 18 Oct 2025 at Mumbai Arena. Secure & verified tickets.">
 
     <meta property="og:title" content="TicketAdda — Travis Scott Live in India">
-    <meta property="og:description" content="Get your tickets now for Travis Scott's biggest concert in Mumbai. Limited seats available!">
+    <meta property="og:description"
+        content="Get your tickets now for Travis Scott's biggest concert in Mumbai. Limited seats available!">
     <meta property="og:image" content="assets/travis_poster.jpg">
     <meta property="og:type" content="website">
+    <link rel="icon" type="image/png" href="logo.png">
+
+    <!-- Font Awesome 6 (use this exact one) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 
     <title>TicketAdda — Buy Tickets</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
 
     <link rel="icon" type="image/svg+xml" href="/vite.svg">
     <link rel="stylesheet" href="redponsivetravis.css">
     <link rel="stylesheet" href="travisteststyles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PBHTFDCMP6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-PBHTFDCMP6');
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6209858039398067"
+        crossorigin="anonymous"></script>
 </head>
+
 <body>
 
     <header class="header" id="header">
         <div class="header-container">
-            <a href="index.html" class="logo">
+            <a href="index.html" class="logo" aria-label="TicketAdda home">
                 <img src="image (1) 9.28.07 PM.png" alt="TicketAdda Logo" class="logo-img">
             </a>
-            <nav class="nav">
-                <a href="#home" class="nav-link active">Home</a>
-                <a href="#tickets" class="nav-link">Buy Tickets</a>
-                <a href="sell.html" class="nav-link">Sell Tickets</a>
-                <a href="#support" class="nav-link">Support</a>
-            </nav>
 
+            <!-- center area holds nav (desktop) and event / title fallback -->
+            <div class="nav-area">
+                <nav class="nav" role="navigation" aria-label="Main navigation">
+                    <a href="#home" class="nav-link active">Home</a>
+                    <a href="#tickets" class="nav-link">Buy Tickets</a>
+                    <a href="sell.html" class="nav-link">Sell Tickets</a>
+                    <a href="#support" class="nav-link">Support</a>
+                </nav>
+            </div>
+
+            <!-- right area: avatar + name + small actions -->
             <div class="header-actions">
-                <button class="music-toggle" id="musicToggle" aria-label="Toggle music">
+                <button class="music-toggle" id="musicToggle" aria-label="Toggle music" title="Play / Pause music">
                     <svg class="music-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 18V5l12-2v13"></path>
                         <circle cx="6" cy="18" r="3"></circle>
                         <circle cx="18" cy="16" r="3"></circle>
                     </svg>
-                    <span class="music-text">Play FEIN</span>
+                    <span class="music-text">FEIN</span>
                 </button>
 
-                <div class="nav-auth">
-                  <div id="authActions">
-                    <a href="login.html" class="btn-signin">Sign in</a>
-                  </div>
-        
-                  <div id="userMenu" style="display:none;">
-                    <img id="userAvatar" src="https://www.transparentpng.com/download/user/gray-user-profile-icon-png-fP8Q1P.png" alt="avatar">
-                    <span id="userNameElm">Hi, User</span>
-                    <button id="logoutBtn" class="btn-logout">Logout</button>
-                  </div>
-                </div>
-            </div>
+                <div class="nav-auth" aria-live="polite">
+                    <div id="authActions">
+                        <a href="login.html" id="signInInline" class="btn-signin">Sign in</a>
+                    </div>
 
-            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+                    <div id="userMenu" style="display:none;">
+                        <img id="userAvatar"
+                            src="https://www.transparentpng.com/download/user/gray-user-profile-icon-png-fP8Q1P.png"
+                            alt="avatar">
+                        <div class="user-info">
+                            <span id="userNameElm" class="user-name">Hi, User</span>
+                        </div>
+                        <button id="logoutBtn" class="btn-logout" title="Logout">Logout</button>
+                    </div>
+                </div>
+
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu" aria-expanded="false">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
         </div>
     </header>
+
+
+
 
     <div class="mobile-nav" id="mobileNav">
         <a href="#home" class="mobile-nav-link">Home</a>
@@ -73,18 +105,18 @@
         <a href="#sell" class="mobile-nav-link">Sell Tickets</a>
         <a href="#events" class="mobile-nav-link">Events</a>
         <a href="#support" class="mobile-nav-link">Support</a>
-        </div>
+    </div>
 
     <section class="hero" id="home">
         <video class="hero-video" autoplay muted loop playsinline poster="assets/travis_poster.jpg">
             <source src="assets/hero-video.mp4" type="video/mp4">
-            </video>
+        </video>
 
         <div class="hero-overlay"></div>
 
         <div class="hero-content">
             <h1 class="hero-title">TRAVIS SCOTT LIVE IN INDIA</h1>
-            <p class="hero-subtitle">18 OCT 2025 | DELHI </p>
+            <p class="hero-subtitle">19 NOV 2025 | MUMBAI </p>
 
             <div class="countdown" id="countdown" role="timer" aria-live="polite">
                 <div class="countdown-item">
@@ -173,21 +205,51 @@
 
             <section class="tickets-section" id="tickets">
                 <div class="container">
-                  <h2 class="section-title">Available Tickets</h2>
-              
-                  <div class="tickets-wrapper" id="sellerTicketsList"></div>
+                    <h2 class="section-title">Available Tickets</h2>
+
                 </div>
-              </section>
-              
-              
+                <!-- FILTER BAR: paste this right before #sellerTicketsList -->
+                <div class="filter-bar">
+                    <div class="filter-row">
+                        <select id="sortPrice" class="filter-select" aria-label="Sort by price">
+                            <option value="default">Sort: Default</option>
+                            <option value="price-low">Price: Low → High</option>
+                            <option value="price-high">Price: High → Low</option>
+                        </select>
+                        <select id="availabilityFilter" class="filter-select" aria-label="Availability">
+                            <option value="all">All Tickets</option>
+                            <option value="available">Available only</option>
+                        </select>
+                        <button id="resetFilters" class="filter-btn" title="Reset filters">Reset</button>
+                    </div>
+                </div>
+
+
+                <div class="tickets-wrapper" id="sellerTicketsList"></div>
+
+<!-- LOAD MORE WRAPPER -->
+<div class="load-more-wrap" id="loadMoreWrap" aria-live="polite">
+  <button id="loadMoreBtn" class="hero-cta" type="button">View more</button>
+</div>
+
+<!-- Flash box (hidden, will be shown briefly on click) -->
+<div id="flashBox" class="flash-box" aria-hidden="true">Loading more tickets…</div>
+
+        </div>
     </section>
-    
+
+    </div>
+
+
+
+    </section>
+
 
     <section class="testimonials-section">
         <div class="container">
             <h2 class="section-title">What People Say</h2>
             <div class="testimonials-carousel" id="testimonialsCarousel">
-                </div>
+            </div>
         </div>
     </section>
 
@@ -195,7 +257,7 @@
         <div class="container">
             <h2 class="section-title">Frequently Asked Questions</h2>
             <div class="faq-accordion" id="faqAccordion">
-                </div>
+            </div>
 
             <div class="support-cta">
                 <p>Still have questions?</p>
@@ -213,7 +275,7 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <div class="footer-brand">
-                        <img class="avinashlogo" src="image (1).png" alt="">
+                        <img class="logo-img" src="TM.png" alt="">
                     </div>
                     <p>India's most trusted ticket marketplace for concerts, sports, theater, and more.</p>
                     <div class="social-links">
@@ -222,7 +284,7 @@
                         <a href="https://www.instagram.com/ticketadda.in/"><i class="fa fa-instagram"></i></a>
                     </div>
                 </div>
-                
+
                 <div class="footer-section">
                     <h4>Buy tickets</h4>
                     <ul>
@@ -233,7 +295,7 @@
                         <li><a href="#">All events</a></li>
                     </ul>
                 </div>
-                
+
                 <div class="footer-section">
                     <h4>Sell tickets</h4>
                     <ul>
@@ -243,7 +305,7 @@
                         <li><a href="#">Seller protection</a></li>
                     </ul>
                 </div>
-                
+
                 <div class="footer-section">
                     <h4>Support</h4>
                     <ul>
@@ -255,7 +317,7 @@
                     </ul>
                 </div>
             </div>
-            
+
             <div class="footer-bottom">
                 <p>&copy; 2025 TicketAdda Technologies Pvt Ltd. All rights reserved.</p>
                 <div class="footer-links">
@@ -266,9 +328,29 @@
             </div>
         </div>
     </footer>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6209858039398067"
+        crossorigin="anonymous"></script>
+    <!-- unit 1 -->
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6209858039398067" data-ad-slot="9744960860"
+        data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+
+    <!-- Modals -->
+    <div class="modal" id="contactModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close" data-close-modal>&times;</button>
+            <h3 class="modal-title" id="modalTitle">Seller Contact Details</h3>
+            <div class="modal-body" id="modalBody">
+                <!-- Dynamic contact details will be injected here -->
+            </div>
+        </div>
+    </div>
+
 
     <div class="mobile-sticky-cta" id="mobileCta">
-        <a href="#tickets" class="mobile-cta-btn">Buy Tickets Now</a>
         <a href="sell.html" class="mobile-cta-btn">Sell Tickets Now</a>
     </div>
 
@@ -285,22 +367,24 @@
             <h3 class="modal-title" id="modalTitle">Complete Your Purchase</h3>
 
             <div class="modal-body" id="modalBody">
-                </div>
+            </div>
         </div>
     </div>
 
     <div class="fomo-toast" id="fomoToast" role="alert" aria-live="polite">
-        </div>
+    </div>
 
     <audio id="bgMusic" loop>
         <source src="songfein.mp3" type="audio/mpeg">
     </audio>
-    
+
 
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
     <script src="travisjstest.js"></script>
+
 </body>
+
 </html>
