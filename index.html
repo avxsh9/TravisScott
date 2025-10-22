@@ -150,6 +150,8 @@
       
             <div class="filter-bar">
                 <div class="filter-row">
+                    <!-- Added search input -->
+                    <input type="text" id="searchTickets" class="filter-input" placeholder="Search tickets..." aria-label="Search tickets">
                     <select id="sortPrice" class="filter-select" aria-label="Sort by price">
                         <option value="default">Sort: Default</option>
                         <option value="price-low">Price: Low → High</option>
@@ -337,9 +339,6 @@
         </div>
     </div>
 
-
-    <div class="modal" id="contactModal">
-    </div>
 
     <div class="modal" id="loginRequiredModal">
         <div class="modal-backdrop" data-close-modal></div>

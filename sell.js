@@ -54,7 +54,9 @@
 
   function createMockFileUrl(file) {
     if (!file) return null;
-    return `mock-file-url/data_proofs/${encodeURIComponent(file.name)}?size=${file.size}`;
+    // In a real app, you'd upload this to Firebase Storage and get a real URL.
+    // For now, we'll use a placeholder.
+    return `https://via.placeholder.com/300x200?text=Ticket+Image`; 
   }
 
   function showToast(message, isError = false) {
@@ -78,84 +80,7 @@
     toast._t = setTimeout(() => { toast.style.display = 'none'; }, 4500);
   }
 
-  // ===== Approved Listings Listener (Realtime / one-time) =====
-  function startApprovedListingsListener({ realtime = true } = {}) {
-    if (!db) {
-      console.warn('Firestore not available - skipping approved listings listener.');
-      return null;
-    }
-
-    const q = db.collection('listings').where('status', '==', 'approved');
-
-    if (realtime) {
-      console.log('Starting realtime approved listings listener...');
-      const unsubscribe = q.onSnapshot(snapshot => {
-        try {
-          const approved = snapshot.docs.map(doc => {
-            const d = doc.data() || {};
-            const priceRaw = d.price ?? d.sellingPrice ?? d.listPrice ?? d.amount ?? '';
-            const priceDigits = String(priceRaw).replace(/[^\d]/g, '');
-            return {
-              id: doc.id,
-              seller: d.seller || d.name || (d.sellerName || 'Seller'),
-              price: priceRaw,
-              quantity: d.quantity ?? d.quan ?? d.qty ?? 0,
-              seat: d.seat || d.section || '-',
-              concert: d.concert || d.eventName || '-',
-              city: d.city || '-',
-              date: d.date || '-',
-              phone: d.phone || '',
-              email: d.email || '',
-              note: d.note || '',
-              __priceNum: priceDigits ? parseInt(priceDigits, 10) : Infinity
-            };
-          });
-
-          window.sellerTickets = approved;
-          if (typeof window.resetPagination === 'function') window.resetPagination();
-          if (typeof window.renderFilteredTickets === 'function') window.renderFilteredTickets();
-          console.log('Approved listings updated:', approved.length);
-        } catch (err) {
-          console.error('Error processing approved listings snapshot:', err);
-        }
-      }, err => {
-        console.error('Firestore onSnapshot error (approved listings):', err);
-      });
-      return unsubscribe;
-    } else {
-      // one-time fetch
-      return q.get().then(snapshot => {
-        const approved = snapshot.docs.map(doc => {
-          const d = doc.data() || {};
-          const priceRaw = d.price ?? d.sellingPrice ?? d.listPrice ?? d.amount ?? '';
-          const priceDigits = String(priceRaw).replace(/[^\d]/g, '');
-          return {
-            id: doc.id,
-            seller: d.seller || d.name || (d.sellerName || 'Seller'),
-            price: priceRaw,
-            quantity: d.quantity ?? d.quan ?? d.qty ?? 0,
-            seat: d.seat || d.section || '-',
-            concert: d.concert || d.eventName || '-',
-            city: d.city || '-',
-            date: d.date || '-',
-            phone: d.phone || '',
-            email: d.email || '',
-            note: d.note || '',
-            __priceNum: priceDigits ? parseInt(priceDigits, 10) : Infinity
-          };
-        });
-
-        window.sellerTickets = approved;
-        if (typeof window.resetPagination === 'function') window.resetPagination();
-        if (typeof window.renderFilteredTickets === 'function') window.renderFilteredTickets();
-        console.log('Approved listings fetched (one-time):', approved.length);
-        return approved;
-      }).catch(err => {
-        console.error('Error fetching approved listings:', err);
-        return [];
-      });
-    }
-  }
+  // Removed startApprovedListingsListener from sell.js as it's handled by index.js
 
   // ===== Firebase auth init & UI sync =====
   function initFirebaseAuth() {
@@ -359,13 +284,6 @@
   function init() {
     initFirebaseAuth();
 
-    // Start approved listings listener to keep window.sellerTickets updated (safe to call even on sell page)
-    try {
-      startApprovedListingsListener({ realtime: true });
-    } catch (err) {
-      console.warn('Failed to start approved listings listener:', err);
-    }
-
     const form = document.getElementById('ticketListingForm');
     const nextBtn = document.getElementById('nextBtn');
     const prevBtn = document.getElementById('prevBtn');
@@ -481,6 +399,9 @@
 
           if (statusHolder) statusHolder.innerHTML = `<strong style="color: var(--color-success);">Listing Submitted!</strong> Your ticket is pending review on the Admin Dashboard.`;
           showToast('Listing submitted — pending admin review.');
+
+          // CRITICAL: Notify other tabs that listings might have updated
+          localStorage.setItem('listings-updated', Date.now().toString());
 
           // Clear UI
           if (ticketPreview) ticketPreview.innerHTML = '';
