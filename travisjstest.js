@@ -749,7 +749,7 @@ document.addEventListener('DOMContentLoaded', () => {
       seller: "Rajveer Prakash", // seller not provided in source row
       price: "8500/Ticket",
       quantity: 2,
-      seat: "Soccer ground",
+      seat: "Silver ground",
       concert: "Travis mumbai concert",
       city: "Mahalakshmi race course, Mumbai",
       date: "19 Nov 2025, 5:00 PM",

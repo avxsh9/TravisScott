@@ -1,20 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sell Tickets - TicketAdda</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <!-- then your JS -->
+    <script src="travisjstest.js"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <link rel="icon" type="image/png" href="logo.png">
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="sell.css">
 </head>
+
 <body>
     <header class="header">
         <nav class="navbar">
@@ -31,12 +44,15 @@
                 </div>
                 <div class="nav-auth">
                     <div id="authActions">
-                      <a href="login.html" class="btn-signin">Sign in</a>
+                        <a href="login.html" class="btn-signin">Sign in</a>
                     </div>
                     <div id="userMenu" style="display:none;">
-                      <img id="userAvatar" src="https://www.transparentpng.com/download/user/gray-user-profile-icon-png-fP8Q1P.png" alt="avatar">
-                      <span id="userNameElm">Hi, User</span>
-                      <button id="logoutBtn" class="btn-logout" aria-label="Logout"><i class="fas fa-sign-out-alt"></i></button>
+                        <img id="userAvatar"
+                            src="https://www.transparentpng.com/download/user/gray-user-profile-icon-png-fP8Q1P.png"
+                            alt="avatar">
+                        <span id="userNameElm">Hi, User</span>
+                        <button id="logoutBtn" class="btn-logout" aria-label="Logout"><i
+                                class="fas fa-sign-out-alt"></i></button>
                     </div>
                 </div>
                 <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu" aria-expanded="false">
@@ -65,7 +81,8 @@
                     <div class="hero-content">
                         <div class="hero-text">
                             <h1>Turn your tickets into cash</h1>
-                            <p>List your tickets for free and get paid within 24 hours of sale. Our platform handles everything from buyer verification to secure payments.</p>
+                            <p>List your tickets for free and get paid within 24 hours of sale. Our platform handles
+                                everything from buyer verification to secure payments.</p>
                             <div class="selling-benefits">
                                 <div class="benefit"><i class="fas fa-rupee-sign"></i><span>Free to list</span></div>
                                 <div class="benefit"><i class="fas fa-clock"></i><span>Get paid fast</span></div>
@@ -73,7 +90,8 @@
                                 <div class="benefit"><i class="fas fa-users"></i><span>Millions of buyers</span></div>
                             </div>
                             <div class="cta-buttons">
-                                <button class="btn-primary btn-large" onclick="scrollToForm()">Start selling now</button>
+                                <button class="btn-primary btn-large" onclick="scrollToForm()">Start selling
+                                    now</button>
                                 <a href="#how-it-works" class="btn-secondary btn-large">How it works</a>
                             </div>
                         </div>
@@ -105,9 +123,12 @@
                                     </div>
                                 </div>
                                 <div class="earnings-breakdown">
-                                    <div class="breakdown-row"><span>Total sale</span><span id="totalSale">₹5,000</span></div>
-                                    <div class="breakdown-row"><span>TicketAdda fee (0%)</span><span id="platformFee">₹0</span></div>
-                                    <div class="breakdown-row total"><span>You earn</span><span id="youEarn">₹5,000</span></div>
+                                    <div class="breakdown-row"><span>Total sale</span><span id="totalSale">₹5,000</span>
+                                    </div>
+                                    <div class="breakdown-row"><span>TicketAdda fee (0%)</span><span
+                                            id="platformFee">₹0</span></div>
+                                    <div class="breakdown-row total"><span>You earn</span><span
+                                            id="youEarn">₹5,000</span></div>
                                 </div>
                             </div>
                         </div>
@@ -123,10 +144,18 @@
                     </div>
                     <div class="sell-form-container">
                         <div class="progress-indicator">
-                            <div class="step active" data-step="1"><div class="step-number">1</div><span>Event Details</span></div>
-                            <div class="step" data-step="2"><div class="step-number">2</div><span>Ticket Info</span></div>
-                            <div class="step" data-step="3"><div class="step-number">3</div><span>Pricing</span></div>
-                            <div class="step" data-step="4"><div class="step-number">4</div><span>Review</span></div>
+                            <div class="step active" data-step="1">
+                                <div class="step-number">1</div><span>Event Details</span>
+                            </div>
+                            <div class="step" data-step="2">
+                                <div class="step-number">2</div><span>Ticket Info</span>
+                            </div>
+                            <div class="step" data-step="3">
+                                <div class="step-number">3</div><span>Pricing</span>
+                            </div>
+                            <div class="step" data-step="4">
+                                <div class="step-number">4</div><span>Review</span>
+                            </div>
                         </div>
                         <form class="sell-form" id="ticketListingForm" novalidate>
                             <div class="form-step active" data-step="1">
@@ -136,7 +165,9 @@
                                         <label for="eventName">Event name *</label>
                                         <div class="input-wrapper">
                                             <i class="fas fa-ticket-alt"></i>
-                                            <input type="text" id="eventName" name="eventName" placeholder="e.g., Mumbai Indians vs Chennai Super Kings" required autocomplete="off">
+                                            <input type="text" id="eventName" name="eventName"
+                                                placeholder="e.g., Mumbai Indians vs Chennai Super Kings" required
+                                                autocomplete="off">
                                         </div>
                                         <div id="eventSuggestions" class="suggestions-dropdown"></div>
                                     </div>
@@ -173,7 +204,8 @@
                                         <label for="venue">Venue *</label>
                                         <div class="input-wrapper">
                                             <i class="fas fa-map-marker-alt"></i>
-                                            <input type="text" id="venue" name="venue" placeholder="e.g., Wankhede Stadium, Mumbai" required>
+                                            <input type="text" id="venue" name="venue"
+                                                placeholder="e.g., Wankhede Stadium, Mumbai" required>
                                         </div>
                                     </div>
                                 </div>
@@ -185,28 +217,32 @@
                                         <label for="ticketSection">Section/Category</label>
                                         <div class="input-wrapper">
                                             <i class="fas fa-map"></i>
-                                            <input type="text" id="ticketSection" name="ticketSection" placeholder="e.g., VIP, General, East Stand">
+                                            <input type="text" id="ticketSection" name="ticketSection"
+                                                placeholder="e.g., VIP, General, East Stand">
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="ticketRow">Phone Number *</label>
                                         <div class="input-wrapper">
                                             <i class="fas fa-phone"></i>
-                                            <input type="tel" id="ticketRow" name="ticketRow" placeholder="e.g., 9876543210" required>
+                                            <input type="tel" id="ticketRow" name="ticketRow"
+                                                placeholder="e.g., 9876543210" required>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="ticketemail">Email *</label>
                                         <div class="input-wrapper">
                                             <i class="fas fa-envelope"></i>
-                                            <input type="email" id="ticketemail" name="ticketemail" placeholder="e.g., abc@gmail.com" required>
+                                            <input type="email" id="ticketemail" name="ticketemail"
+                                                placeholder="e.g., abc@gmail.com" required>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="seatNumbers">Seller Name *</label>
                                         <div class="input-wrapper">
                                             <i class="fas fa-user"></i>
-                                            <input type="text" id="seatNumbers" name="seatNumbers" placeholder="e.g., Harshita Dubey" required>
+                                            <input type="text" id="seatNumbers" name="seatNumbers"
+                                                placeholder="e.g., Harshita Dubey" required>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -229,7 +265,8 @@
                                     <div class="form-group full-width">
                                         <label for="ticketUpload">Upload Ticket Photo/Screenshot *</label>
                                         <div class="file-upload-wrapper">
-                                            <input type="file" id="ticketUpload" name="ticketUpload" accept="image/png, image/jpeg, application/pdf" required hidden>
+                                            <input type="file" id="ticketUpload" name="ticketUpload"
+                                                accept="image/png, image/jpeg, application/pdf" required hidden>
                                             <label for="ticketUpload" class="file-upload-label">
                                                 <i class="fas fa-cloud-upload-alt"></i>
                                                 <span>Click to upload or drag & drop</span>
@@ -240,9 +277,11 @@
                                     </div>
                                     <div class="form-group full-width">
                                         <label for="paymentProofUpload">Upload Original Payment Proof *</label>
-                                        <p class="label-note">To verify authenticity, upload a receipt of your original ticket purchase.</p>
+                                        <p class="label-note">To verify authenticity, upload a receipt of your original
+                                            ticket purchase.</p>
                                         <div class="file-upload-wrapper">
-                                            <input type="file" id="paymentProofUpload" name="paymentProofUpload" accept="image/png, image/jpeg, application/pdf" required hidden>
+                                            <input type="file" id="paymentProofUpload" name="paymentProofUpload"
+                                                accept="image/png, image/jpeg, application/pdf" required hidden>
                                             <label for="paymentProofUpload" class="file-upload-label">
                                                 <i class="fas fa-receipt"></i>
                                                 <span>Click to upload or drag & drop</span>
@@ -282,30 +321,41 @@
                                             <label for="sellingPrice">Price per ticket *</label>
                                             <div class="price-input-wrapper">
                                                 <span class="currency">₹</span>
-                                                <input type="number" id="sellingPrice" name="sellingPrice" placeholder="2500" min="100" max="100000" required>
+                                                <input type="number" id="sellingPrice" name="sellingPrice"
+                                                    placeholder="2500" min="100" max="100000" required>
                                                 <span class="per-ticket">per ticket</span>
                                             </div>
                                         </div>
                                         <div class="pricing-suggestions">
                                             <h4>Suggested pricing</h4>
                                             <div class="suggestion-buttons">
-                                                <button type="button" class="suggestion-btn" data-price="1800">₹1,800 (Below market)</button>
-                                                <button type="button" class="suggestion-btn" data-price="2200">₹2,200 (Market price)</button>
-                                                <button type="button" class="suggestion-btn" data-price="2800">₹2,800 (Above market)</button>
+                                                <button type="button" class="suggestion-btn" data-price="1800">₹1,800
+                                                    (Below market)</button>
+                                                <button type="button" class="suggestion-btn" data-price="2200">₹2,200
+                                                    (Market price)</button>
+                                                <button type="button" class="suggestion-btn" data-price="2800">₹2,800
+                                                    (Above market)</button>
                                             </div>
-                                            <p class="pricing-note"><i class="fas fa-info-circle"></i>Competitive pricing helps sell faster</p>
+                                            <p class="pricing-note"><i class="fas fa-info-circle"></i>Competitive
+                                                pricing helps sell faster</p>
                                         </div>
                                     </div>
                                     <div class="earnings-preview">
                                         <h4>Earnings breakdown</h4>
                                         <div class="earnings-table">
-                                            <div class="earnings-row"><span>Price per ticket</span><span id="previewPrice">₹0</span></div>
-                                            <div class="earnings-row"><span>Number of tickets</span><span id="previewQuantity">0</span></div>
-                                            <div class="earnings-row"><span>Total sale value</span><span id="previewTotal">₹0</span></div>
-                                            <div class="earnings-row"><span>TicketAdda fee (0%)</span><span id="previewFee">₹0</span></div>
-                                            <div class="earnings-row total"><span>You receive</span><span id="previewEarnings">₹0</span></div>
+                                            <div class="earnings-row"><span>Price per ticket</span><span
+                                                    id="previewPrice">₹0</span></div>
+                                            <div class="earnings-row"><span>Number of tickets</span><span
+                                                    id="previewQuantity">0</span></div>
+                                            <div class="earnings-row"><span>Total sale value</span><span
+                                                    id="previewTotal">₹0</span></div>
+                                            <div class="earnings-row"><span>TicketAdda fee (0%)</span><span
+                                                    id="previewFee">₹0</span></div>
+                                            <div class="earnings-row total"><span>You receive</span><span
+                                                    id="previewEarnings">₹0</span></div>
                                         </div>
-                                        <div class="payment-info"><i class="fas fa-info-circle"></i><span>Payment will be transferred to your bank account within 24 hours of sale</span></div>
+                                        <div class="payment-info"><i class="fas fa-info-circle"></i><span>Payment will
+                                                be transferred to your bank account within 24 hours of sale</span></div>
                                     </div>
                                 </div>
                             </div>
@@ -318,32 +368,44 @@
                                             <span class="preview-category" id="previewCategory">Category</span>
                                         </div>
                                         <div class="preview-details">
-                                            <div class="detail-row"><i class="fas fa-calendar"></i><span id="previewEventDate">Date</span></div>
-                                            <div class="detail-row"><i class="fas fa-map-marker-alt"></i><span id="previewVenue">Venue</span></div>
-                                            <div class="detail-row"><i class="fas fa-ticket-alt"></i><span id="previewTicketInfo">Ticket info</span></div>
-                                            <div class="detail-row"><i class="fas fa-rupee-sign"></i><span id="previewPriceInfo">Price info</span></div>
-                                            <div class="detail-row"><i class="fas fa-file-image"></i><span id="previewTicketUpload">No ticket file provided</span></div>
-                                            <div class="detail-row"><i class="fas fa-file-invoice-dollar"></i><span id="previewPaymentProof">No proof file provided</span></div>
+                                            <div class="detail-row"><i class="fas fa-calendar"></i><span
+                                                    id="previewEventDate">Date</span></div>
+                                            <div class="detail-row"><i class="fas fa-map-marker-alt"></i><span
+                                                    id="previewVenue">Venue</span></div>
+                                            <div class="detail-row"><i class="fas fa-ticket-alt"></i><span
+                                                    id="previewTicketInfo">Ticket info</span></div>
+                                            <div class="detail-row"><i class="fas fa-rupee-sign"></i><span
+                                                    id="previewPriceInfo">Price info</span></div>
+                                            <div class="detail-row"><i class="fas fa-file-image"></i><span
+                                                    id="previewTicketUpload">No ticket file provided</span></div>
+                                            <div class="detail-row"><i class="fas fa-file-invoice-dollar"></i><span
+                                                    id="previewPaymentProof">No proof file provided</span></div>
                                         </div>
                                     </div>
                                     <div class="terms-agreement">
                                         <label class="checkbox-wrapper">
                                             <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
                                             <span class="checkmark"></span>
-                                            <span class="checkbox-text">I agree to the <a href="#" target="_blank">Seller Terms</a> and confirm that I own these tickets</span>
+                                            <span class="checkbox-text">I agree to the <a href="#"
+                                                    target="_blank">Seller Terms</a> and confirm that I own these
+                                                tickets</span>
                                         </label>
                                         <label class="checkbox-wrapper">
                                             <input type="checkbox" id="agreeTransfer" name="agreeTransfer" required>
                                             <span class="checkmark"></span>
-                                            <span class="checkbox-text">I understand that tickets will be transferred to buyers through TicketAdda's secure platform</span>
+                                            <span class="checkbox-text">I understand that tickets will be transferred to
+                                                buyers through TicketAdda's secure platform</span>
                                         </label>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-navigation">
-                                <button type="button" class="btn-secondary" id="prevBtn" style="display: none;"><i class="fas fa-arrow-left"></i>Previous</button>
-                                <button type="button" class="btn-primary" id="nextBtn">Next<i class="fas fa-arrow-right"></i></button>
-                                <button type="submit" class="btn-primary" id="submitBtn" style="display: none;">List my tickets<i class="fas fa-check"></i></button>
+                                <button type="button" class="btn-secondary" id="prevBtn" style="display: none;"><i
+                                        class="fas fa-arrow-left"></i>Previous</button>
+                                <button type="button" class="btn-primary" id="nextBtn">Next<i
+                                        class="fas fa-arrow-right"></i></button>
+                                <button type="submit" class="btn-primary" id="submitBtn" style="display: none;">List my
+                                    tickets<i class="fas fa-check"></i></button>
                             </div>
                         </form>
                     </div>
@@ -357,17 +419,20 @@
                         <div class="step-card">
                             <div class="step-icon"><i class="fas fa-plus-circle"></i></div>
                             <h3>1. List your tickets</h3>
-                            <p>Create your listing in under 2 minutes. Add event details, ticket information, and set your price.</p>
+                            <p>Create your listing in under 2 minutes. Add event details, ticket information, and set
+                                your price.</p>
                         </div>
                         <div class="step-card">
                             <div class="step-icon"><i class="fas fa-users"></i></div>
                             <h3>2. Connect with buyers</h3>
-                            <p>Our platform shows your tickets to millions of buyers. We handle all communication and verification.</p>
+                            <p>Our platform shows your tickets to millions of buyers. We handle all communication and
+                                verification.</p>
                         </div>
                         <div class="step-card">
                             <div class="step-icon"><i class="fas fa-handshake"></i></div>
                             <h3>3. Secure transfer</h3>
-                            <p>When someone buys your tickets, we facilitate the secure transfer and handle payment processing.</p>
+                            <p>When someone buys your tickets, we facilitate the secure transfer and handle payment
+                                processing.</p>
                         </div>
                         <div class="step-card">
                             <div class="step-icon"><i class="fas fa-money-bill-wave"></i></div>
@@ -384,34 +449,40 @@
                     <div class="faq-grid">
                         <div class="faq-item">
                             <h3>How much does it cost to sell?</h3>
-                            <p>Listing is completely free. We only charge a 0% fee when your tickets sell (for now!).</p>
+                            <p>Listing is completely free. We only charge a 0% fee when your tickets sell (for now!).
+                            </p>
                         </div>
                         <div class="faq-item">
                             <h3>When do I get paid?</h3>
-                            <p>Payment is transferred to your bank account within 24 hours of the ticket sale being completed.</p>
+                            <p>Payment is transferred to your bank account within 24 hours of the ticket sale being
+                                completed.</p>
                         </div>
                         <div class="faq-item">
                             <h3>What if my event gets cancelled?</h3>
-                            <p>If an event is cancelled, we automatically process refunds for buyers and remove your listing. No fees apply.</p>
+                            <p>If an event is cancelled, we automatically process refunds for buyers and remove your
+                                listing. No fees apply.</p>
                         </div>
                         <div class="faq-item">
                             <h3>Can I change my price after listing?</h3>
-                            <p>Yes, you can update your ticket prices anytime before they sell through your seller dashboard.</p>
+                            <p>Yes, you can update your ticket prices anytime before they sell through your seller
+                                dashboard.</p>
                         </div>
                         <div class="faq-item">
                             <h3>How do I transfer mobile tickets?</h3>
-                            <p>For mobile tickets, we provide a secure transfer process through the original ticketing platform.</p>
+                            <p>For mobile tickets, we provide a secure transfer process through the original ticketing
+                                platform.</p>
                         </div>
                         <div class="faq-item">
                             <h3>Is it safe to sell on TicketAdda?</h3>
-                            <p>Yes, we verify all buyers and provide seller protection. Payments are processed securely through our platform.</p>
+                            <p>Yes, we verify all buyers and provide seller protection. Payments are processed securely
+                                through our platform.</p>
                         </div>
                     </div>
                 </div>
             </section>
 
         </div>
-        </main>
+    </main>
 
     <footer class="footer">
         <div class="container">
@@ -474,4 +545,5 @@
         } 
     </script>
 </body>
+
 </html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicketAdda Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+
+    <header class="header">
+        <div class="header-container">
+            <h1 class="logo">Admin Dashboard</h1>
+            <div id="authStatus" class="auth-status">
+                <span id="adminName">Loading...</span>
+                <button id="logoutBtn" class="btn-secondary" style="display:none;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="loginScreen" class="login-screen">
+            <div class="login-card">
+                <h2>Admin Login</h2>
+                <p>Sign in with your admin credentials.</p>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" placeholder="admin@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" placeholder="********" required>
+                    </div>
+                    <button type="submit" id="loginBtn" class="btn-primary">Sign In</button>
+                    <p id="loginError" class="error-message" style="display: none;"></p>
+                </form>
+            </div>
+        </section>
+
+        <section id="dashboard" class="dashboard" style="display: none;">
+            <div class="container">
+                <h2>Pending Listings <span id="pendingCount" class="badge">0</span></h2>
+                <p class="last-updated" id="lastUpdated">Last updated: Never</p>
+
+                <div class="action-bar">
+                    <div class="controls-group">
+                        <input type="text" id="searchInput" placeholder="Search event/seller..." aria-label="Search listings">
+                        <select id="sortSelect" aria-label="Sort listings">
+                            <option value="submittedAt_desc">Newest first</option>
+                            <option value="submittedAt_asc">Oldest first</option>
+                            <option value="price_desc">Price: High to Low</option>
+                            <option value="price_asc">Price: Low to High</option>
+                        </select>
+                        <button id="exportCsvBtn" class="btn-secondary"><i class="fas fa-file-csv"></i> Export CSV</button>
+                    </div>
+                    
+                    <div class="bulk-actions" style="display:none;">
+                        <button id="bulkApproveBtn" class="btn-success"><i class="fas fa-check"></i> Bulk Approve</button>
+                        <button id="bulkRejectBtn" class="btn-danger"><i class="fas fa-times"></i> Bulk Reject</button>
+                        <span id="selectedCount">0 selected</span>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="listings-table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAll"></th>
+                                <th data-sort="eventName">Event</th>
+                                <th data-sort="sellerName">Seller</th>
+                                <th data-sort="quantity">Qty</th>
+                                <th data-sort="sellingPrice">Price</th>
+                                <th data-sort="submittedAt">Submitted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listingsTableBody">
+                            <tr><td colspan="7" class="loading-row"><i class="fas fa-spinner fa-spin"></i> Loading pending listings...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="activity-log">
+                    <h3>Activity Log (Last 10 Actions)</h3>
+                    <ul id="activityLogList">
+                        <li><i class="fas fa-info-circle"></i> No recent activity.</li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <div class="modal" id="detailsModal">
+        <div class="modal-backdrop" data-close-modal></div>
+        <div class="modal-content large-modal">
+            <button class="modal-close" data-close-modal>&times;</button>
+            <h3 class="modal-title" id="detailsModalTitle">Listing Details</h3>
+            <div class="modal-body">
+                <div id="listingDetailsBody" class="details-grid">
+                    </div>
+                <div class="modal-footer-actions">
+                    <button id="modalApproveBtn" class="btn-success"><i class="fas fa-check"></i> Approve Listing</button>
+                    <button id="modalRejectBtn" class="btn-danger"><i class="fas fa-times"></i> Reject Listing</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="rejectionModal">
+        <div class="modal-backdrop" data-close-modal></div>
+        <div class="modal-content">
+            <button class="modal-close" data-close-modal>&times;</button>
+            <h3 class="modal-title">Reason for Rejection</h3>
+            <div class="modal-body">
+                <p>Please provide a brief reason for rejecting the listing(s).</p>
+                <textarea id="rejectionReason" rows="4" placeholder="e.g., Ticket image unclear, Price too high, Event cancelled." required></textarea>
+                <button id="confirmRejectBtn" class="btn-danger mt-2">Confirm Rejection</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="csvToast">CSV file exported successfully!</div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
