@@ -181,7 +181,7 @@
  .music-toggle:hover {
     background: var(--color-accent-orange);
     color: var(--color-bg-dark);
-    transform: scale(1.05);
+    /* transform: scale(1.05); */
   }
   
  .music-toggle.playing {
@@ -2021,5 +2021,18 @@ footer {
   /* Mobile nav below header */
   .mobile-nav {
     top: 56px !important;
+  }
+}
+/* Sirf desktop par 'scale' effect add karein (screens > 768px) */
+@media (min-width: 769px) {
+  .music-toggle:hover {
+    transform: scale(1.05);
+  }
+}
+/* Sirf mobile par footer ke neeche jagah add karein (sticky CTA ke liye) */
+@media (max-width: 767px) {
+  .footer {
+    margin-bottom: 100px !important;
+    
   }
 }

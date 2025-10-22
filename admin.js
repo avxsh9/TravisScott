@@ -20,7 +20,7 @@
 
     // !!! IMPORTANT: Configure ADMIN UIDs here !!!
     // The UID 'gzTJ0gt8YuNR6ubcB93oYBEvuMS2' is kept as admin.
-    const ADMIN_UIDS = ['gzTJ0gt8YuNR6ubcB93oYBEvuMS2', 'ADMIN_USER_UID_2'];
+    const ADMIN_UIDS = ['gzTJ0gt8YuNR6ubcB93oYBEvuMS2', 'jfU1XJfXAuWXzcKOQKB6pnfy6nb2'];
     const LISTINGS_COLLECTION = 'listings';
     const ACTIVITY_COLLECTION = 'adminActivity';
     const ITEMS_PER_PAGE = 50;
