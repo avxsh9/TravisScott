@@ -2467,4 +2467,17 @@ h1, h2, h3, h4 {
     #mobileMenuBtn { display: inline-flex !important; }
     body.menu-open { overflow: hidden; }
   }
-  
+  /* Fix navbar and login button spacing */
+.nav-container {
+    padding-right: 20px; /* Adds space on right for all screens */
+}
+
+.nav-auth {
+    margin-right: 10px; /* Adds small gap for Sign in / Login button */
+}
+
+@media (max-width: 768px) {
+    .nav-container {
+        padding-right: 15px; /* Slightly smaller padding on mobile */
+    }
+}
