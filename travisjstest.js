@@ -24,7 +24,7 @@
     measurementId: "G-EDDVKVVXHS"
   };
 
-  // Initialize Firebaseuser
+  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
@@ -366,14 +366,14 @@
     if (isMusicPlaying) {
       elements.bgMusic.pause();
       elements.musicToggle.classList.remove('playing');
-      elements.musicToggle.querySelector('.music-text').textContent = 'Play PAL PAL';
+      elements.musicToggle.querySelector('.music-text').textContent = 'Play FEIN';
       isMusicPlaying = false;
     } else {
       elements.bgMusic.play().catch(err => {
         console.error('Audio playback failed:', err);
       });
       elements.musicToggle.classList.add('playing');
-      elements.musicToggle.querySelector('.music-text').textContent = 'Pause PAL PAL';
+      elements.musicToggle.querySelector('.music-text').textContent = 'Pause FEIN';
       isMusicPlaying = true;
     }
   }
@@ -1381,5 +1381,670 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     initFilters();
   }
+
+})();
+/**
+ * TicketAdda - Travis Scott Concert Landing Page
+ * Vanilla JavaScript - ES6+ Module Pattern
+ * All interactive functionality including filters, countdown, modal, FOMO notifications
+ * + Firebase Authentication Integration for Persistent Login
+ * + Real-time Approved Listings from Firestore
+ */
+
+(function () {
+  'use strict';
+
+  // ==========================================
+  // FIREBASE AUTHENTICATION SETUP
+  // ==========================================
+
+  // --- IMPORTANT: Replace with your actual Firebase project configuration ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyDSPYXYwrxaVTna2CfFI2EktEysXb7z5iE",
+    authDomain: "ticketaddda.firebaseapp.com",
+    projectId: "ticketaddda",
+    storageBucket: "ticketaddda.firebasestorage.app",
+    messagingSenderId: "987839286443",
+    appId: "1:987839286443:web:235ed8857cd8cc8477fbee",
+    measurementId: "G-EDDVKVVXHS"
+  };
+
+  // Initialize Firebase
+  if (!window.firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const listingsRef = db.collection('listings');
+
+  /**
+   * Manages the user interface changes based on the user's authentication state.
+   */
+  function setupAuthUI() {
+    const authActions = document.getElementById('authActions');
+    const userMenu = document.getElementById('userMenu');
+    const userNameElm = document.getElementById('userNameElm');
+    const userAvatar = document.getElementById('userAvatar');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const mobileNav = document.getElementById('mobileNav');
+
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(() => {
+        console.log('Firebase auth persistence set to LOCAL.');
+        auth.onAuthStateChanged(async (user) => {
+          if (user) {
+            let displayName = (user.displayName || '').trim();
+            if (!displayName) {
+              try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                  displayName = userDoc.data().fullName || '';
+                }
+              } catch (err) {
+                console.warn('Failed to read user document from Firestore:', err);
+              }
+            }
+            if (!displayName) {
+              displayName = (user.email || 'User').split('@')[0];
+            }
+
+            if (authActions) authActions.style.display = 'none';
+            if (userMenu) {
+              userMenu.style.display = 'flex';
+              if (userNameElm) userNameElm.textContent = `Hi, ${displayName}`;
+              if (user.photoURL && userAvatar) userAvatar.src = user.photoURL;
+            }
+
+            const existingMobileAuth = mobileNav.querySelector('.mobile-auth-link');
+            if (existingMobileAuth) existingMobileAuth.remove();
+            const mobileLogoutLink = document.createElement('a');
+            mobileLogoutLink.href = '#';
+            mobileLogoutLink.className = 'mobile-nav-link mobile-auth-link';
+            mobileLogoutLink.textContent = 'Logout';
+            mobileLogoutLink.onclick = (e) => {
+              e.preventDefault();
+              auth.signOut();
+            };
+            mobileNav.appendChild(mobileLogoutLink);
+
+          } else {
+            if (authActions) authActions.style.display = 'flex';
+            if (userMenu) userMenu.style.display = 'none';
+
+            const existingMobileAuth = mobileNav.querySelector('.mobile-auth-link');
+            if (existingMobileAuth) existingMobileAuth.remove();
+            const mobileLoginLink = document.createElement('a');
+            mobileLoginLink.href = 'login.html';
+            mobileLoginLink.className = 'mobile-nav-link mobile-auth-link';
+            mobileLoginLink.textContent = 'Sign In';
+            mobileNav.appendChild(mobileLoginLink);
+          }
+        });
+      })
+      .catch((error) => {
+        console.error("Error setting session persistence:", error);
+      });
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        auth.signOut().catch(err => console.error('Logout failed:', err));
+      });
+    }
+  }
+
+  // ==========================================
+  // ORIGINAL PAGE DATA & LOGIC (Static parts)
+  // ==========================================
+  const EVENT_DATA = {
+    event: {
+      id: "ts-delhi-2025",
+      artist: "Travis Scott",
+      date: "2025-10-18T19:30:00+05:30",
+      venue: "JLN Stadium",
+      city: "Delhi",
+      poster: "assets/travis_poster.jpg"
+    },
+    testimonials: [
+      {
+        name: "Amit Sharma",
+        location: "Mumbai",
+        text: "Got my VIP tickets in seconds! The entire process was smooth and secure. Can't wait for the concert!",
+        avatar: "A"
+      },
+      {
+        name: "Neha Patel",
+        location: "Delhi",
+        text: "Best ticket booking platform! Genuine tickets, verified sellers, and amazing customer support.",
+        avatar: "N"
+      },
+      {
+        name: "Rohan Singh",
+        location: "Bangalore",
+        text: "Used TicketAdda for multiple concerts. Never disappointed! Highly recommended for Travis Scott fans.",
+        avatar: "R"
+      }
+    ],
+    faqs: [
+      {
+        question: "Are these tickets genuine and verified?",
+        answer: "Tickets on TicketAdda are not sold directly by us — they’re genuine resale listings from verified users who’ve already purchased them. Every ticket is verified, and you’ll get the seller’s contact and full details once you select a listing."
+      },
+      {
+        question: "What payment methods are accepted?",
+        answer: "Currently, TicketAdda doesn’t handle payments directly. We simply connect buyers and sellers. You’ll pay the seller directly for the ticket — TicketAdda doesn’t charge any fee right now, as we’re in our initial launch phase."
+      },
+      {
+        question: "Can I get a refund if the event is cancelled?",
+        answer: "In case the event gets cancelled (which is very unlikely), you’ll need to contact the seller directly for a refund or ticket resolution. TicketAdda only connects buyers and sellers and doesn’t process payments."
+      },
+      {
+        question: "When will I receive my e-ticket?",
+        answer: "It totally depends on the seller. Once they confirm, they’ll send the e-ticket directly to you. We don’t control the timing, we’re just connecting you with them."
+      },
+      {
+        question: "Is there an age restriction for the concert?",
+        answer: "You’ll have to check that yourself on the official site where the tickets are listed. This is just a resell platform, so the age restriction depends on the specific event—you can find the details in the event info section."
+      }
+    ]
+  };
+
+  // ==========================================
+  // STATE MANAGEMENT (Dynamic parts)
+  // ==========================================
+  window.sellerTickets = []; // This will now be populated by Firestore
+  let displayedCount = 9; // Initial show count for pagination
+  const LOAD_MORE_COUNT = 6;
+  let countdownInterval = null;
+  let isMusicPlaying = false;
+
+  // ==========================================
+  // DOM ELEMENTS
+  // ==========================================
+  const elements = {
+    mobileMenuBtn: document.getElementById('mobileMenuBtn'),
+    mobileNav: document.getElementById('mobileNav'),
+    navLinks: document.querySelectorAll('.nav-link,.mobile-nav-link'),
+    musicToggle: document.getElementById('musicToggle'),
+    bgMusic: document.getElementById('bgMusic'),
+    daysEl: document.getElementById('days'),
+    hoursEl: document.getElementById('hours'),
+    minutesEl: document.getElementById('minutes'),
+    secondsEl: document.getElementById('seconds'),
+    sortPrice: document.getElementById('sortPrice'),
+    availabilityFilter: document.getElementById('availabilityFilter'),
+    searchTickets: document.getElementById('searchTickets'), // Added search input
+    resetFilters: document.getElementById('resetFilters'),
+    sellerTicketsList: document.getElementById('sellerTicketsList'), // Renamed from ticketsGrid for clarity
+    loadMoreBtn: document.getElementById('loadMoreBtn'),
+    loadMoreWrap: document.getElementById('loadMoreWrap'),
+    flashBox: document.getElementById('flashBox'),
+    contactModal: document.getElementById('contactModal'),
+    loginRequiredModal: document.getElementById('loginRequiredModal'),
+    testimonialsCarousel: document.getElementById('testimonialsCarousel'),
+    faqAccordion: document.getElementById('faqAccordion'),
+    mobileCta: document.getElementById('mobileCta')
+  };
+
+  // ==========================================
+  // HELPERS
+  // ==========================================
+  function formatINR(num) {
+    const n = Number(num) || 0;
+    return '₹' + n.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+  }
+
+  function parsePriceToNumber(price) {
+    if (typeof price === 'number') return price;
+    if (!price) return Infinity;
+    const digits = String(price).replace(/[^\d]/g, '');
+    return digits ? parseInt(digits, 10) : Infinity;
+  }
+
+  function formatPriceDisplay(ticket) {
+    const priceRaw = ticket.price;
+    if (typeof priceRaw === 'number') return `₹${priceRaw.toLocaleString('en-IN')}/Ticket`;
+    if (typeof priceRaw === 'string') {
+      const digits = String(priceRaw).replace(/[^\d]/g, '');
+      if (digits) {
+        const num = parseInt(digits, 10);
+        return `₹${num.toLocaleString('en-IN')}/Ticket`;
+      }
+      return String(priceRaw).trim();
+    }
+    const fallbackNum = ticket.__priceNum || parsePriceToNumber(priceRaw) || 0;
+    return `₹${fallbackNum.toLocaleString('en-IN')}/Ticket`;
+  }
+
+  function escapeHTML(str) {
+    return String(str || '')
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "<")
+      .replace(/>/g, ">")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  const openModal = (modal) => modal?.classList.add('active');
+  const closeModal = (modal) => modal?.classList.remove('active');
+  const closeAllModals = () => {
+    document.querySelectorAll('.modal').forEach(closeModal);
+  };
+
+  function debounce(fn, wait) {
+    let t;
+    return function (...args) {
+      clearTimeout(t);
+      t = setTimeout(() => fn.apply(this, args), wait);
+    };
+  }
+
+  // ==========================================
+  // REAL-TIME FIRESTORE LISTENER FOR APPROVED TICKETS
+  // ==========================================
+  function startApprovedListingsListener() {
+    if (!db) {
+      console.warn('Firestore not available - skipping approved listings listener.');
+      return null;
+    }
+
+    console.log('Starting real-time approved listings listener for index.html...');
+    const q = listingsRef.where('status', '==', 'approved');
+
+    const unsubscribe = q.onSnapshot(snapshot => {
+      try {
+        const approved = snapshot.docs.map(doc => {
+          const d = doc.data() || {};
+          const priceRaw = d.price ?? d.sellingPrice ?? d.listPrice ?? d.amount ?? '';
+          const priceDigits = String(priceRaw).replace(/[^\d]/g, '');
+          return {
+            id: doc.id,
+            seller: d.sellerName || 'Seller', // Use sellerName from Firestore
+            price: priceRaw,
+            quantity: d.quantity ?? d.quan ?? d.qty ?? 0,
+            seat: d.ticketSection || '-', // Use ticketSection for seat
+            concert: d.eventName || '-', // Use eventName for concert
+            city: d.venue || '-', // Use venue for city (or add a city field to form)
+            date: d.eventDate || '-',
+            time: d.eventTime || '',
+            phone: d.ticketRow || '', // Use ticketRow for phone
+            email: d.ticketemail || '', // Use ticketemail for email
+            note: d.note || '',
+            imageUrl: d.ticketFileUrl || 'https://via.placeholder.com/300x200?text=Ticket+Image', // Placeholder for image
+            __priceNum: priceDigits ? parseInt(priceDigits, 10) : Infinity
+          };
+        });
+
+        window.sellerTickets = approved;
+        console.log('Approved listings updated from Firestore:', approved.length);
+        resetPagination(); // Reset pagination when new data comes in
+        renderFilteredTickets(); // Re-render with new data
+      } catch (err) {
+        console.error('Error processing approved listings snapshot:', err);
+      }
+    }, err => {
+      console.error('Firestore onSnapshot error (approved listings):', err);
+    });
+    return unsubscribe;
+  }
+
+  // ==========================================
+  // CROSS-TAB NOTIFICATION LISTENER
+  // ==========================================
+  function setupLocalStorageListener() {
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'listings-updated') {
+        console.log('localStorage "listings-updated" event detected. Re-fetching tickets...');
+        // Trigger a re-fetch/re-render. The Firestore listener will handle the actual data update.
+        // If Firestore listener is already active, this will just ensure a re-render.
+        // If not, we could manually fetch here, but the real-time listener is better.
+        resetPagination();
+        renderFilteredTickets();
+      }
+    });
+  }
+
+  // ==========================================
+  // PAGINATION & RENDERING
+  // ==========================================
+  function resetPagination() {
+    displayedCount = 9; // Reset to initial show count
+    updateLoadMoreVisibility();
+  }
+
+  function increasePagination() {
+    displayedCount += LOAD_MORE_COUNT;
+    updateLoadMoreVisibility();
+  }
+
+  function renderFilteredTickets() {
+    const container = elements.sellerTicketsList;
+    if (!container) return;
+    let list = [...window.sellerTickets]; // Use the globally updated sellerTickets
+
+    // availability filter
+    const avail = elements.availabilityFilter?.value || 'all';
+    if (avail === 'available') {
+      list = list.filter(t => {
+        const q = t.quantity ?? 0;
+        return Number(q) > 0;
+      });
+    }
+
+    // search
+    const q = (elements.searchTickets?.value || '').toLowerCase().trim();
+    if (q) {
+      list = list.filter(t => {
+        const seller = String(t.seller || '').toLowerCase();
+        const city = String(t.city || '').toLowerCase();
+        const seat = String(t.seat || '').toLowerCase();
+        const concert = String(t.concert || '').toLowerCase();
+        return seller.includes(q) || city.includes(q) || seat.includes(q) || concert.includes(q);
+      });
+    }
+
+    // sort
+    const sortVal = elements.sortPrice?.value || 'default';
+    if (sortVal === 'price-low') {
+      list.sort((a, b) => (a.__priceNum || 0) - (b.__priceNum || 0));
+    } else if (sortVal === 'price-high') {
+      list.sort((a, b) => (b.__priceNum || 0) - (a.__priceNum || 0));
+    } // default -> leave original order (or by submission date if available)
+
+    // save full filtered list to window for debugging if needed
+    window.__lastFilteredTickets = list;
+
+    // pagination slice
+    const totalAvailable = list.length;
+    const displayList = list.slice(0, displayedCount);
+
+    // render grid
+    container.innerHTML = '';
+    if (displayList.length === 0) {
+      container.innerHTML = `<div class="no-tickets" style="grid-column: 1/-1; padding:2rem;text-align:center;color:#666">No tickets match your filters.</div>`;
+      updateLoadMoreVisibility();
+      return;
+    }
+
+    displayList.forEach(ticket => {
+      const card = document.createElement('div');
+      card.className = 'seller-ticket-card';
+      const priceDisplay = formatPriceDisplay(ticket);
+      const quantity = ticket.quantity ?? 0;
+      const eventDateTime = ticket.date + (ticket.time ? `, ${ticket.time}` : '');
+
+      card.innerHTML = `
+        <div class="ticket-image-wrapper">
+          <img src="${escapeHTML(ticket.imageUrl)}" alt="${escapeHTML(ticket.concert)} Ticket" class="ticket-image">
+        </div>
+        <div class="seller-card-header">
+          <span class="seller-name">${escapeHTML(ticket.seller)}</span>
+          <span class="seller-price">${escapeHTML(priceDisplay)}</span>
+        </div>
+        <div class="seller-card-body">
+          <div class="info-row"><i class="fa fa-ticket"></i> Quantity: <span>${escapeHTML(String(quantity))}</span></div>
+          <div class="info-row"><i class="fa-solid fa-chair"></i> Seat: <span>${escapeHTML(ticket.seat)}</span></div>
+          <div class="info-row"><i class="fa fa-music"></i> Concert: <span>${escapeHTML(ticket.concert)}</span></div>
+          <div class="info-row"><i class="fa fa-city"></i> City: <span>${escapeHTML(ticket.city)}</span></div>
+          <div class="info-row"><i class="fa fa-calendar-days"></i> Date: <span>${escapeHTML(eventDateTime)}</span></div>
+        </div>
+        <button class="contact-seller-btn" data-ticket-id="${escapeHTML(String(ticket.id))}">Contact Seller</button>
+      `;
+      container.appendChild(card);
+    });
+
+    const remaining = Math.max(0, totalAvailable - displayList.length);
+    updateLoadMoreVisibility(remaining);
+  }
+
+  function updateLoadMoreVisibility(remainingCount = null) {
+    const btn = elements.loadMoreBtn;
+    const wrap = elements.loadMoreWrap;
+    const list = window.__lastFilteredTickets || window.sellerTickets;
+    const total = list.length;
+    const remaining = remainingCount === null ? Math.max(0, total - displayedCount) : remainingCount;
+    if (!btn || !wrap) return;
+    if (remaining > 0) {
+      btn.style.display = 'inline-block';
+      btn.textContent = `View more (${Math.min(remaining, LOAD_MORE_COUNT)} more)`;
+    } else {
+      btn.style.display = 'none';
+    }
+  }
+
+  function showFlashBox(text = 'Loading more tickets…', ms = 900) {
+    const fb = elements.flashBox;
+    if (!fb) return;
+    fb.textContent = text;
+    fb.setAttribute('aria-hidden', 'false');
+    fb.classList.add('show');
+    clearTimeout(fb._t);
+    fb._t = setTimeout(() => {
+      fb.classList.remove('show');
+      fb.setAttribute('aria-hidden', 'true');
+    }, ms);
+  }
+
+  // ==========================================
+  // CONTACT OWNER FLOW
+  // ==========================================
+  function handleContactClick(e) {
+    if (!e.target.classList.contains('contact-seller-btn')) return;
+
+    const ticketId = e.target.dataset.ticketId;
+    const ticket = window.sellerTickets.find(t => String(t.id) === String(ticketId));
+    if (!ticket) return;
+
+    const currentUser = firebase.auth().currentUser;
+
+    if (currentUser) {
+      const modalBody = elements.contactModal.querySelector('#modalBody');
+      if (modalBody) {
+        modalBody.innerHTML = `
+          <p>Aap <strong>${escapeHTML(ticket.seller)}</strong> se neeche di gayi details par contact kar sakte hain:</p>
+          <div class="info-row"><i class="fa fa-phone"></i> Phone: <span><a href="tel:${escapeHTML(ticket.phone || '')}">${escapeHTML(ticket.phone || 'N/A')}</a></span></div>
+          <div class="info-row"><i class="fa fa-envelope"></i> Email: <span><a href="mailto:${escapeHTML(ticket.email || '')}">${escapeHTML(ticket.email || 'N/A')}</a></span></div>
+          <br>
+          <p><strong>Seller ka Note:</strong><br>${escapeHTML(ticket.note || '')}</p>
+        `;
+        openModal(elements.contactModal);
+      }
+    } else {
+      sessionStorage.setItem('loginRedirect', window.location.pathname + '#tickets');
+      openModal(elements.loginRequiredModal);
+    }
+  }
+
+  // ==========================================
+  // ORIGINAL PAGE LOGIC (Static parts)
+  // ==========================================
+  function toggleMobileMenu() {
+    elements.mobileNav?.classList.toggle('active');
+    elements.mobileMenuBtn?.classList.toggle('active');
+  }
+
+  function handleNavClick(e) {
+    const targetId = e.target.getAttribute('href');
+    if (targetId && targetId.startsWith('#')) {
+      e.preventDefault();
+      const targetSection = document.querySelector(targetId);
+      if (targetSection) {
+        const headerOffset = 80;
+        const elementPosition = targetSection.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+        elements.mobileNav?.classList.remove('active');
+        elements.mobileMenuBtn?.classList.remove('active');
+      }
+    }
+  }
+
+  function handleScroll() {
+    handleMobileStickyCTA();
+  }
+
+  function handleMobileStickyCTA() {
+    if (!elements.mobileCta) return;
+    const ticketsSection = document.getElementById('tickets');
+    if (!ticketsSection) return;
+    const ticketsSectionTop = ticketsSection.offsetTop;
+    const scrollPosition = window.scrollY + window.innerHeight;
+    if (scrollPosition > ticketsSectionTop + 200) {
+      elements.mobileCta.classList.add('visible');
+    } else {
+      elements.mobileCta.classList.remove('visible');
+    }
+  }
+
+  function toggleMusic() {
+    if (!elements.bgMusic || !elements.musicToggle) return;
+    if (isMusicPlaying) {
+      elements.bgMusic.pause();
+      elements.musicToggle.classList.remove('playing');
+      elements.musicToggle.querySelector('.music-text').textContent = 'Play FEIN';
+      isMusicPlaying = false;
+    } else {
+      elements.bgMusic.play().catch(err => {
+        console.error('Audio playback failed:', err);
+      });
+      elements.musicToggle.classList.add('playing');
+      elements.musicToggle.querySelector('.music-text').textContent = 'Pause FEIN';
+      isMusicPlaying = true;
+    }
+  }
+
+  function startCountdown() {
+    if (!elements.daysEl) return;
+    const eventDate = new Date("2025-11-19T17:00:00+05:30").getTime(); // Hardcoded event date
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = eventDate - now;
+      if (distance < 0) {
+        clearInterval(countdownInterval);
+        elements.daysEl.textContent = '00';
+        elements.hoursEl.textContent = '00';
+        elements.minutesEl.textContent = '00';
+        elements.secondsEl.textContent = '00';
+        return;
+      }
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      elements.daysEl.textContent = String(days).padStart(2, '0');
+      elements.hoursEl.textContent = String(hours).padStart(2, '0');
+      elements.minutesEl.textContent = String(minutes).padStart(2, '0');
+      elements.secondsEl.textContent = String(seconds).padStart(2, '0');
+    }
+    updateCountdown();
+    countdownInterval = setInterval(updateCountdown, 1000);
+  }
+
+  function renderTestimonials() {
+    if (!elements.testimonialsCarousel) return;
+    elements.testimonialsCarousel.innerHTML = EVENT_DATA.testimonials.map(t => `<div class="testimonial-card"><p class="testimonial-text">"${t.text}"</p><div class="testimonial-author"><div class="testimonial-avatar">${t.avatar}</div><div class="testimonial-info"><div class="testimonial-name">${t.name}</div><div class="testimonial-location">${t.location}</div></div></div></div>`).join('');
+  }
+
+  function renderFAQ() {
+    if (!elements.faqAccordion) return;
+    elements.faqAccordion.innerHTML = EVENT_DATA.faqs.map((faq, index) => `
+      <div class="faq-item" data-faq-index="${index}">
+        <button class="faq-question" aria-expanded="false">
+          <span>${faq.question}</span>
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-content">${faq.answer}</div></div>
+      </div>`).join('');
+    elements.faqAccordion.querySelectorAll('.faq-question').forEach(btn => {
+      btn.addEventListener('click', toggleFAQ);
+    });
+  }
+
+  function toggleFAQ(e) {
+    const button = e.currentTarget;
+    const faqItem = button.closest('.faq-item');
+    const isActive = faqItem.classList.contains('active');
+    document.querySelectorAll('.faq-item.active').forEach(item => {
+      if (item !== faqItem) {
+        item.classList.remove('active');
+        item.querySelector('.faq-question')?.setAttribute('aria-expanded', 'false');
+      }
+    });
+    faqItem.classList.toggle('active');
+    button.setAttribute('aria-expanded', String(!isActive));
+  }
+
+  function handleKeyboard(e) {
+    if (e.key === 'Escape') {
+      closeAllModals(); // Close any active modal
+      if (elements.mobileNav?.classList.contains('active')) toggleMobileMenu();
+    }
+  }
+
+  // ==========================================
+  // MAIN INITIALIZATION
+  // ==========================================
+  function init() {
+    console.log('🎫 TicketAdda - Initializing index.html...');
+
+    setupAuthUI();
+    startApprovedListingsListener(); // Start real-time listener for approved tickets
+    setupLocalStorageListener(); // Listen for cross-tab updates
+
+    // Bind static events
+    elements.mobileMenuBtn?.addEventListener('click', toggleMobileMenu);
+    elements.navLinks.forEach(link => link.addEventListener('click', handleNavClick));
+    elements.musicToggle?.addEventListener('click', toggleMusic);
+    document.addEventListener('keydown', handleKeyboard);
+    window.addEventListener('scroll', handleScroll);
+
+    // Bind filter/sort events
+    elements.sortPrice?.addEventListener('change', () => { resetPagination(); renderFilteredTickets(); });
+    elements.availabilityFilter?.addEventListener('change', () => { resetPagination(); renderFilteredTickets(); });
+    elements.searchTickets?.addEventListener('input', debounce(() => { resetPagination(); renderFilteredTickets(); }, 180));
+    elements.resetFilters?.addEventListener('click', () => {
+      if (elements.searchTickets) elements.searchTickets.value = '';
+      if (elements.sortPrice) elements.sortPrice.value = 'default';
+      if (elements.availabilityFilter) elements.availabilityFilter.value = 'all';
+      resetPagination();
+      renderFilteredTickets();
+    });
+
+    // Bind load more button
+    elements.loadMoreBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      increasePagination();
+      showFlashBox('Loading more tickets…', 800);
+      setTimeout(renderFilteredTickets, 240);
+    });
+
+    // Delegate contact button clicks
+    elements.sellerTicketsList?.addEventListener('click', handleContactClick);
+
+    // Bind modal close buttons
+    document.querySelectorAll('[data-close-modal]').forEach(btn => btn.addEventListener('click', closeAllModals));
+    document.querySelectorAll('.modal-backdrop').forEach(bd => bd.addEventListener('click', closeAllModals));
+
+    // Render static content
+    renderTestimonials();
+    renderFAQ();
+    startCountdown(); // Start countdown timer
+    handleMobileStickyCTA(); // Initial check for mobile CTA
+
+    console.log('✅ TicketAdda - index.html Ready!');
+  }
+
+  // Ensure DOM is fully loaded before initializing
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    if (countdownInterval) clearInterval(countdownInterval);
+    // No need to clear Firestore listener here, it's managed by onSnapshot's unsubscribe
+  });
 
 })();
