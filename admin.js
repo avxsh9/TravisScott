@@ -1,8 +1,11 @@
 /**
- * TicketAdda Admin Dashboard
- * Pure Vanilla JavaScript (ES6) for Firebase/Firestore backend
- * Final Updated Code (Syntax and Logic Fixes Applied)
+ * TicketAdda - Admin Dashboard Logic
+ *
+ * This file handles Firebase Authentication, UI state management, real-time 
+ * fetching/filtering/sorting of pending listings, and bulk/single approval/rejection actions.
+ * FIXES: Implemented ADMIN_UID check and added robust error handling for Firebase permissions.
  */
+
 (function () {
     'use strict';
 
@@ -19,11 +22,11 @@
     };
 
     // !!! IMPORTANT: Configure ADMIN UIDs here !!!
-    // The UID 'gzTJ0gt8YuNR6ubcB93oYBEvuMS2' is kept as admin.
-    const ADMIN_UIDS = ['gzTJ0gt8YuNR6ubcB93oYBEvuMS2', 'jfU1XJfXAuWXzcKOQKB6pnfy6nb2'];
-    const LISTINGS_COLLECTION = 'listings';
-    const ACTIVITY_COLLECTION = 'adminActivity';
-    const ITEMS_PER_PAGE = 50;
+    // Ensure your admin user's UID is listed here.
+    const ADMIN_UIDS = ['gzTJ0gt8YuNR6ubcB93oYBEvuMS2', 'ADMIN_USER_UID_2'];
+    const LISTINGS_COLLECTION = 'listings'; // Listings data collection
+    const ACTIVITY_COLLECTION = 'adminActivity'; // Log collection
+    // const ITEMS_PER_PAGE = 50; // Not used in this version but kept for context
 
     // --- FIREBASE INITIALIZATION ---
     let auth, db, storage, listingsRef;
@@ -103,6 +106,7 @@
 
     function formatDate(timestamp) {
         if (!timestamp) return 'N/A';
+        // Handle Firestore Timestamp objects
         const date = timestamp.toDate ? timestamp.toDate() : (typeof timestamp === 'string' || typeof timestamp === 'number' ? new Date(timestamp) : new Date());
         return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     }
@@ -174,6 +178,7 @@
     function updateAuthUI(user) {
         if (user) {
             currentUser = user;
+            // Client-side Admin Check
             isAdmin = ADMIN_UIDS.includes(user.uid);
             currentAdminEmail = user.email || 'N/A';
 
@@ -182,12 +187,16 @@
                 elements.dashboard.style.display = 'block';
                 elements.logoutBtn.style.display = 'inline-flex';
                 elements.adminName.textContent = `Hi, ${user.email.split('@')[0]}`;
+                // Start fetching admin data only if authenticated and is admin
                 startRealtimeUpdates();
                 startActivityLogUpdates();
             } else {
                 auth.signOut();
-                updateAuthUI(null);
-                alert('Unauthorized Access: Your user ID is not configured as an admin. You will be logged out.');
+                // Set a small timeout to prevent re-rendering loop before redirect/re-render
+                setTimeout(() => {
+                    alert('Unauthorized Access: Your user ID is not configured as an admin. You will be logged out.');
+                    updateAuthUI(null); // Force UI update
+                }, 100);
             }
         } else {
             currentUser = null;
@@ -213,6 +222,7 @@
 
         elements.listingsTableBody.innerHTML = `<tr><td colspan="7" class="loading-row"><i class="fas fa-spinner fa-spin"></i> Loading pending listings...</td></tr>`;
 
+        // Fetch only listings with status 'pending'
         listingsUnsubscribe = listingsRef.where('status', '==', 'pending')
             .onSnapshot(snapshot => {
                 allListings = snapshot.docs.map(doc => ({
@@ -225,8 +235,13 @@
                 updateTimeAndCount();
 
             }, error => {
+                // Critical Firebase Permission Error Handling
                 console.error("Error listening to listings:", error);
-                elements.listingsTableBody.innerHTML = `<tr><td colspan="7" class="loading-row error"><i class="fas fa-exclamation-triangle"></i> Error fetching data: ${error.message}</td></tr>`;
+                const errorMessage = error.message.includes('permissions') ? 
+                                     "Permission denied. Check Firestore Security Rules for 'listings' collection." : 
+                                     `Error fetching data: ${error.message}`;
+                
+                elements.listingsTableBody.innerHTML = `<tr><td colspan="7" class="loading-row error"><i class="fas fa-exclamation-triangle"></i> ${errorMessage}</td></tr>`;
             });
     }
 
@@ -262,7 +277,7 @@
             let valA = a[field] || 0;
             let valB = b[field] || 0;
 
-            // Handle Firestore Timestamp or ISO date strings
+            // Handle Firestore Timestamp or ISO date strings for sorting
             if (field === 'createdAt' || field === 'submittedAt' || field === 'eventDate') {
                 valA = a[field]?.seconds || new Date(a[field]).getTime() || 0;
                 valB = b[field]?.seconds || new Date(b[field]).getTime() || 0;
@@ -445,26 +460,17 @@
         if (!ids || ids.length === 0) return showToast('No listings selected.', 3000);
     
         const batch = db.batch();
-        
-        // 🛑 FIX: serverTimestamp() can only be used at the top level of set() or update().
         const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp();
-        
-        // Use a standard ISO timestamp string (simple data type) for the array element.
         const localTimestamp = new Date().toISOString(); 
     
-        // 1. Array element for the 'actions' array in the listing document
-        //    (Must use simple data types, like the localTimestamp string)
         const adminAction = {
             adminUid: currentUser.uid,
             adminEmail: currentAdminEmail,
             action: action,
-            // ✅ FIXED: Using local string date instead of FieldValue.serverTimestamp()
             ts: localTimestamp, 
             reason: reason || (action === 'approved' ? 'Approved' : 'No reason provided')
         };
     
-        // 2. Data for the main 'adminActivity' log document 
-        //    (Uses serverTimestamp() because it's a top-level set() operation)
         const actionLogData = {
             adminUid: currentUser.uid,
             adminEmail: currentAdminEmail,
@@ -561,6 +567,7 @@
         
         elements.activityLogList.innerHTML = `<li><i class="fas fa-spinner fa-spin"></i> Fetching activity log...</li>`;
     
+        // Fetch last 10 activities ordered by timestamp
         db.collection(ACTIVITY_COLLECTION).orderBy('timestamp', 'desc').limit(10)
             .onSnapshot(snapshot => {
                 
@@ -588,8 +595,12 @@
                 });
             }, 
             error => { 
+                // Critical Firebase Permission Error Handling
                 console.error("Error fetching activity log:", error); 
-                elements.activityLogList.innerHTML = `<li><i class="fas fa-exclamation-triangle"></i> Error loading log: ${error.message || 'Permission denied'}</li>`;
+                const errorMessage = error.message.includes('permissions') ? 
+                                     "Permission denied. Check Firestore Security Rules for 'adminActivity' collection." : 
+                                     `Error loading log: ${error.message}`;
+                elements.activityLogList.innerHTML = `<li><i class="fas fa-exclamation-triangle"></i> ${errorMessage}</li>`;
             });
     }
 
