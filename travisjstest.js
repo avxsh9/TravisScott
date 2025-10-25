@@ -1773,9 +1773,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const eventDateTime = ticket.date + (ticket.time ? `, ${ticket.time}` : '');
 
       card.innerHTML = `
-        <div class="ticket-image-wrapper">
-          <img src="${escapeHTML(ticket.imageUrl)}" alt="${escapeHTML(ticket.concert)} Ticket" class="ticket-image">
-        </div>
         <div class="seller-card-header">
           <span class="seller-name">${escapeHTML(ticket.seller)}</span>
           <span class="seller-price">${escapeHTML(priceDisplay)}</span>
